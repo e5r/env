@@ -2,8 +2,8 @@
 
 set CDPATH=%CD%
 set EXEPATH=%~dp0
-set PSSCRIPT=%EXEPATH%e5r-bootstrapper.ps1
-set PSSCRIPTURL="https://raw.githubusercontent.com/e5r/env/master/scripts/e5r-bootstrapper.ps1"
+set PSSCRIPT=%EXEPATH%bootstrapper.ps1
+set PSSCRIPTURL="https://raw.githubusercontent.com/e5r/env/master/scripts/bootstrapper.ps1"
 set PSSCRIPTDOWNLOAD="(New-Object System.Net.WebClient).DownloadFile('%PSSCRIPTURL%', '%PSSCRIPT%')"
 
 IF EXIST %PSSCRIPT% goto psrun
