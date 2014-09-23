@@ -13,7 +13,7 @@ $e5rBin           = "$e5rPath\bin"
 $e5rLang          = "$e5rPath\lang"
 $langUrlTemplate  = "https://raw.githubusercontent.com/e5r/env/master/scripts/lang/{LANG}/bootstrapper.ps1"
 $langPathTemplate = "$e5rLang\{LANG}"
-$extraParams      = [String]::join(",", $args)
+$extraParams      = '"' + [String]::join('" "', $args) + '"'
 
 Function Create-Path-Base() {
     $outputSilent = New-Item -ItemType Directory -Force $e5rPath
@@ -35,10 +35,8 @@ Function Web-Exists([string] $url) {
     return $false
 }
 
-Function Web-Download([string] $url, [string] $path) {
-    $wc = New-Object System.Net.WebClient
-    $wc.DownloadFile($url, $path)
-    #Invoke-WebRequest $url -OutFile $path
+Function Web-Download([string]$url, [string]$path) {
+    Invoke-WebRequest $url -OutFile $path
 }
 
 Function Print-Usage() {
@@ -67,8 +65,8 @@ if((Test-Path $langScriptFilePath) -ne 1) {
         Write-Host "  URL Request: $langScriptUrl"
         Exit
     }
-    New-Item -ItemType Directory -Force $langScriptPath
-    Web-Download($langScriptUrl, $langScriptFilePath)
+    $outputSilent = New-Item -ItemType Directory -Force $langScriptPath
+    Web-Download $langScriptUrl $langScriptFilePath
 }
 
-Invoke-Command -FilePath $langScriptFilePath -ArgumentList $args
+Invoke-Expression -Command 'PowerShell "$langScriptFilePath" $extraParams'
