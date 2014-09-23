@@ -3,7 +3,7 @@ param(
     [string[]]$args=@()
 )
 
-Write-Host "Bootstrapper .NET vNext running 2..."
+Write-Host "Bootstrapper .NET vNext running..."
 
 $count = 0
 foreach($arg in $args) {
