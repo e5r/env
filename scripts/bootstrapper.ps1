@@ -7,16 +7,25 @@ param(
     [string[]]$args=@()
 )
 
-$workdir          = [IO.Path]::GetFullPath($workdir)
-$e5rPath          = $env:USERPROFILE + "\.e5r"
-$e5rBin           = "$e5rPath\bin"
-$e5rLang          = "$e5rPath\lang"
-$langUrlTemplate  = "https://raw.githubusercontent.com/e5r/env/master/scripts/lang/{LANG}/bootstrapper.ps1"
-$langPathTemplate = "$e5rLang\{LANG}"
-$binUrlTemplate   = "https://raw.githubusercontent.com/e5r/env/master/scripts/{BIN}"
-$binPathTemplate  = "$e5rBin\e5r-{BIN}"
-$postBootstrapper = "$e5rPath\postbootstrapper.bat"
-$extraParams      = '"' + [String]::join('" "', $args) + '"'
+$repositoryVersion      = "master"
+$workdir                = [IO.Path]::GetFullPath($workdir)
+$e5rPath                = $env:USERPROFILE + "\.e5r"
+$e5rBin                 = "$e5rPath\bin"
+$e5rLang                = "$e5rPath\lang"
+$langUrlTemplate        = "https://raw.githubusercontent.com/e5r/env/$repositoryVersion/scripts/lang/{LANG}/bootstrapper.ps1"
+$langPathTemplate       = "$e5rLang\{LANG}"
+$binPathTemplate        = "$e5rBin\e5r-{BIN}"
+$postBootstrapper       = "$e5rPath\postbootstrapper.bat"
+$repositoryUrl          = "https://github.com/e5r/env/archive/$repositoryVersion.zip"
+$repositoryZip          = "$e5rPath\repository.zip"
+$repositoryPath         = "$e5rPath\repository"
+$repositoryScriptPath   = "$repositoryPath\env-$repositoryVersion\scripts"
+$langRepositoryTemplate = "$repositoryPath\env-$repositoryVersion\scripts\lang\{LANG}\bootstrapper.ps1"
+$extraParams            = '"' + [String]::join('" "', $args) + '"'
+$langScriptPath         = $langPathTemplate -Replace "{LANG}", $lang
+$langScriptFilePath     = "$langScriptPath\bootstrapper.ps1"
+$langScriptUrl          = $langUrlTemplate -Replace "{LANG}", $lang
+$langRepositoryPath     = $langRepositoryTemplate -Replace "{LANG}", $lang
 
 Function Create-Path-Base() {
     $outputSilent = New-Item -ItemType Directory -Force $e5rPath
@@ -24,34 +33,50 @@ Function Create-Path-Base() {
     $outputSilent = New-Item -ItemType Directory -Force $e5rLang
 }
 
-Function Web-Exists([string] $url) {
-    $wr = [System.Net.WebRequest]::Create($url)
-    try {
-        $res = $wr.GetResponse()
-    } catch [System.Net.WebException] {
-        $res = $_.Exception.Response
-    }
-    $statusCode = [int]$res.StatusCode
-    if($statusCode -eq 200){
-        return $true
-    }
-    return $false
-}
-
 Function Web-Download([string]$url, [string]$path) {
+    Write-Host "----> Downloading $url"
+    Write-Host "      To: $path"
     Invoke-WebRequest $url -OutFile $path
 }
 
-Function Web-Install-Binary([string]$bin) {
-    $binaryUrl = $binUrlTemplate -Replace "{BIN}", $bin
-    $binaryPath = $binPathTemplate -Replace "{BIN}", $bin
-    if((Test-Path $binaryPath) -ne 1) {
-        $webExists = Web-Exists($binaryUrl)
-        if($webExists -eq $false) {
-            Write-Host "----> Web binary '$bin' not found!"
-            Write-Host "      URL Request: $binaryUrl"
-        }
-        Web-Download $binaryUrl $binaryPath
+Function Zip-Extract([string]$file, [string]$path) {
+    try {
+        $outputSilent = [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem")
+        $outputSilent = [System.IO.Compression.ZipFile]::ExtractToDirectory($file, $path)
+    } catch [System.Exception] {
+        $shell = New-Object -ComObject Shell.Application
+        $zipPackage = $shell.NameSpace($file)
+        $destinationFolder = $shell.NameSpace($path)
+        $destinationFolder.CopyHere($zipPackage.Items())
+    }
+}
+
+Function Get-Repository() {
+    if ((Test-Path $repositoryPath) -ne 1) {
+        Web-Download $repositoryUrl $repositoryZip
+        $outputSilent = New-Item -ItemType Directory -Force $repositoryPath
+        Zip-Extract $repositoryZip $repositoryPath
+        $outputSilent = Remove-Item $repositoryZip -Force
+    }
+}
+
+Function Clean-Repository() {
+    if (Test-Path $repositoryPath) {
+        $outputSilent = Remove-Item $repositoryPath -Recurse -Force
+    }
+}
+
+Function Script-Install([string]$script, [string]$path) {
+    $from = "$repositoryScriptPath\$script"
+    $to = "$path"
+    if(Test-Path $to) {
+        Write-Host "----> Script $script already installed."
+    }else{
+        Write-Host "----> Script-Install $script"
+        Write-Host "      From: $from"
+        Write-Host "      To: $to"
+        Get-Repository
+        $outputSilent = Copy-Item $from $to
     }
 }
 
@@ -81,23 +106,22 @@ if ($help -or !$lang) {
 }
 
 Create-Path-Base
-Update-Environment-Variables
-Web-Install-Binary "help.bat"
-Web-Install-Binary "help.ps1"
 
-$langScriptPath = $langPathTemplate -Replace "{LANG}", $lang
-$langScriptFilePath = "$langScriptPath\bootstrapper.ps1"
-$langScriptUrl = $langUrlTemplate -Replace "{LANG}", $lang
+Script-Install "help.bat" "$e5rBin\help.bat"
+Script-Install "help.ps1" "$e5rBin\help.ps1"
 
 if((Test-Path $langScriptFilePath) -ne 1) {
-    $webExists = Web-Exists($langScriptUrl)
-    if($webExists -eq $false) {
+    Get-Repository
+    $scriptExists = Test-Path $langRepositoryPath
+    if($scriptExists -eq $false) {
         Write-Host "----> Bootstrapper script for lang '$lang' not found!"
         Write-Host "      URL Request: $langScriptUrl"
         Exit
     }
     $outputSilent = New-Item -ItemType Directory -Force $langScriptPath
-    Web-Download $langScriptUrl $langScriptFilePath
+    $outputSilent = Copy-Item $langRepositoryPath $langScriptFilePath
 }
 
+Clean-Repository
+Update-Environment-Variables
 Invoke-Expression -Command 'PowerShell "$langScriptFilePath" $extraParams'
