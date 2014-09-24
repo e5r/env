@@ -12,7 +12,7 @@ $workdir                = [IO.Path]::GetFullPath($workdir)
 $e5rPath                = $env:USERPROFILE + "\.e5r"
 $e5rBin                 = "$e5rPath\bin"
 $e5rLang                = "$e5rPath\lang"
-$langUrlTemplate        = "https://raw.githubusercontent.com/e5r/env/$repositoryVersion/scripts/lang/{LANG}/bootstrapper.ps1"
+$langUrlTemplate        = "https://github.com/e5r/env/blob/master/scripts/lang/{LANG}/bootstrapper.ps1"
 $langPathTemplate       = "$e5rLang\{LANG}"
 $binPathTemplate        = "$e5rBin\e5r-{BIN}"
 $postBootstrapper       = "$e5rPath\postbootstrapper.bat"
@@ -115,7 +115,7 @@ if((Test-Path $langScriptFilePath) -ne 1) {
     $scriptExists = Test-Path $langRepositoryPath
     if($scriptExists -eq $false) {
         Write-Host "----> Bootstrapper script for lang '$lang' not found!"
-        Write-Host "      URL Request: $langScriptUrl"
+        Write-Host "      Check in: $langScriptUrl"
         Exit
     }
     $outputSilent = New-Item -ItemType Directory -Force $langScriptPath
