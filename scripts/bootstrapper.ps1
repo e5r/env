@@ -7,7 +7,7 @@ param(
     [string[]]$args=@()
 )
 
-$repositoryVersion      = "master"
+$repositoryVersion      = "0.0.2-alpha"
 $workdir                = [IO.Path]::GetFullPath($workdir)
 $e5rPath                = $env:USERPROFILE + "\.e5r"
 $e5rBin                 = "$e5rPath\bin"
