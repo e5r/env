@@ -7,14 +7,14 @@ param(
     [string[]]$args=@()
 )
 
-$repositoryVersion      = "0.0.2-alpha"
+$repositoryVersion      = "master"
 $workdir                = [IO.Path]::GetFullPath($workdir)
 $e5rPath                = $env:USERPROFILE + "\.e5r"
 $e5rBin                 = "$e5rPath\bin"
 $e5rLang                = "$e5rPath\lang"
 $langUrlTemplate        = "https://github.com/e5r/env/blob/master/scripts/lang/{LANG}/bootstrapper.ps1"
 $langPathTemplate       = "$e5rLang\{LANG}"
-$binPathTemplate        = "$e5rBin\e5r-{BIN}"
+$binFileNameTemplate    = "e5r-{FILENAME}"
 $postBootstrapper       = "$e5rPath\postbootstrapper.bat"
 $repositoryUrl          = "https://github.com/e5r/env/archive/$repositoryVersion.zip"
 $repositoryZip          = "$e5rPath\repository.zip"
@@ -66,9 +66,13 @@ Function Clean-Repository() {
     }
 }
 
-Function Script-Install([string]$script, [string]$path) {
+Function Script-Install([string]$script) {
+    $script = $script -Replace "/", "\"
     $from = "$repositoryScriptPath\$script"
-    $to = "$path"
+    $split = $script.Split("\")
+    $filename = $split[$split.Length - 1]
+    $filename = $binFileNameTemplate -Replace "{FILENAME}", $filename
+    $to = "$e5rBin\$filename"
     if(Test-Path $to) {
         Write-Host "----> Script $script already installed."
     }else{
@@ -107,8 +111,8 @@ if ($help -or !$lang) {
 
 Create-Path-Base
 
-Script-Install "help.bat" "$e5rBin\help.bat"
-Script-Install "help.ps1" "$e5rBin\help.ps1"
+Script-Install "help.bat"
+Script-Install "help.ps1"
 
 if((Test-Path $langScriptFilePath) -ne 1) {
     Get-Repository
