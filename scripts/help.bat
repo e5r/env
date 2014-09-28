@@ -1,3 +1,3 @@
 @echo off
-set PSSCRIPT=%~dp0help.ps1
+set PSSCRIPT=%~dpn0.ps1
 @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted "%PSSCRIPT%" %*
