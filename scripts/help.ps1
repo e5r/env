@@ -1,4 +1,4 @@
-$version = "0.0.1-alpha"
+$version = "master"
 function Show-Help {
 @"
 E5R Environment - Version $version
