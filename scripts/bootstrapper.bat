@@ -1,10 +1,11 @@
 @echo off
 
+set VERSION=master
 set CDPATH=%CD%
 set EXEPATH=%~dp0
 set POSTBOOTSTRAPPERFILE=%USERPROFILE%\.e5r\postbootstrapper.bat
 set PSSCRIPT=%EXEPATH%bootstrapper.ps1
-set PSSCRIPTURL="https://raw.githubusercontent.com/e5r/env/master/scripts/bootstrapper.ps1"
+set PSSCRIPTURL="https://raw.githubusercontent.com/e5r/env/%VERSION%/scripts/bootstrapper.ps1"
 set PSSCRIPTDOWNLOAD="(New-Object System.Net.WebClient).DownloadFile('%PSSCRIPTURL%', '%PSSCRIPT%')"
 
 if exist %PSSCRIPT% goto psrun
