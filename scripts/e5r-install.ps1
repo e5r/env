@@ -55,8 +55,8 @@ Function Update-Environment-Variables() {
 $outputSilent = New-Item -ItemType Directory -Force $e5rBin
 
 Get-Repository
-$outputSilent = Copy-Item "$repositoryScriptPath\e5r.bat" $to = "$e5rBin\e5r.bat"
-$outputSilent = Copy-Item "$repositoryScriptPath\e5r.ps1" $to = "$e5rBin\e5r.ps1"
+$outputSilent = Copy-Item "$repositoryScriptPath\e5r.bat" "$e5rBin\e5r.bat"
+$outputSilent = Copy-Item "$repositoryScriptPath\e5r.ps1" "$e5rBin\e5r.ps1"
 
 Clean-Repository
 Update-Environment-Variables
