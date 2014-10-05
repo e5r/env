@@ -1,4 +1,4 @@
-$version = "master"
+$version = "sprint-1"
 function Show-Help {
 @"
 E5R Environment - Version $version

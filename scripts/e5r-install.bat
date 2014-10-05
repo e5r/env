@@ -1,11 +1,12 @@
 @echo off
 
-set VERSION=master
+set VERSION=sprint-1
 set CDPATH=%CD%
-set EXEPATH=%~dp0
-set POSTBOOTSTRAPPERFILE=%USERPROFILE%\.e5r\postbootstrapper.bat
-set PSSCRIPT=%EXEPATH%bootstrapper.ps1
-set PSSCRIPTURL="https://raw.githubusercontent.com/e5r/env/%VERSION%/scripts/bootstrapper.ps1"
+set SCRIPTPATH=%~dp0
+set SCRIPTNAME=%~n0
+set POSTSETUPFILE=%USERPROFILE%\.e5r\postsetup.bat
+set PSSCRIPT=%SCRIPTPATH%%SCRIPTNAME%.ps1
+set PSSCRIPTURL="https://raw.githubusercontent.com/e5r/env/%VERSION%/scripts/%SCRIPTNAME%.ps1"
 set PSSCRIPTDOWNLOAD="(New-Object System.Net.WebClient).DownloadFile('%PSSCRIPTURL%', '%PSSCRIPT%')"
 
 if exist %PSSCRIPT% goto psrun
@@ -20,7 +21,7 @@ if errorlevel 1 (
     @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted "%PSSCRIPT%" %*
 )
 
-if exist %POSTBOOTSTRAPPERFILE% (
-    CALL %POSTBOOTSTRAPPERFILE%
-    DEL %POSTBOOTSTRAPPERFILE%
+if exist %POSTSETUPFILE% (
+    CALL %POSTSETUPFILE%
+    DEL %POSTSETUPFILE%
 )
