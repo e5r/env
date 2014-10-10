@@ -42,10 +42,19 @@ Function Clean-Repository() {
 
 Function Update-Environment-Variables() {
     $path = [Environment]::GetEnvironmentVariable("Path", "User")
-    $contains = $path.ToLower().Contains($e5rBin.ToLower())
+    $contains = $false
+    if($path -ne $null) {
+        $contains = $path.ToLower().Contains($e5rBin.ToLower())
+    }
     if(!$contains) {
-        $path += ";" + $e5rBin
-        $env:Path += ";" + $e5rBin
+        if($path -ne $null) {
+            $path += ";"
+        }
+        $path += $e5rBin
+        if($env:Path -ne $null) {
+            $env:Path += ";"
+        }
+        $env:Path += $e5rBin
         $command = "set PATH=%PATH%;$e5rBin"
         $outputSilent = New-Item -ItemType File -Force $postSetup -Value $command
         [Environment]::SetEnvironmentVariable("Path", $path, "User")
