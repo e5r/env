@@ -5,6 +5,7 @@ param(
 )
 
 $version = "sprint-1"
+$e5rPath = "$env:UserProfile\.e5r"
 
 for($count = 0; $count -lt $args.length; $count++) {
     $value = $args[$count]
@@ -46,8 +47,7 @@ if($args.length -lt 1) {
 }
 
 $commandName, $args = $args
-$commandPath = [System.IO.Path]::GetDirectoryName($MyInvocation.InvocationName)
-$commandPath = [System.IO.Path]::GetFullPath("$commandPath\..\command")
+$commandPath = "$e5rPath\command"
 $commandFileName = "$commandName.ps1"
 $commandFilePath = "$commandPath\$commandFileName"
 
