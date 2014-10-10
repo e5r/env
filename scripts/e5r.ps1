@@ -1,9 +1,19 @@
 param(
-    [parameter(Position=0, ValueFromRemainingArguments=$true)]
-    [string[]]$args=@()
+    [array]
+    [parameter(ValueFromRemainingArguments=$true)]
+    $args=@()
 )
 
 $version = "sprint-1"
+
+for($count = 0; $count -lt $args.length; $count++) {
+    $value = $args[$count]
+    if($value.contains(" ")) {
+        $value = $value.replace("`"", "```"")
+        $value = "`"$value`""
+    }
+    $args[$count] = $value
+}
 
 function Print-Usage {
 @"
@@ -35,8 +45,9 @@ if($args.length -lt 1) {
     Exit
 }
 
-$commandPath = [IO.Path]::GetFullPath("$PSScriptRoot\..\command")
-$commandName = $args[0]
+$commandName, $args = $args
+$commandPath = [System.IO.Path]::GetDirectoryName($MyInvocation.InvocationName)
+$commandPath = [System.IO.Path]::GetFullPath("$commandPath\..\command")
 $commandFileName = "$commandName.ps1"
 $commandFilePath = "$commandPath\$commandFileName"
 
@@ -56,5 +67,4 @@ if ((Test-Path $commandFilePath) -ne 1) {
     Exit
 }
 
-# TODO: Repassar argumentos do comando
-Invoke-Expression -Command 'PowerShell "$commandFilePath"'
+Invoke-Expression "& `"$commandFilePath`" $args"
