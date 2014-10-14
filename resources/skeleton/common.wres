@@ -1,10 +1,10 @@
 d:src
 d:test
 d:doc
-f:build.sh:common-files/build.sh
-f:build.cmd:common-files/build.cmd
-f:LICENSE.md:common-files/LICENSE.md
-f:README.md:common-files/README.md
+f:build.sh:common/build.sh
+f:build.cmd:common/build.cmd
+f:LICENSE.md:common/LICENSE.md
+f:README.md:common/README.md
 
 #d: Create a directory
 # syntax

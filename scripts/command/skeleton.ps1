@@ -42,6 +42,7 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
     }catch [Exception] {
         Write-Host "----> Download failed!"
         Write-Host "      URL: $resourceUrl"
+        $outputSilent = Remove-Item $pathBase -Recurse -Force
         Exit
     }
     $lineNumber = 0
