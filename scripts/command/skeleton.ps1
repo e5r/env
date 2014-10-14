@@ -137,19 +137,6 @@ E5R Skeleton Command Help
 }
 
 Function Run-Init() {
-# Não existe '.e5r/resources/skeleton/common'?
-#  --> Não existe 'http://github.../resources/skeleton/common.wres'
-#      --> Mensagem de erro
-#  --> Cria '.e5r/resources/skeleton/common'
-#  --> Baixa 'http://github.../resources/skeleton/common.wres' para '.e5r/resources/skeleton/common/common.wres'
-#  --> Processa '.e5r/resources/skeleton/common/common.wres'
-#  --> Apaga '.e5r/resources/skeleton/common/common.wres'
-#
-# Não existe '.e5r/resources/skeleton/common'?
-#  --> Mensagem de erro
-#
-# Copia '.e5r/resources/skeleton/common/*' para './'
-
     if(!$lang) {
         Write-Host "E5R Skeleton Command requires -lang parameter." -ForegroundColor Red
         Write-Host
@@ -164,26 +151,26 @@ Function Run-Init() {
     }
 
     $skeletonCommon = "$skeletonBasePath\common"
-    #$skeletonLang   = "$skeletonBasePath\$lang"
+    $skeletonLang   = "$skeletonBasePath\$lang"
 
     if(!(Test-Path $skeletonCommon)) {
         Make-WebResource $skeletonBaseUrl "common.wres" $skeletonCommon
     }
-    #if(!(Test-Path $skeletonLang)) {
-    #    Make-WebResource $skeletonBaseUrl "$lang.wres" $skeletonLang
-    #}
+    if(!(Test-Path $skeletonLang)) {
+        Make-WebResource $skeletonBaseUrl "$lang.wres" $skeletonLang
+    }
 
     if(!(Test-Path $skeletonCommon)) {
         Write-Host "E5R Skeleton Template <common> not found!"
         Exit
     }
-    #if(!(Test-Path $skeletonLang)) {
-    #    Write-Host "E5R Skeleton Template <common> not found!"
-    #    Exit
-    #}
+    if(!(Test-Path $skeletonLang)) {
+        Write-Host "E5R Skeleton Template <common> not found!"
+        Exit
+    }
 
     Copy-Skeleton "common" $workdir
-    #Copy-Skeleton "$lang" $workdir
+    Copy-Skeleton "$lang" $workdir
 
     Write-Host "E5R Skeleton <$lang> initialized successfully!" -ForegroundColor Cyan
 }
