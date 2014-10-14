@@ -1,12 +1,7 @@
-base:/resources/skeleton
-
-d:.e5r
-f:.e5r/env
 d:src
 d:test
 d:doc
 f:build.sh:common-files/build.sh
-# -> /resources/skeleton/common-files/build.sh
 f:build.cmd:common-files/build.cmd
 f:LICENSE.md:common-files/LICENSE.md
 f:README.md:common-files/README.md
