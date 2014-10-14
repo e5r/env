@@ -29,7 +29,7 @@ Function Web-Exists([string] $url) {
 Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $pathBase) {
     $resourceUrl = "$urlBase/$resourceName"
     $resourceFilePath = "$pathBase\$resourceName"
-    if(!Web-Exists $resourceUrl) {
+    if(!(Web-Exists $resourceUrl)) {
         Write-Host "----> Web resource $resourceName not found!"
         Write-Host "      URL: $resourceUrl"
         Exit
@@ -48,16 +48,53 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
     foreach ($line in (Get-Content $resourceFilePath))
     {
         $lineNumber += 1
-        Write-Host "[webResource:$lineNumber] $line"
+        $line = "$line".Trim()
+
+        if($line.length -lt 1 -or $line[0] -eq "#") {
+            continue
+        }
+
+        if($line.length -gt 1 -and $line[1] -eq ":" -and $line[0] -eq "d") {
+            $directory = $line.Substring(2)
+            $outputSilent = New-Item -ItemType Directory -Path "$pathBase\$directory"
+            continue
+        }
+
+        if($line.length -gt 1 -and $line[1] -eq ":" -and $line[0] -eq "f") {
+            $parts = $line.Substring(2).Split(":")
+            if($parts.length -ne 2) {
+                Write-Host "Syntax error in web resource file [$resourceName]" -ForegroundColor Red
+                Write-Host "  URL: " -NoNewLine -ForegroundColor DarkRed
+                Write-Host "$resourceUrl"  -ForegroundColor DarkGray
+                Write-Host "  Line $lineNumber`: " -NoNewLine -ForegroundColor DarkRed
+                Write-Host "$line" -ForegroundColor DarkGray
+                $outputSilent = Remove-Item $pathBase -Recurse -Force
+                Exit
+            }
+            $fileUrl = "$urlBase/" + $parts[1]
+            $filePath = "$pathBase\" + $parts[0]
+            $filePathBase = [System.IO.Path]::GetDirectoryName($filePath)
+            if(!(Test-Path $filePathBase) -ne 1) {
+                $outputSilent = New-Item -ItemType Directory -Path $filePathBase
+            }
+            Invoke-WebRequest $fileUrl -OutFile $filePath
+            continue
+        }
+
+        Write-Host "Syntax error in web resource file [$resourceName]" -ForegroundColor Red
+        Write-Host "  URL: " -NoNewLine -ForegroundColor DarkRed
+        Write-Host "$resourceUrl"  -ForegroundColor DarkGray
+        Write-Host "  Line $lineNumber`: " -NoNewLine -ForegroundColor DarkRed
+        Write-Host "$line" -ForegroundColor DarkGray
+        $outputSilent = Remove-Item $pathBase -Recurse -Force
+        Exit
     }
     $outputSilent = Remove-Item $resourceFilePath
 }
 
 Function Copy-Skeleton([string] $skeleton, [string] $toPath) {
     $fromPath = "$skeletonBasePath\$skeleton"
-    Write-Host "Copy-Skeleton"
-    Write-Host "  From: $fromPath"
-    Write-Host "    To: $toPath"
+    $outputSilent = Copy-Item "$fromPath\*" $toPath -Recurse -Force
 }
 
 if([String]::IsNullOrEmpty($workdir)) {
@@ -112,26 +149,33 @@ Function Run-Init() {
         Run-Usage
         Exit
     }
+
+    if ((Get-ChildItem $workdir).count -gt 0) {
+        Write-Host "Not empty directories can not be initialized." -ForegroundColor Red
+        Exit
+    }
+
     $skeletonCommon = "$skeletonBasePath\common"
-    $skeletonLang   = "$skeletonBasePath\$lang"
+    #$skeletonLang   = "$skeletonBasePath\$lang"
+
     if(!(Test-Path $skeletonCommon)) {
         Make-WebResource $skeletonBaseUrl "common.wres" $skeletonCommon
     }
-    if(!(Test-Path $skeletonLang)) {
-        Make-WebResource $skeletonBaseUrl "$lang.wres" $skeletonLang
-    }
+    #if(!(Test-Path $skeletonLang)) {
+    #    Make-WebResource $skeletonBaseUrl "$lang.wres" $skeletonLang
+    #}
 
     if(!(Test-Path $skeletonCommon)) {
         Write-Host "E5R Skeleton Template <common> not found!"
         Exit
     }
-    if(!(Test-Path $skeletonLang)) {
-        Write-Host "E5R Skeleton Template <common> not found!"
-        Exit
-    }
+    #if(!(Test-Path $skeletonLang)) {
+    #    Write-Host "E5R Skeleton Template <common> not found!"
+    #    Exit
+    #}
 
-    $outputSilent = Copy-Item $skeletonCommon $workdir -Recurse
-    $outputSilent = Copy-Item $skeletonLang $workdir -Recurse
+    Copy-Skeleton "common" $workdir
+    #Copy-Skeleton "$lang" $workdir
 
     Write-Host "E5R Skeleton <$lang> initialized successfully!" -ForegroundColor Cyan
 }
