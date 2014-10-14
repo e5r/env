@@ -77,6 +77,13 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
             if(!(Test-Path $filePathBase)) {
                 $outputSilent = New-Item -ItemType Directory -Path $filePathBase
             }
+            if(!(Web-Exists $fileUrl)) {
+                Write-Host "Web resource not found!" -ForegroundColor Red
+                Write-Host "  URL: " -NoNewLine -ForegroundColor DarkRed
+                Write-Host "$fileUrl"  -ForegroundColor DarkGray
+                $outputSilent = Remove-Item $pathBase -Recurse -Force
+                Exit
+            }
             Invoke-WebRequest $fileUrl -OutFile $filePath
             continue
         }
