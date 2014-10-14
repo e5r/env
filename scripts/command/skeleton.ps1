@@ -173,6 +173,8 @@ Function Run-Init() {
     Copy-Skeleton "$lang" $workdir
 
     Write-Host "E5R Skeleton <$lang> initialized successfully!" -ForegroundColor Cyan
+    Write-Host "TODO:" -NoNewLine -ForegroundColor DarkCyan
+    Write-Host "Create .e5r/lang and .e5r/env" -ForegroundColor White
 }
 
 # -help
