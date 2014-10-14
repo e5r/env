@@ -74,7 +74,7 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
             $fileUrl = "$urlBase/" + $parts[1]
             $filePath = "$pathBase\" + $parts[0]
             $filePathBase = [System.IO.Path]::GetDirectoryName($filePath)
-            if(!(Test-Path $filePathBase) -ne 1) {
+            if(Test-Path $filePathBase -ne 1) {
                 $outputSilent = New-Item -ItemType Directory -Path $filePathBase
             }
             Invoke-WebRequest $fileUrl -OutFile $filePath
