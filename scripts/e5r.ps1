@@ -27,6 +27,13 @@ Usage:
 "@ | Write-Host
 }
 
+Function Web-Download([string]$url, [string]$path) {
+    Write-Host "----> Downloading $url"
+    Write-Host "      To: $path"
+    $wc = New-Object System.Net.WebClient
+    $wc.DownloadFileTaskAsync($url, $path)
+}
+
 Function Web-Exists([string] $url) {
     $wr = [System.Net.WebRequest]::Create($url)
     try {
@@ -58,7 +65,7 @@ if ((Test-Path $commandPath) -ne 1) {
 if ((Test-Path $commandFilePath) -ne 1) {
     $url ="https://raw.githubusercontent.com/e5r/env/$version/scripts/command/$commandFileName"
     if(Web-Exists $url) {
-        Invoke-WebRequest $url -OutFile $commandFilePath
+        Web-Download $url $commandFilePath
     }
 }
 

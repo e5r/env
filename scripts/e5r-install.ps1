@@ -10,7 +10,8 @@ $repositoryScriptPath   = "$repositoryPath\env-$repositoryVersion\scripts"
 Function Web-Download([string]$url, [string]$path) {
     Write-Host "----> Downloading $url"
     Write-Host "      To: $path"
-    Invoke-WebRequest $url -OutFile $path
+    $wc = New-Object System.Net.WebClient
+    $wc.DownloadFileTaskAsync($url, $path)
 }
 
 Function Zip-Extract([string]$file, [string]$path) {

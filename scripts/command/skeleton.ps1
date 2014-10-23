@@ -15,6 +15,13 @@ $skeletonBaseUrl  = "https://raw.githubusercontent.com/e5r/env/$version/resource
 $licenseBasePath  = "$e5rPath\resources\license"
 $licenseBaseUrl   = "https://raw.githubusercontent.com/e5r/env/$version/resources/license"
 
+Function Web-Download([string]$url, [string]$path) {
+    Write-Host "----> Downloading $url"
+    Write-Host "      To: $path"
+    $wc = New-Object System.Net.WebClient
+    $wc.DownloadFileTaskAsync($url, $path)
+}
+
 Function Web-Exists([string] $url) {
     $wr = [System.Net.WebRequest]::Create($url)
     try {
@@ -41,7 +48,7 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
         $outputSilent = New-Item -ItemType Directory -Path $pathBase
     }
     try {
-        Invoke-WebRequest $resourceUrl -OutFile $resourceFilePath
+        Web-Download $resourceUrl $resourceFilePath
     }catch [Exception] {
         Write-Host "----> Download failed!"
         Write-Host "      URL: $resourceUrl"
@@ -88,7 +95,7 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
                 $outputSilent = Remove-Item $pathBase -Recurse -Force
                 Exit
             }
-            Invoke-WebRequest $fileUrl -OutFile $filePath
+            Web-Download $fileUrl $filePath
             continue
         }
 
@@ -212,7 +219,7 @@ Function Run-Init() {
                     $outputSilent = New-Item -ItemType Directory -Path $licenseBasePath
                 }
                 try {
-                    Invoke-WebRequest $licenseUrl -OutFile $licensePath
+                    Web-Download $licenseUrl $licensePath
                     $outputSilent = Copy-Item $licensePath "$workdir\LICENSE.md" -Force
                 }catch [Exception] {
                     Write-Host "----> Download failed!" -ForegroundColor DarkGray
