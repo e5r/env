@@ -1,6 +1,7 @@
 param(
     [string] $workdir = $null,
     [string] $lang = $null,
+    [string] $license = $null,
     [switch] $init = $false,
     [switch] $help = $false,
     [parameter(Position=1, ValueFromRemainingArguments=$true)]
@@ -11,6 +12,8 @@ $version          = "sprint-1"
 $e5rPath          = "$env:UserProfile\.e5r"
 $skeletonBasePath = "$e5rPath\resources\skeleton"
 $skeletonBaseUrl  = "https://raw.githubusercontent.com/e5r/env/$version/resources/skeleton"
+$licenseBasePath  = "$e5rPath\resources\license"
+$licenseBaseUrl   = "https://raw.githubusercontent.com/e5r/env/$version/resources/license"
 
 Function Web-Exists([string] $url) {
     $wr = [System.Net.WebRequest]::Create($url)
@@ -172,9 +175,60 @@ Function Run-Init() {
     Copy-Skeleton "common" $workdir
     Copy-Skeleton "$lang" $workdir
 
+    $e5rLocalPath = "$workdir\.e5r"
+    $langFilePath = "$e5rLocalPath\lang"
+    $envFilePath  = "$e5rLocalPath\env"
+
+    if(!(Test-Path $e5rLocalPath)) {
+        $outputSilent = New-Item -ItemType Directory -Path $e5rLocalPath
+    }
+
+    $envDef  = "E5R_LANG=$lang"
+    $envDef += [System.Environment]::NewLine
+    $envDef += "E5R_LICENSE=NO"
+    $envDef += [System.Environment]::NewLine
+    $envDef += "UNIX:E5R_OS=UNIX"
+    $envDef += [System.Environment]::NewLine
+    $envDef += "WINDOWS:E5R_OS=WINDOWS"
+
+    $outputSilent = New-Item -ItemType File -Force -Path $langFilePath -Value $lang
+    $outputSilent = New-Item -ItemType File -Force -Path $envFilePath -Value $envDef
+
+    $licenseMessage = $null
+
+    if("$license" -ne "") {
+        $license     = "$license".ToUpper()
+        $licenseFile = "$license.md"
+        $licensePath = "$licenseBasePath\$licenseFile"
+        $licenseUrl  = "$licenseBaseUrl/$licenseFile"
+        
+        if(!(Test-Path $licensePath)) {
+            if(!(Web-Exists $licenseUrl)) {
+                Write-Host "----> Web license $license not found!" -ForegroundColor DarkGray
+                Write-Host "      URL: $licenseUrl" -ForegroundColor DarkGray
+                $licenseMessage = "$license license not added to the project!"
+            }else{
+                if(!(Test-Path $licenseBasePath)) {
+                    $outputSilent = New-Item -ItemType Directory -Path $licenseBasePath
+                }
+                try {
+                    Invoke-WebRequest $licenseUrl -OutFile $licensePath
+                    $outputSilent = Copy-Item $licensePath "$workdir\LICENSE.md" -Force
+                }catch [Exception] {
+                    Write-Host "----> Download failed!" -ForegroundColor DarkGray
+                    Write-Host "      URL: $licenseUrl" -ForegroundColor DarkGray
+                    $licenseMessage = "$license license not added to the project!"
+                }
+            }
+        }
+    }
+
     Write-Host "E5R Skeleton <$lang> initialized successfully!" -ForegroundColor Cyan
-    Write-Host "TODO:" -NoNewLine -ForegroundColor DarkCyan
-    Write-Host "Create .e5r/lang and .e5r/env" -ForegroundColor White
+
+    if("$licenseMessage" -ne "") {
+        Write-Host "WARNING: " -NoNewLine -ForegroundColor DarkYellow
+        Write-Host $licenseMessage -ForegroundColor Yellow
+    }
 }
 
 # -help
