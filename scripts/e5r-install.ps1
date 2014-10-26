@@ -1,17 +1,43 @@
-$repositoryVersion      = "sprint-1"
-$e5rPath                = $env:USERPROFILE + "\.e5r"
-$e5rBin                 = "$e5rPath\bin"
-$postSetup              = "$e5rPath\postsetup.bat"
-$repositoryUrl          = "https://github.com/e5r/env/archive/$repositoryVersion.zip"
-$repositoryZip          = "$e5rPath\repository.zip"
-$repositoryPath         = "$e5rPath\repository"
-$repositoryScriptPath   = "$repositoryPath\env-$repositoryVersion\scripts"
+$repositoryVersion    = "sprint-1"
+$e5rPath              = $env:USERPROFILE + "\.e5r"
+$e5rBin               = "$e5rPath\bin"
+$postSetup            = "$e5rPath\postsetup.bat"
+$repositoryUrl        = "https://github.com/e5r/env/archive/$repositoryVersion.zip"
+$repositoryZip        = "$e5rPath\repository.zip"
+$repositoryPath       = "$e5rPath\repository"
+$repositoryScriptPath = "$repositoryPath\env-$repositoryVersion\scripts"
+$maxDownloadRequest   = 5
+$timeoutDownload      = 30000
+$sleepAttemptDownload = 5000
 
-Function Web-Download([string]$url, [string]$path) {
-    Write-Host "----> Downloading $url"
+Function Web-Download([string]$url, [string]$path, $requestNum = 1) {
+    if($requestNum -gt 1){
+        Write-Host "----> Downloading(attempt $requestNum) $url"
+    }else{
+        Write-Host "----> Downloading $url"
+    }
     Write-Host "      To: $path"
-    $wc = New-Object System.Net.WebClient
-    $wc.DownloadFileTaskAsync($url, $path)
+    try {
+        $webRequest = [System.Net.WebRequest]::Create($url)
+        $webRequest.Timeout = $timeoutDownload
+        #$webRequest.Headers.Add("UserAgent", "E5R Environment version 1.0")
+        [System.Net.WebResponse]$webResponse = $webRequest.GetResponse()
+        [System.IO.Stream]$webStream = $webResponse.GetResponseStream()
+        [System.IO.FileStream]$fileStream = [System.IO.File]::Create($path)
+        $webStream.CopyTo($fileStream)
+        $fileStream.Close()
+        $webStream.Close()
+        $webResponse.Close()
+    } catch [System.Exception] {
+        if($requestNum -ge $maxDownloadRequest){
+            throw $_
+        }
+        $requestNum++
+        Write-Host "----> Download error for $url"
+        Write-Host "      >> Retrying in 5 seconds ($requestNum of $maxDownloadRequest attempts)..."
+        Start-Sleep -m $sleepAttemptDownload
+        Web-Download $url $path $requestNum
+    }
 }
 
 Function Zip-Extract([string]$file, [string]$path) {
