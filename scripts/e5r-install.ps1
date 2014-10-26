@@ -96,3 +96,7 @@ $outputSilent = Copy-Item "$repositoryScriptPath\e5r.ps1" "$e5rBin\e5r.ps1"
 
 Clean-Repository
 Update-Environment-Variables
+
+Write-Host ""
+Write-Host "----> E5R Environment successfully installed!"
+Start-Sleep -s 5
