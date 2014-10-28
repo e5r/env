@@ -116,17 +116,17 @@ $outputSilent = New-Item -ItemType Directory -Force $e5rLib
 
 # Clean-Repository
 
-if((Test-WebFile "$repositoryBase/scripts/e5r.bat")) {
+if(!(Test-WebFile "$repositoryBase/scripts/e5r.bat")) {
     Write-Host "----> Web file [e5r.bat] not found!" -ForegroundColor Red
     Exit
 }
 
-if((Test-WebFile "$repositoryBase/scripts/e5r.ps1")) {
+if(!(Test-WebFile "$repositoryBase/scripts/e5r.ps1")) {
     Write-Host "----> Web file [e5r.ps1] not found!" -ForegroundColor Red
     Exit
 }
 
-if((Test-WebFile "$repositoryBase/scripts/common.ps1")) {
+if(!(Test-WebFile "$repositoryBase/scripts/common.ps1")) {
     Write-Host "----> Web file [common.ps1] not found!" -ForegroundColor Red
     Exit
 }
