@@ -1,6 +1,7 @@
 $repositoryVersion    = "sprint-1"
 $e5rPath              = $env:USERPROFILE + "\.e5r"
 $e5rBin               = "$e5rPath\bin"
+$e5rLib               = "$e5rPath\lib"
 $postSetup            = "$e5rPath\postsetup.bat"
 $repositoryUrl        = "https://github.com/e5r/env/archive/$repositoryVersion.zip"
 $repositoryZip        = "$e5rPath\repository.zip"
@@ -10,7 +11,7 @@ $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
 $sleepAttemptDownload = 5000
 
-Function Web-Download([string]$url, [string]$path, $requestNum = 1) {
+Function Get-WebFile([string]$url, [string]$path, $requestNum = 1) {
     if($requestNum -gt 1){
         Write-Host "----> Downloading(attempt $requestNum) $url"
     }else{
@@ -36,7 +37,7 @@ Function Web-Download([string]$url, [string]$path, $requestNum = 1) {
         Write-Host "----> Download error for $url"
         Write-Host "      >> Retrying in 5 seconds ($requestNum of $maxDownloadRequest attempts)..."
         Start-Sleep -m $sleepAttemptDownload
-        Web-Download $url $path $requestNum
+        Get-WebFile $url $path $requestNum
     }
 }
 
@@ -54,7 +55,7 @@ Function Zip-Extract([string]$file, [string]$path) {
 
 Function Get-Repository() {
     if ((Test-Path $repositoryPath) -ne 1) {
-        Web-Download $repositoryUrl $repositoryZip
+        Get-WebFile $repositoryUrl $repositoryZip
         $outputSilent = New-Item -ItemType Directory -Force $repositoryPath
         Zip-Extract $repositoryZip $repositoryPath
         $outputSilent = Remove-Item $repositoryZip -Force
@@ -89,10 +90,12 @@ Function Update-Environment-Variables() {
 }
 
 $outputSilent = New-Item -ItemType Directory -Force $e5rBin
+$outputSilent = New-Item -ItemType Directory -Force $e5rLib
 
 Get-Repository
 $outputSilent = Copy-Item "$repositoryScriptPath\e5r.bat" "$e5rBin\e5r.bat"
 $outputSilent = Copy-Item "$repositoryScriptPath\e5r.ps1" "$e5rBin\e5r.ps1"
+$outputSilent = Copy-Item "$repositoryScriptPath\common.ps1" "$e5rLib\common.ps1"
 
 Clean-Repository
 Update-Environment-Variables
