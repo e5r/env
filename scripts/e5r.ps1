@@ -6,9 +6,11 @@ param(
 
 $version              = "sprint-1"
 $e5rPath              = "$env:UserProfile\.e5r"
-$maxDownloadRequest   = 5
-$timeoutDownload      = 30000
-$sleepAttemptDownload = 5000
+# $maxDownloadRequest   = 5
+# $timeoutDownload      = 30000
+# $sleepAttemptDownload = 5000
+
+Import-Module -Name "$e5rPath\lib\common.ps1"
 
 for($count = 0; $count -lt $args.length; $count++) {
     $value = $args[$count]
@@ -30,49 +32,49 @@ Usage:
 "@ | Write-Host
 }
 
-Function Web-Download([string]$url, [string]$path, $requestNum = 1) {
-    if($requestNum -gt 1){
-        Write-Host "----> Downloading(attempt $requestNum) $url"
-    }else{
-        Write-Host "----> Downloading $url"
-    }
-    Write-Host "      To: $path"
-    try {
-        $webRequest = [System.Net.WebRequest]::Create($url)
-        $webRequest.Timeout = $timeoutDownload
-        #$webRequest.Headers.Add("UserAgent", "E5R Environment version 1.0")
-        [System.Net.WebResponse]$webResponse = $webRequest.GetResponse()
-        [System.IO.Stream]$webStream = $webResponse.GetResponseStream()
-        [System.IO.FileStream]$fileStream = [System.IO.File]::Create($path)
-        $webStream.CopyTo($fileStream)
-        $fileStream.Close()
-        $webStream.Close()
-        $webResponse.Close()
-    } catch [System.Exception] {
-        if($requestNum -ge $maxDownloadRequest){
-            throw $_
-        }
-        $requestNum++
-        Write-Host "----> Download error for $url"
-        Write-Host "      >> Retrying in 5 seconds ($requestNum of $maxDownloadRequest attempts)..."
-        Start-Sleep -m $sleepAttemptDownload
-        Web-Download $url $path $requestNum
-    }
-}
+# Function Web-Download([string]$url, [string]$path, $requestNum = 1) {
+#     if($requestNum -gt 1){
+#         Write-Host "----> Downloading(attempt $requestNum) $url"
+#     }else{
+#         Write-Host "----> Downloading $url"
+#     }
+#     Write-Host "      To: $path"
+#     try {
+#         $webRequest = [System.Net.WebRequest]::Create($url)
+#         $webRequest.Timeout = $timeoutDownload
+#         #$webRequest.Headers.Add("UserAgent", "E5R Environment version 1.0")
+#         [System.Net.WebResponse]$webResponse = $webRequest.GetResponse()
+#         [System.IO.Stream]$webStream = $webResponse.GetResponseStream()
+#         [System.IO.FileStream]$fileStream = [System.IO.File]::Create($path)
+#         $webStream.CopyTo($fileStream)
+#         $fileStream.Close()
+#         $webStream.Close()
+#         $webResponse.Close()
+#     } catch [System.Exception] {
+#         if($requestNum -ge $maxDownloadRequest){
+#             throw $_
+#         }
+#         $requestNum++
+#         Write-Host "----> Download error for $url"
+#         Write-Host "      >> Retrying in 5 seconds ($requestNum of $maxDownloadRequest attempts)..."
+#         Start-Sleep -m $sleepAttemptDownload
+#         Web-Download $url $path $requestNum
+#     }
+# }
 
-Function Web-Exists([string] $url) {
-    $wr = [System.Net.WebRequest]::Create($url)
-    try {
-        $res = $wr.GetResponse()
-    } catch [System.Net.WebException] {
-        $res = $_.Exception.Response
-    }
-    $statusCode = [int]$res.StatusCode
-    if($statusCode -eq 200){
-        return $true
-    }
-    return $false
-}
+# Function Web-Exists([string] $url) {
+#     $wr = [System.Net.WebRequest]::Create($url)
+#     try {
+#         $res = $wr.GetResponse()
+#     } catch [System.Net.WebException] {
+#         $res = $_.Exception.Response
+#     }
+#     $statusCode = [int]$res.StatusCode
+#     if($statusCode -eq 200){
+#         return $true
+#     }
+#     return $false
+# }
 
 if($args.length -lt 1) {
     Print-Usage
@@ -90,8 +92,8 @@ if ((Test-Path $commandPath) -ne 1) {
 
 if ((Test-Path $commandFilePath) -ne 1) {
     $url ="https://raw.githubusercontent.com/e5r/env/$version/scripts/command/$commandFileName"
-    if(Web-Exists $url) {
-        Web-Download $url $commandFilePath
+    if(Test-WebFile $url) {
+        Get-WebFile $url $commandFilePath
     }
 }
 
