@@ -44,20 +44,6 @@ Function Get-WebFile([string]$url, [string]$path, $requestNum = 1) {
     }
 }
 
-Function Test-WebFile([string]$url) {
-    $wr = [System.Net.WebRequest]::Create($url)
-    try {
-        $res = $wr.GetResponse()
-    } catch [System.Net.WebException] {
-        $res = $_.Exception.Response
-    }
-    $statusCode = [int]$res.StatusCode
-    if($statusCode -eq 200){
-        return $true
-    }
-    return $false
-}
-
 # Function Zip-Extract([string]$file, [string]$path) {
 #     try {
 #         $outputSilent = [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem")
@@ -84,6 +70,12 @@ Function Test-WebFile([string]$url) {
 #         $outputSilent = Remove-Item $repositoryPath -Recurse -Force
 #     }
 # }
+
+Function Invoke-Uninstall() {
+    if(Test-Path $e5rPath) {
+        $outputSilent = Remove-Item $e5rPath -Recurse -Force
+    }
+}
 
 Function Update-Environment-Variables() {
     $path = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -116,24 +108,15 @@ $outputSilent = New-Item -ItemType Directory -Force $e5rLib
 
 # Clean-Repository
 
-if(!(Test-WebFile "$repositoryBase/scripts/e5r.bat")) {
-    Write-Host "----> Web file [e5r.bat] not found!" -ForegroundColor Red
+try {
+    Get-WebFile "$repositoryBase/scripts/e5r.bat" "$e5rBin\e5r.bat"
+    Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1"
+    Get-WebFile "$repositoryBase/scripts/common.ps1" "$e5rLib\common.ps1"
+}catch [Exception]{
+    Invoke-Uninstall
+    Start-Sleep -s 5
     Exit
 }
-
-if(!(Test-WebFile "$repositoryBase/scripts/e5r.ps1")) {
-    Write-Host "----> Web file [e5r.ps1] not found!" -ForegroundColor Red
-    Exit
-}
-
-if(!(Test-WebFile "$repositoryBase/scripts/common.ps1")) {
-    Write-Host "----> Web file [common.ps1] not found!" -ForegroundColor Red
-    Exit
-}
-
-Get-WebFile "$repositoryBase/scripts/e5r.bat" "$e5rBin\e5r.bat"
-Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1"
-Get-WebFile "$repositoryBase/scripts/e5r.common" "$e5rLib\common.ps1"
 
 Update-Environment-Variables
 
