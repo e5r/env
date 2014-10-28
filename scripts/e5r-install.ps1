@@ -1,12 +1,15 @@
-$repositoryVersion    = "sprint-1"
+$version    = "sprint-1"
 $e5rPath              = $env:USERPROFILE + "\.e5r"
 $e5rBin               = "$e5rPath\bin"
 $e5rLib               = "$e5rPath\lib"
 $postSetup            = "$e5rPath\postsetup.bat"
-$repositoryUrl        = "https://github.com/e5r/env/archive/$repositoryVersion.zip"
-$repositoryZip        = "$e5rPath\repository.zip"
-$repositoryPath       = "$e5rPath\repository"
-$repositoryScriptPath = "$repositoryPath\env-$repositoryVersion\scripts"
+$repositoryBase       = "https://raw.githubusercontent.com/e5r/env/$version"
+
+# $repositoryUrl        = "https://github.com/e5r/env/archive/$repositoryVersion.zip"
+# $repositoryZip        = "$e5rPath\repository.zip"
+# $repositoryPath       = "$e5rPath\repository"
+# $repositoryScriptPath = "$repositoryPath\env-$repositoryVersion\scripts"
+
 $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
 $sleepAttemptDownload = 5000
@@ -41,32 +44,46 @@ Function Get-WebFile([string]$url, [string]$path, $requestNum = 1) {
     }
 }
 
-Function Zip-Extract([string]$file, [string]$path) {
+Function Test-WebFile([string]$url) {
+    $wr = [System.Net.WebRequest]::Create($url)
     try {
-        $outputSilent = [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem")
-        $outputSilent = [System.IO.Compression.ZipFile]::ExtractToDirectory($file, $path)
-    } catch [System.Exception] {
-        $shell = New-Object -ComObject Shell.Application
-        $zipPackage = $shell.NameSpace($file)
-        $destinationFolder = $shell.NameSpace($path)
-        $destinationFolder.CopyHere($zipPackage.Items())
+        $res = $wr.GetResponse()
+    } catch [System.Net.WebException] {
+        $res = $_.Exception.Response
     }
+    $statusCode = [int]$res.StatusCode
+    if($statusCode -eq 200){
+        return $true
+    }
+    return $false
 }
 
-Function Get-Repository() {
-    if ((Test-Path $repositoryPath) -ne 1) {
-        Get-WebFile $repositoryUrl $repositoryZip
-        $outputSilent = New-Item -ItemType Directory -Force $repositoryPath
-        Zip-Extract $repositoryZip $repositoryPath
-        $outputSilent = Remove-Item $repositoryZip -Force
-    }
-}
+# Function Zip-Extract([string]$file, [string]$path) {
+#     try {
+#         $outputSilent = [System.Reflection.Assembly]::LoadWithPartialName("System.IO.Compression.FileSystem")
+#         $outputSilent = [System.IO.Compression.ZipFile]::ExtractToDirectory($file, $path)
+#     } catch [System.Exception] {
+#         $shell = New-Object -ComObject Shell.Application
+#         $zipPackage = $shell.NameSpace($file)
+#         $destinationFolder = $shell.NameSpace($path)
+#         $destinationFolder.CopyHere($zipPackage.Items())
+#     }
+# }
 
-Function Clean-Repository() {
-    if (Test-Path $repositoryPath) {
-        $outputSilent = Remove-Item $repositoryPath -Recurse -Force
-    }
-}
+# Function Get-Repository() {
+#     if ((Test-Path $repositoryPath) -ne 1) {
+#         Get-WebFile $repositoryUrl $repositoryZip
+#         $outputSilent = New-Item -ItemType Directory -Force $repositoryPath
+#         Zip-Extract $repositoryZip $repositoryPath
+#         $outputSilent = Remove-Item $repositoryZip -Force
+#     }
+# }
+
+# Function Clean-Repository() {
+#     if (Test-Path $repositoryPath) {
+#         $outputSilent = Remove-Item $repositoryPath -Recurse -Force
+#     }
+# }
 
 Function Update-Environment-Variables() {
     $path = [Environment]::GetEnvironmentVariable("Path", "User")
@@ -92,12 +109,32 @@ Function Update-Environment-Variables() {
 $outputSilent = New-Item -ItemType Directory -Force $e5rBin
 $outputSilent = New-Item -ItemType Directory -Force $e5rLib
 
-Get-Repository
-$outputSilent = Copy-Item "$repositoryScriptPath\e5r.bat" "$e5rBin\e5r.bat"
-$outputSilent = Copy-Item "$repositoryScriptPath\e5r.ps1" "$e5rBin\e5r.ps1"
-$outputSilent = Copy-Item "$repositoryScriptPath\common.ps1" "$e5rLib\common.ps1"
+# Get-Repository
+# $outputSilent = Copy-Item "$repositoryScriptPath\e5r.bat" "$e5rBin\e5r.bat"
+# $outputSilent = Copy-Item "$repositoryScriptPath\e5r.ps1" "$e5rBin\e5r.ps1"
+# $outputSilent = Copy-Item "$repositoryScriptPath\common.ps1" "$e5rLib\common.ps1"
 
-Clean-Repository
+# Clean-Repository
+
+if((Test-WebFile "$repositoryBase/scripts/e5r.bat")) {
+    Write-Host "----> Web file [e5r.bat] not found!" -ForegroundColor Red
+    Exit
+}
+
+if((Test-WebFile "$repositoryBase/scripts/e5r.ps1")) {
+    Write-Host "----> Web file [e5r.ps1] not found!" -ForegroundColor Red
+    Exit
+}
+
+if((Test-WebFile "$repositoryBase/scripts/common.ps1")) {
+    Write-Host "----> Web file [common.ps1] not found!" -ForegroundColor Red
+    Exit
+}
+
+Get-WebFile "$repositoryBase/scripts/e5r.bat" "$e5rBin\e5r.bat"
+Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1"
+Get-WebFile "$repositoryBase/scripts/e5r.common" "$e5rLib\common.ps1"
+
 Update-Environment-Variables
 
 Write-Host ""
