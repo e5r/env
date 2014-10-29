@@ -14,58 +14,13 @@ $skeletonBasePath     = "$e5rPath\resources\skeleton"
 $skeletonBaseUrl      = "https://raw.githubusercontent.com/e5r/env/$version/resources/skeleton"
 $licenseBasePath      = "$e5rPath\resources\license"
 $licenseBaseUrl       = "https://raw.githubusercontent.com/e5r/env/$version/resources/license"
-$maxDownloadRequest   = 5
-$timeoutDownload      = 30000
-$sleepAttemptDownload = 5000
 
-Function Web-Download([string]$url, [string]$path, $requestNum = 1) {
-    if($requestNum -gt 1){
-        Write-Host "----> Downloading(attempt $requestNum) $url"
-    }else{
-        Write-Host "----> Downloading $url"
-    }
-    Write-Host "      To: $path"
-    try {
-        $webRequest = [System.Net.WebRequest]::Create($url)
-        $webRequest.Timeout = $timeoutDownload
-        #$webRequest.Headers.Add("UserAgent", "E5R Environment version 1.0")
-        [System.Net.WebResponse]$webResponse = $webRequest.GetResponse()
-        [System.IO.Stream]$webStream = $webResponse.GetResponseStream()
-        [System.IO.FileStream]$fileStream = [System.IO.File]::Create($path)
-        $webStream.CopyTo($fileStream)
-        $fileStream.Close()
-        $webStream.Close()
-        $webResponse.Close()
-    } catch [System.Exception] {
-        if($requestNum -ge $maxDownloadRequest){
-            throw $_
-        }
-        $requestNum++
-        Write-Host "----> Download error for $url"
-        Write-Host "      >> Retrying in 5 seconds ($requestNum of $maxDownloadRequest attempts)..."
-        Start-Sleep -m $sleepAttemptDownload
-        Web-Download $url $path $requestNum
-    }
-}
-
-Function Web-Exists([string] $url) {
-    $wr = [System.Net.WebRequest]::Create($url)
-    try {
-        $res = $wr.GetResponse()
-    } catch [System.Net.WebException] {
-        $res = $_.Exception.Response
-    }
-    $statusCode = [int]$res.StatusCode
-    if($statusCode -eq 200){
-        return $true
-    }
-    return $false
-}
+Import-Module -Name "$e5rPath\lib\common.ps1"
 
 Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $pathBase) {
     $resourceUrl = "$urlBase/$resourceName"
     $resourceFilePath = "$pathBase\$resourceName"
-    if(!(Web-Exists $resourceUrl)) {
+    if(!(Test-WebFile $resourceUrl)) {
         Write-Host "----> Web resource $resourceName not found!"
         Write-Host "      URL: $resourceUrl"
         Exit
@@ -74,7 +29,7 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
         $outputSilent = New-Item -ItemType Directory -Path $pathBase
     }
     try {
-        Web-Download $resourceUrl $resourceFilePath
+        Get-WebFile $resourceUrl $resourceFilePath
     }catch [Exception] {
         Write-Host "----> Download failed!"
         Write-Host "      URL: $resourceUrl"
@@ -114,14 +69,14 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
             if(!(Test-Path $filePathBase)) {
                 $outputSilent = New-Item -ItemType Directory -Path $filePathBase
             }
-            if(!(Web-Exists $fileUrl)) {
+            if(!(Test-WebFile $fileUrl)) {
                 Write-Host "Web resource not found!" -ForegroundColor Red
                 Write-Host "  URL: " -NoNewLine -ForegroundColor DarkRed
                 Write-Host "$fileUrl"  -ForegroundColor DarkGray
                 $outputSilent = Remove-Item $pathBase -Recurse -Force
                 Exit
             }
-            Web-Download $fileUrl $filePath
+            Get-WebFile $fileUrl $filePath
             continue
         }
 
@@ -161,15 +116,45 @@ E5R Skeleton Command
 
 Usage:
   e5r skeleton [options]
+
+Options:
+   -help|help           Show this message
+      > TODO            Show information to sub commands
+
+   -init                Initializes a directory with the skeleton of a project
+
+   -workdir <dir/path>  By default the skeleton command considers the current
+      > optional        directory as the working directory, but this can be
+                        modified by passing a value for this option.
+
+   -lang <lang>         Specifies the default project that will be initialized.
+
+   -license <licence>   License specifies that the project will use.
+      > optional        
+      > values:
+         AGPL-3.0       GNU Affero General Public License, Version 3
+         APACHE-2.0     Apache License, Version 2.0
+         ARTISTIC-2.0   The Artistic License 2.0
+         BSD-2-CLAUSE   Simplified BSD
+         BSD-3-CLAUSE   New BSD
+         CC0            CC0 1.0 Universal - Public Domain Dedication
+         EPL-1.0        Eclipse Public License - v 1.0
+         GPL-2.0        GNU General Public License, Version 2
+         GPL-3.0        GNU General Public License, Version 3
+         ISC            ISC license
+         LGPL-2.1       GNU Lesser General Public License, Version 2.1
+         LGPL-3.0       GNU Lesser General Public License, Version 3
+         MIT            The MIT License
+         MPL-2.0        Mozilla Public License, Version 2.0
+         UNLICENSE      Public Domain (Unlicense)
+
+         More in [http://choosealicense.com]
+
 "@ | Write-Host
 }
 
 Function Run-Help () {
-@"
-E5R Skeleton Command Help
-  
-  ???
-"@ | Write-Host
+    Run-Usage
 }
 
 Function Run-Init() {
@@ -236,7 +221,7 @@ Function Run-Init() {
         $licenseUrl  = "$licenseBaseUrl/$licenseFile"
         
         if(!(Test-Path $licensePath)) {
-            if(!(Web-Exists $licenseUrl)) {
+            if(!(Test-WebFile $licenseUrl)) {
                 Write-Host "----> Web license $license not found!" -ForegroundColor DarkGray
                 Write-Host "      URL: $licenseUrl" -ForegroundColor DarkGray
                 $licenseMessage = "$license license not added to the project!"
@@ -245,7 +230,7 @@ Function Run-Init() {
                     $outputSilent = New-Item -ItemType Directory -Path $licenseBasePath
                 }
                 try {
-                    Web-Download $licenseUrl $licensePath
+                    Get-WebFile $licenseUrl $licensePath
                     $outputSilent = Copy-Item $licensePath "$workdir\LICENSE.md" -Force
                 }catch [Exception] {
                     Write-Host "----> Download failed!" -ForegroundColor DarkGray
@@ -265,6 +250,7 @@ Function Run-Init() {
 }
 
 # -help
+# TODO: Exibir help de subcomandos
 if($help -or ($args.length -eq 1 -and $args[0] -eq "help")) {
     Run-Help
     Exit
