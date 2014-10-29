@@ -62,3 +62,7 @@ Function Test-Command([string] $commandName) {
     
     return $false
 }
+
+Function Get-ProcessorArchitecture() {
+    return [System.String]::Format("{0}bit", [System.IntPtr]::Size * 8)
+}
