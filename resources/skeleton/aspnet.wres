@@ -1,0 +1,3 @@
+f:global.json:aspnet/global.json
+f:makefile.shade:aspnet/makefile.shade
+f:NuGet.Config:aspnet/NuGet.Config

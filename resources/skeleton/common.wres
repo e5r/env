@@ -3,7 +3,6 @@ d:test
 d:doc
 f:build.sh:common/build.sh
 f:build.cmd:common/build.cmd
-f:LICENSE.md:common/LICENSE.md
 f:README.md:common/README.md
 
 #d: Create a directory
