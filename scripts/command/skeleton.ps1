@@ -1,6 +1,6 @@
 param(
     [string] $workdir = $null,
-    [string] $lang = $null,
+    [string] $tech = $null,
     [string] $license = $null,
     [switch] $init = $false,
     [switch] $help = $false,
@@ -128,8 +128,7 @@ Options:
       > optional        directory as the working directory, but this can be
                         modified by passing a value for this option.
 
-   -lang <lang>         Specifies the default project that will be initialized.
-      > TODO            Change to -arch in future
+   -tech <tech>         Specifies the default project that will be initialized.
 
    -license <licence>   License specifies that the project will use.
       > optional        
@@ -160,8 +159,8 @@ Function Run-Help () {
 }
 
 Function Run-Init() {
-    if(!$lang) {
-        Write-Host "E5R Skeleton Command requires -lang parameter." -ForegroundColor Red
+    if(!$tech) {
+        Write-Host "E5R Skeleton Command requires -tech parameter." -ForegroundColor Red
         Write-Host
 
         Run-Usage
@@ -174,36 +173,36 @@ Function Run-Init() {
     }
 
     $skeletonCommon = "$skeletonBasePath\common"
-    $skeletonLang   = "$skeletonBasePath\$lang"
+    $skeletonTech   = "$skeletonBasePath\$tech"
 
     if(!(Test-Path $skeletonCommon)) {
         Make-WebResource $skeletonBaseUrl "common.wres" $skeletonCommon
     }
-    if(!(Test-Path $skeletonLang)) {
-        Make-WebResource $skeletonBaseUrl "$lang.wres" $skeletonLang
+    if(!(Test-Path $skeletonTech)) {
+        Make-WebResource $skeletonBaseUrl "$tech.wres" $skeletonTech
     }
 
     if(!(Test-Path $skeletonCommon)) {
         Write-Host "E5R Skeleton Template <common> not found!"
         Exit
     }
-    if(!(Test-Path $skeletonLang)) {
+    if(!(Test-Path $skeletonTech)) {
         Write-Host "E5R Skeleton Template <common> not found!"
         Exit
     }
 
     Copy-Skeleton "common" $workdir
-    Copy-Skeleton "$lang" $workdir
+    Copy-Skeleton "$tech" $workdir
 
     $e5rLocalPath = "$workdir\.e5r"
-    $langFilePath = "$e5rLocalPath\lang"
+    $techFilePath = "$e5rLocalPath\tech"
     $envFilePath  = "$e5rLocalPath\env"
 
     if(!(Test-Path $e5rLocalPath)) {
         $outputSilent = New-Item -ItemType Directory -Path $e5rLocalPath
     }
 
-    $envDef  = "E5R_LANG=$lang"
+    $envDef  = "E5R_TECH=$tech"
     $envDef += [System.Environment]::NewLine
     $envDef += "E5R_LICENSE=NO"
     $envDef += [System.Environment]::NewLine
@@ -211,7 +210,7 @@ Function Run-Init() {
     $envDef += [System.Environment]::NewLine
     $envDef += "WINDOWS:E5R_OS=WINDOWS"
 
-    $outputSilent = New-Item -ItemType File -Force -Path $langFilePath -Value $lang
+    $outputSilent = New-Item -ItemType File -Force -Path $techFilePath -Value $tech
     $outputSilent = New-Item -ItemType File -Force -Path $envFilePath -Value $envDef
 
     $licenseMessage = $null
@@ -243,7 +242,7 @@ Function Run-Init() {
         }
     }
 
-    Write-Host "E5R Skeleton <$lang> initialized successfully!" -ForegroundColor Cyan
+    Write-Host "E5R Skeleton <$tech> initialized successfully!" -ForegroundColor Cyan
 
     if("$licenseMessage" -ne "") {
         Write-Host "WARNING: " -NoNewLine -ForegroundColor DarkYellow
