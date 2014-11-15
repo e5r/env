@@ -8,13 +8,15 @@ $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
 $sleepAttemptDownload = 5000
 
-Function Get-WebFile([string]$url, [string]$path, $requestNum = 1) {
-    if($requestNum -gt 1){
-        Write-Host "----> Downloading(attempt $requestNum) $url"
-    }else{
-        Write-Host "----> Downloading $url"
+Function Get-WebFile([string]$url, [string]$path, $message = $null, $requestNum = 1, $silent = $false) {
+    if(!$silent) {
+        if($message -ne $null) {
+            Write-Host "----> $message"
+        }else{
+            Write-Host "----> Downloading $url"
+            Write-Host "      To: $path"
+        }
     }
-    Write-Host "      To: $path"
     try {
         $webRequest = [System.Net.WebRequest]::Create($url)
         $webRequest.Timeout = $timeoutDownload
@@ -30,10 +32,12 @@ Function Get-WebFile([string]$url, [string]$path, $requestNum = 1) {
             throw $_
         }
         $requestNum++
-        Write-Host "----> Download error for $url"
-        Write-Host "      >> Retrying in 5 seconds ($requestNum of $maxDownloadRequest attempts)..."
+        if(!$silent){
+            Write-Host "      >> Download error"
+        }
+        Write-Host "      -> Attempt $requestNum of $maxDownloadRequest..."
         Start-Sleep -m $sleepAttemptDownload
-        Get-WebFile $url $path $requestNum
+        Get-WebFile $url $path $message $requestNum $true
     }
 }
 
@@ -68,9 +72,9 @@ $outputSilent = New-Item -ItemType Directory -Force $e5rBin
 $outputSilent = New-Item -ItemType Directory -Force $e5rLib
 
 try {
-    Get-WebFile "$repositoryBase/scripts/e5r.bat" "$e5rBin\e5r.bat"
-    Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1"
-    Get-WebFile "$repositoryBase/scripts/common.ps1" "$e5rLib\common.ps1"
+    Get-WebFile "$repositoryBase/scripts/e5r.bat" "$e5rBin\e5r.bat" "Getting `"$e5r.bat`"..."
+    Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1" "Getting `"$e5r.ps1`"..."
+    Get-WebFile "$repositoryBase/scripts/common.ps1" "$e5rLib\common.ps1" "Getting `"$common.ps1`"..."
 }catch [Exception]{
     Invoke-Uninstall
     Start-Sleep -s 5

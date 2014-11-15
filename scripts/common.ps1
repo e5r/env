@@ -3,14 +3,14 @@ $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
 $sleepAttemptDownload = 5000
 
-Function Get-WebFile([string]$url, [string]$path, $requestNum = 1, $silent = $false) {
+Function Get-WebFile([string]$url, [string]$path, $message = $null, $requestNum = 1, $silent = $false) {
     if(!$silent) {
-        if($requestNum -gt 1){
-            Write-Host "----> Downloading(attempt $requestNum) $url"
+        if($message -ne $null) {
+            Write-Host "----> $message"
         }else{
             Write-Host "----> Downloading $url"
+            Write-Host "      To: $path"
         }
-        Write-Host "      To: $path"
     }
     try {
         $webRequest = [System.Net.WebRequest]::Create($url)
@@ -28,13 +28,11 @@ Function Get-WebFile([string]$url, [string]$path, $requestNum = 1, $silent = $fa
         }
         $requestNum++
         if(!$silent){
-            Write-Host "----> Download error for $url"
-            Write-Host "      >> Retrying in 5 seconds ($requestNum of $maxDownloadRequest attempts)..."
-        }else{
-            Write-Host "      >> Retrying in 5 seconds ($requestNum of $maxDownloadRequest attempts)..."
+            Write-Host "      >> Download error"
         }
+        Write-Host "      -> Attempt $requestNum of $maxDownloadRequest..."
         Start-Sleep -m $sleepAttemptDownload
-        Get-WebFile $url $path $requestNum $true
+        Get-WebFile $url $path $message $requestNum $true
     }
 }
 

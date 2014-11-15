@@ -30,10 +30,10 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
         $outputSilent = New-Item -ItemType Directory -Path $pathBase
     }
     try {
-        Get-WebFile $resourceUrl $resourceFilePath
+        Get-WebFile $resourceUrl $resourceFilePath "Getting remote resource `"$resourceName`"..."
     }catch [Exception] {
-        Write-Host "----> Download failed!"
-        Write-Host "      URL: $resourceUrl"
+        Write-Host "      >> Download failed!"
+        Write-Host "      -> URL: $resourceUrl"
         $outputSilent = Remove-Item $pathBase -Recurse -Force
         Exit
     }
@@ -64,7 +64,8 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
                 $outputSilent = Remove-Item $pathBase -Recurse -Force
                 Exit
             }
-            $fileUrl = "$urlBase/" + $parts[1]
+            $fileName = $parts[1]
+            $fileUrl = "$urlBase/$fileName"
             $filePath = "$pathBase\" + $parts[0]
             $filePathBase = [System.IO.Path]::GetDirectoryName($filePath)
             if(!(Test-Path $filePathBase)) {
@@ -77,7 +78,7 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
                 $outputSilent = Remove-Item $pathBase -Recurse -Force
                 Exit
             }
-            Get-WebFile $fileUrl $filePath
+            Get-WebFile $fileUrl $filePath "Getting file `"$fileName`"..."
             continue
         }
 
@@ -231,11 +232,11 @@ Function Run-Init() {
                     $outputSilent = New-Item -ItemType Directory -Path $licenseBasePath
                 }
                 try {
-                    Get-WebFile $licenseUrl $licensePath
+                    Get-WebFile $licenseUrl $licensePath "Getting license `"$license`"..."
                     $outputSilent = Copy-Item $licensePath "$workdir\LICENSE.md" -Force
                 }catch [Exception] {
-                    Write-Host "----> Download failed!" -ForegroundColor DarkGray
-                    Write-Host "      URL: $licenseUrl" -ForegroundColor DarkGray
+                    Write-Host "      >> Download failed!" -ForegroundColor DarkGray
+                    Write-Host "      -> URL: $licenseUrl" -ForegroundColor DarkGray
                     $licenseMessage = "$license license not added to the project!"
                 }
             }

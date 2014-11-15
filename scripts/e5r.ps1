@@ -49,7 +49,7 @@ if ((Test-Path $commandPath) -ne 1) {
 if ((Test-Path $commandFilePath) -ne 1) {
     $url ="$commandBaseUrl/$commandFileName"
     if(Test-WebFile $url) {
-        Get-WebFile $url $commandFilePath
+        Get-WebFile $url $commandFilePath "Getting remote command `"$commandName`"..."
     }
 }
 
