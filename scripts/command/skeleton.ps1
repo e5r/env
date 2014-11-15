@@ -8,14 +8,15 @@ param(
     [string[]]$args=@()
 )
 
-$version              = "sprint-1"
 $e5rPath              = "$env:UserProfile\.e5r"
+
+Import-Module -Name "$e5rPath\lib\common.ps1"
+
+$version              = Get-E5RVersion
 $skeletonBasePath     = "$e5rPath\resources\skeleton"
 $skeletonBaseUrl      = "https://raw.githubusercontent.com/e5r/env/$version/resources/skeleton"
 $licenseBasePath      = "$e5rPath\resources\license"
 $licenseBaseUrl       = "https://raw.githubusercontent.com/e5r/env/$version/resources/license"
-
-Import-Module -Name "$e5rPath\lib\common.ps1"
 
 Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $pathBase) {
     $resourceUrl = "$urlBase/$resourceName"
@@ -118,7 +119,7 @@ Usage:
   e5r skeleton [options]
 
 Options:
-   -help|help           Show this message
+   -help|help           Show this information
       > TODO            Show information to sub commands
 
    -init                Initializes a directory with the skeleton of a project
@@ -128,6 +129,7 @@ Options:
                         modified by passing a value for this option.
 
    -lang <lang>         Specifies the default project that will be initialized.
+      > TODO            Change to -arch in future
 
    -license <licence>   License specifies that the project will use.
       > optional        

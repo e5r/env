@@ -1,3 +1,4 @@
+$version              = "0.1-alpha1"
 $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
 $sleepAttemptDownload = 5000
@@ -12,7 +13,7 @@ Function Get-WebFile([string]$url, [string]$path, $requestNum = 1) {
     try {
         $webRequest = [System.Net.WebRequest]::Create($url)
         $webRequest.Timeout = $timeoutDownload
-        #$webRequest.Headers.Add("UserAgent", "E5R Environment version 1.0")
+        $webRequest.Headers.Add("User-Agent", "E5R/$version (E5R Environment; Windows)")
         [System.Net.WebResponse]$webResponse = $webRequest.GetResponse()
         [System.IO.Stream]$webStream = $webResponse.GetResponseStream()
         [System.IO.FileStream]$fileStream = [System.IO.File]::Create($path)
@@ -65,4 +66,8 @@ Function Test-Command([string] $commandName) {
 
 Function Get-ProcessorArchitecture() {
     return [System.String]::Format("{0}bit", [System.IntPtr]::Size * 8)
+}
+
+Function Get-E5RVersion() {
+    return $version
 }

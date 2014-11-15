@@ -11,6 +11,8 @@ A ferramenta foi projetada para atender aos seguintes requisitos:
 4. Não requer privilégios de administrador;
 5. Não interferir no restante do sistema.
 
+> Me perdoem pelo documento extenso, ou a forma meio desconexa ao relatar cada caso; mas é que eu ia escrevendo de acordo com que as ideias iam surgindo. Em um segundo momento este documento será revisado para conter uma melhor didática, além de texto mais suscinto e dinâmico.
+
 ## Pensando a arquitetura
 
 Para atender ao primeiro requisito **Ser de fácil instalação**, optamos por instalar somente o mínimo necessário, e criar um mecanismo que pudesse fazer as demais instalações silenciosamente sempre que necessário (`sob demanda`); e isso acabou nos levando ao segundo requisito, **Não ocupar espaço desnecessário no disco**.
@@ -34,7 +36,7 @@ version           x509
 
 Neste exemplo (acima), temos um total de 46 comandos, e cada um com sua lógica fazendo uma coisa diferente pra você, mas... **você dificilmente irá utilizar todos**, com muito trabalho usará uma dúzia deles talvez.
 
-Claro que em se tratando dessa ferramenta (openssl), não dá pra falar de disperdício de espaço em disco, porque é uma ferramenta compilada (e essa não é uma opção pra nós, porque temos aqui o terceiro requisito **Não requer compilação**) e os comandos estão bem compactados em um (ou vários) pequenos executáveis. Mas de uma forma mais geral.
+Claro que em se tratando dessa ferramenta (openssl), não dá pra falar de disperdício de espaço em disco, porque é uma ferramenta compilada (e essa não é uma opção pra nós, porque temos aqui o terceiro requisito **Não requer compilação**) e os comandos estão bem compactados em um (ou vários) pequenos executáveis.
 
 > "Não seria melhor instalar somente os comandos que eu vou realmente utilizar?"
 
@@ -48,7 +50,7 @@ Depois de ponderá sobre todos esses pensamentos, chegamos a proposta abaixo.
 
 ## Arquitetura proposta
 
-Decidimos que atendemos as três primeiros requisitos se fizermos a instalação de um único comando e disponibilizarmos para o usuário; o comando `e5r`.
+Decidimos que atendemos aos três primeiros requisitos se fizermos a instalação de um único comando e disponibilizarmos para o usuário; o comando `e5r`.
 
 Esse pode ser instalado facilmente (atendendo ao 1º requisito) como visto em [README.md](https://github.com/e5r/env/blob/0.1-alpha1/README.md).
 
@@ -62,7 +64,7 @@ Vamos ver como funciona o comando `e5r` nos bastidores.
 
 ## O comando `E5R`
 
-Quando você faz a instalação da ferramenta, ela cria o diretório `.e5r` dentro do diretório do usuário que executou a instalação, contendo o script `.e5r`, e inclui esse caminho no `PATH` do usuário. Com isso o usuário já pode começar a trabalhar.
+Quando você faz a instalação da ferramenta, ela cria o diretório `.e5r` dentro do diretório do usuário que executou a instalação, contendo o script `e5r`, e inclui o caminho do mesmo no `PATH` do usuário. Com isso o usuário já pode começar a trabalhar.
 
 Vamos supor que o usuário deseja saber mais sobre a utilização da ferramenta. Então digita o comando:
 
@@ -70,7 +72,7 @@ Vamos supor que o usuário deseja saber mais sobre a utilização da ferramenta.
 e5r help
 ```
 
-O `help` é um comando que exibe a ajuda da ferramenta, porém ainda não está disponível. Mas o comando `e5r` percebe que o mesmo não está no diretório de comandos do usuário, então procura e o encontra em um repositório da Internet, baixa e instala ele no local adequado; e então `o executa`.
+O `help` é um comando (ou melhor, `subcomando`) que exibe a ajuda da ferramenta, porém ainda não está disponível. Mas o comando `e5r` percebe que o mesmo não está no diretório de comandos do usuário, então procura e o encontra em um repositório da Internet, baixa e instala ele no local adequado; e então `o executa`.
 
 Tudo isso é feito transparentemente, e o usuário então `vê` as informações de ajuda na tela. Em uma próxima vez que o usuário digitar `e5r help`, esse comando já existe em seu diretório de comandos, e é executado imediatamente.
 
@@ -86,21 +88,25 @@ Você viu no tópico **O comando `E5R`** que a instalação é feita no diretór
 
 Isso porque é presumido que o usuário que executa a instalação tem as permissões necessárias pelo menos em **seu próprio diretório** de usuário; mas não é garantido que ele tenha as permissões necessárias se fizermos a instalação em `/Program Files` ou `/bin` por exemplo, porque esses diretórios normalmente necessitam de permissões especiais.
 
+> Imagine que você está fazendo compras no shopping e o telefone toca, é aquele cliente importante, com um problema que precisa ser corrigido imediatamente em seu software. Você sabe como resolver facilmente, mas está sem seu laptop; o máximo que encontra é uma LanHouse do shopping, mas é complicado conseguir permissão para instalar o NodeJS e montar seu ambiente de desenvolvimento alí.
+
+> Pois bem, com `E5R` isso é possível. Basta baixar e instalar seu ambiente ali mesmo rapidamente, sem necessidade de privilégios de administrador; e ainda com a conciência tranquila pois não afetará o sistema da Lan House. Faça seu trabalho tranquilo.
+
 Fazendo a instalação no próprio diretório do usuário nós atendemos ao 4º requisito, mas não só isso; de quebra atendemos também ao 5º requisito.
 
 ### 5º - Não interferir no restante do sistema
 
-Quando fazemos uma instalação nos diretórios do sistema, todos os usuários desse sistema se "beneficiam" de tal instalação porque podem usar os programas instalados. Mas no mundo do desenvolvimento, é comum a experimentação; por isso nós estamos a todo instante instalando e desinstalando softwares, e testando novas versões. E você já sabe o que acontece quando nós temos por exemplo o Microsoft Office 2010 instalado na máquina, e instalamos a versão 2013 pra "NÓS"; acontece que nós afetamos aos demais usuários.
+Quando fazemos uma instalação nos diretórios do sistema, todos os usuários desse sistema se "beneficiam" de tal instalação porque podem usar os programas instalados. Mas no mundo do desenvolvimento, é comum a experimentação; por isso nós estamos a todo instante instalando e desinstalando softwares, e testando novas versões. E você já sabe o que acontece quando nós temos por exemplo o Microsoft Office 2010 instalado na máquina, e instalamos a versão 2013 pra "NÓS"; acontece que nós afetamos aos demais usuários também. Mas será que isso será bom pra todos os outros usuários?
 
 Não interferir no restante do sistema quer dizer que nós podemos instalar, desinstalar, e atualizar nossas ferramentas; e essas, só afetarem o nosso ambiente.
 
-Com a instalação no próprio diretório do usuário atendemos ao 5º requisito.
+Com a instalação no próprio diretório do usuário atendemos ao 5º requisito também.
 
 ## Indo além
 
 Talvez você possa se questionar:
 
-* Porque usarmos `scripts` para instalação de ferramentas e não usamos uma interface gráfica que é bem mais prático?
+* Porque usarmos `scripts` para instalação de ferramentas e não usamos uma interface gráfica que é bem mais prática?
 
 Os scripts (ou programas de linha de comando) são na verdade a base para os programas de GUI (*Graphical User Interface*). Quando você usa uma ferramenta gráfica poderosa como o Visual Studio, Eclipse ou Netbeans, e clica em `compilar` por exemplo; o que ele faz na verdade é chamar um programa de linha de comando pra fazer o trabalho pesado. Por isso ter ferramentas assim bem estruturadas é o melhor caminho, depois, criar plugins ou interfaces gráficas (seja Desktop ou Web) é mais fácil; *mas fica pra depois*.
 
@@ -112,16 +118,24 @@ Sim, mas esse é o menor dos problemas; não chega nem a ser um problema se comp
 
 Além do mais, essa ferramenta não ajuda somente no momento do desenvolvimento, mas também no momento da implantação.
 
-> Certo dia eu ([Erlimar](https://github.com/erlimar)) estava fazendo uns testes nas ferramentas https://travis-ci.org e https://heroku.com. Até aí nada de mais, se não fosse o fato de que meus testes estarem sendo feitos na nova plataforma [ASP.NET vNext](http://asp.net/vnext), e tanto o Travis CI quanto o Heroku não davam suporte nativos a essa plataforma (até porque a plataforma ainda não tinha sido lançada - na verdade, até o momento em que escrevo este texto a plataforma ainda não foi lançada)
+> Certo dia eu ([Erlimar](https://github.com/erlimar)) estava fazendo uns testes nas ferramentas https://travis-ci.org e https://heroku.com. Até aí nada de mais, se não fosse o fato de que meus testes estavam sendo feitos na nova plataforma [ASP.NET vNext](http://asp.net/vnext), e tanto o Travis-CI quanto o Heroku não davam suporte nativos a essa plataforma (até porque a plataforma ainda não tinha sido lançada - na verdade, até o momento em que escrevo este texto a plataforma ainda não foi lançada); [veja aqui](https://github.com/erlimar/dotnet-vnext-ci-travis) os resultados.
+> 
+> Acontece que eu precisava compilar o [Mono](http://mono-project.org) antes de executar meu projeto, pois o ASP.NET vNext requer uma versão mais atualizada do Mono que as fornecidas pelas distribuições atualmente.
+> 
+> Depois de instalar uma série de requisitos, eu consegui resolver o problema no Travis-CI, porque esse me permitia executar comandos como usuário `root`, mas não tive a mesma sorte no Heroku.
+> 
+> Moral da história, ainda não consegui (pelo menos até o momento em que escrevia esse texto) terminar meus testes, porque o tal privilégio de administrador (ou falta dele) não me permitiu.
 
+O modelo de implantação de software tem mudado muito nos últimos tempos, principalmente com o uso da computação na nuvem, onde você tem na verdade em um ambiente mais robusto uma série de pequenos ambientes virtuais completamente isolados. É comum nesse novo modelo você ter que configurar seu ambiente completamente a cada implantação, e isso inclui instalar frameworks, interpretadores, bancos, etc.
 
+A Integração Contínua ([*CI - Continuous Integration*](http://en.wikipedia.org/wiki/Continuous_integration)) e a Entrega Contínua ([*CD - Continuous Delivery*](http://en.wikipedia.org/wiki/Continuous_delivery)) são os processos automatizados para essas tarefas, onde, após configurar nosso sistema com alguns parâmetros ele passa a fazer o trabalho por nós após cada *commit* ou outros eventos que também configuramos de acordo com nosso fluxo de trabalho.
 
+E como no modelo de *cloud computing* nós não temos o domínio sobre o sistema hospedeiro; ao invés disso temos uma certa parcela do sistema de forma isolada, com um usuário específico e devemos fazer nosso trabalho sem afetar os demais; normalmente não temos acesso aos diretórios do sistema, mas sim ao diretório do usuário, ou às vezes, um *sandbox* que simula os diretórios do sistema, e em alguns casos nos é permitido *achar* que temos privilégios administrativos.
 
+No fim das contas, o que esses sistemas (de CI e DI) na verdade fazem, é executar uma série de scripts, que monitoram e baixam nosso código do repositório automaticamente, compilam, testam, transformam, instalam dependências e etc.
 
-* O usuário não requer permissões especiais no sistema para instalação
-* Instalações/Desinstalações não afetam outros usuários
-* Perfeito para ambientes de integração/entrega contínua
+Com a proposta do modelo `E5R`, nós já estamos prontos para esse novo modelo. O que estamos fazendo na verdade é pensar no ponto final (implantação) do projeto desde o princípio.
 
-### Pré-requisitos
+## ~~Efeitos colaterais~~
 
-* Conexão sempre ativa com a Internet
+Um efeito colateral dessa abordagem escolhida é que você precisará ter **uma conexão sempre ativa com a Internet**, mas... vejam só: *Isso não é um problema* porque o modelo `E5R` é pensado para o desenvolvimento de softwares modernos em um ecossistema de *cloud computing*; e a Internet pra esse cenário é tão importante quanto a energia elétrica ou o café, ou seja, sem eles não dá pra trabalhar.

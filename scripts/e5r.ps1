@@ -4,11 +4,13 @@ param(
     $args=@()
 )
 
-$version              = "sprint-1"
 $e5rPath              = "$env:UserProfile\.e5r"
-$commandBaseUrl       = "https://raw.githubusercontent.com/e5r/env/$version/scripts/command"
 
 Import-Module -Name "$e5rPath\lib\common.ps1"
+
+$version              = Get-E5RVersion
+$commandBaseUrl       = "https://raw.githubusercontent.com/e5r/env/$version/scripts/command"
+
 
 for($count = 0; $count -lt $args.length; $count++) {
     $value = $args[$count]
@@ -26,15 +28,6 @@ Copyright (c) 2014 E5R Development Team
 
 Usage:
    e5r <command> [options]
-
-Commands:
-   help             Show E5R Environment information
-
-   skeleton         Provides methods to create the basic structures
-                    of their projects
-
-   env              Allows you to install/uninstall and select the
-                    various versions of development environments
 
 "@ | Write-Host
 }

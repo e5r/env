@@ -3,5 +3,8 @@
 
 Arquivos que devem ser ajustados a cada release:
 
-* HELP.md
+* ARCHITECTURE.md
 * README.md
+* USERGUIDE.md
+* e5r-install.bat
+* scripts/e5r-install.ps1

@@ -20,3 +20,9 @@ PRONTO! Você já pode começar a usar a ferramenta.
 ## Problemas?
 
 Caso encontre algum problema durante a instalação, ou até mesmo durante a utilização da ferramenta, [abra um incidente](https://github.com/e5r/env/issues).
+
+## Métricas
+
+[![Throughput Graph](https://graphs.waffle.io/e5r/env/throughput.svg)](https://waffle.io/e5r/env/metrics)
+
+[![Stories in Ready](https://badge.waffle.io/e5r/env.svg?label=ready&title=Ready)](http://waffle.io/e5r/env) [![Stories in Ready](https://badge.waffle.io/e5r/env.svg?label=In%20Progress&title=In%20Progress)](http://waffle.io/e5r/env)

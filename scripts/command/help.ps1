@@ -3,17 +3,37 @@ param(
     [string[]]$args=@()
 )
 
-$version = "sprint-1"
+$e5rPath = "$env:UserProfile\.e5r"
+
+Import-Module -Name "$e5rPath\lib\common.ps1"
+
+$version = Get-E5RVersion
 
 function Show-Help {
 @"
 
 E5R Environment - Version $version
 
-Collection of scripts for managing the development environment for E5R team.
-Learn more at http://github.com/e5r/env
-
 Copyright (c) 2014 E5R Development Team
+
+E5R Environment, is a collection of scripts to automate tasks
+that relate to the development of E5R Development Team.
+But that can easily be used by any developer (or development
+team) wishing to apply concepts and patterns of development
+used by E5R Development Team for their projects.
+
+Usage:
+   e5r <command> [options]
+
+Commands:
+   help             Show this information
+
+   skeleton         Provides methods to create the basic structure
+                    for your projects and components
+
+   env              Manages the installation / uninstallation and
+                    selection of several versions of your
+                    development environment
 
 "@ | Write-Host -ForegroundColor Cyan
 }

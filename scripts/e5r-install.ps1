@@ -1,4 +1,4 @@
-$version              = "sprint-1"
+$version              = "0.1-alpha1"
 $e5rPath              = $env:USERPROFILE + "\.e5r"
 $e5rBin               = "$e5rPath\bin"
 $e5rLib               = "$e5rPath\lib"
