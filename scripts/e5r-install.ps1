@@ -72,9 +72,9 @@ $outputSilent = New-Item -ItemType Directory -Force $e5rBin
 $outputSilent = New-Item -ItemType Directory -Force $e5rLib
 
 try {
-    Get-WebFile "$repositoryBase/scripts/e5r.bat" "$e5rBin\e5r.bat" "Getting `"$e5r.bat`"..."
-    Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1" "Getting `"$e5r.ps1`"..."
-    Get-WebFile "$repositoryBase/scripts/common.ps1" "$e5rLib\common.ps1" "Getting `"$common.ps1`"..."
+    Get-WebFile "$repositoryBase/scripts/e5r.bat" "$e5rBin\e5r.bat" "Getting `"e5r.bat`"..."
+    Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1" "Getting `"e5r.ps1`"..."
+    Get-WebFile "$repositoryBase/scripts/common.ps1" "$e5rLib\common.ps1" "Getting `"common.ps1`"..."
 }catch [Exception]{
     Invoke-Uninstall
     Start-Sleep -s 5
