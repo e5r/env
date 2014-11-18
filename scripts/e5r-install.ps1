@@ -2,7 +2,7 @@ $version              = "0.1-alpha1"
 $e5rPath              = $env:USERPROFILE + "\.e5r"
 $e5rBin               = "$e5rPath\bin"
 $e5rLib               = "$e5rPath\lib"
-$postSetup            = "$e5rPath\postsetup.bat"
+$postSetup            = "$e5rPath\postsetup.cmd"
 $repositoryBase       = "https://raw.githubusercontent.com/e5r/env/$version"
 $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
@@ -86,7 +86,7 @@ $outputSilent = New-Item -ItemType Directory -Force $e5rBin
 $outputSilent = New-Item -ItemType Directory -Force $e5rLib
 
 try {
-    Get-WebFile "$repositoryBase/scripts/e5r.bat" "$e5rBin\e5r.bat" "Getting `"e5r.bat`"..."
+    Get-WebFile "$repositoryBase/scripts/e5r.cmd" "$e5rBin\e5r.cmd" "Getting `"e5r.cmd`"..."
     Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1" "Getting `"e5r.ps1`"..."
     Get-WebFile "$repositoryBase/scripts/common.ps1" "$e5rLib\common.ps1" "Getting `"common.ps1`"..."
 }catch [Exception]{

@@ -10,7 +10,7 @@ E5R Environment
 ## Instalação
 
 1. Baixe o script de acordo com o sistema operacional:
-    * [Windows](https://raw.githubusercontent.com/e5r/env/0.1-alpha1/e5r-install.bat);
+    * [Windows](https://raw.githubusercontent.com/e5r/env/0.1-alpha1/e5r-install.cmd);
     * ~~Unix like~~ (em breve).
 2. Execute o script como preferir;
 3. A mensagem *E5R Environment successfully installed!* é apresentada.
