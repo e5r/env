@@ -114,7 +114,9 @@ $workdir = [System.IO.Path]::GetFullPath($workdir)
 
 Function Run-Usage() {
 @"
-E5R Skeleton Command
+E5R Skeleton Command - Version $version
+
+Copyright (c) 2014 E5R Development Team
 
 Usage:
   e5r skeleton [options]
@@ -127,9 +129,9 @@ Options:
 
    -workdir <dir/path>  By default the skeleton command considers the current
       > optional        directory as the working directory, but this can be
-                        modified by passing a value for this option.
+                        modified by passing a value for this option
 
-   -tech <tech>         Specifies the default project that will be initialized.
+   -tech <tech>         Specify the technology to be used
 
    -license <licence>   License specifies that the project will use.
       > optional        
