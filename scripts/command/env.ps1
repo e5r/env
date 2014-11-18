@@ -13,6 +13,15 @@ Import-Module -Name "$e5rPath\lib\common.ps1"
 
 $version = Get-E5RVersion
 
+for($count = 0; $count -lt $args.length; $count++) {
+    $value = $args[$count]
+    if($value.contains(" ")) {
+        $value = $value.replace("`"", "```"")
+        $value = "`"$value`""
+    }
+    $args[$count] = $value
+}
+
 function Show-Help {
 @"
 E5R Env Command - Version $version
@@ -52,65 +61,15 @@ Options:
 }
 
 Function Install-Command($commandName) {
-    return $true
+  Write-Host "Installing [$commandName]..."
+  return $true
 }
 
-Function Invoke-Command($commandName) {
-    # boot
-    if($commandName -eq "boot") {
-        Invoke-Boot
-        Exit
-    }
+$commandName, $args = $args
 
-    # install
-    if($commandName -eq "install") {
-        Invoke-Install
-        Exit
-    }
-
-    # uninstall
-    if($commandName -eq "uninstall") {
-        Invoke-Uninstall
-        Exit
-    }
-
-    # list
-    if($commandName -eq "list") {
-        Invoke-List
-        Exit
-    }
-
-    # use
-    if($commandName -eq "use") {
-        Invoke-Use
-        Exit
-    }
-}
-
-Function Invoke-Boot() {
-    Write-Host "Invoke-Boot!"
-    Exit
-}
-
-Function Invoke-Install() {
-    Write-Host "Invoke-Install!"
-    Exit
-}
-
-Function Invoke-Uninstall() {
-    Write-Host "Invoke-Uninstall!"
-    Exit
-}
-
-Function Invoke-List() {
-    Write-Host "Invoke-List!"
-    Exit
-}
-
-Function Invoke-Use() {
-    Write-Host "Invoke-Use!"
-    Exit
-}
+$commandName
+$args
+Exit
 
 # -help
 # TODO: Exibir help de subcomandos

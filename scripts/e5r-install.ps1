@@ -27,6 +27,20 @@ Function Get-WebFile([string]$url, [string]$path, $message = $null, $requestNum 
         $fileStream.Close()
         $webStream.Close()
         $webResponse.Close()
+    } catch [System.Net.WebException] {
+        if($_.Exception.Response -and $_.Exception.Response.StatusCode -eq "NotFound") {
+            throw $_
+        }
+        if($requestNum -ge $maxDownloadRequest){
+            throw $_
+        }
+        $requestNum++
+        if(!$silent){
+            Write-Host "      >> Download error"
+        }
+        Write-Host "      -> Attempt $requestNum of $maxDownloadRequest..."
+        Start-Sleep -m $sleepAttemptDownload
+        Get-WebFile $url $path $message $requestNum $true
     } catch [System.Exception] {
         if($requestNum -ge $maxDownloadRequest){
             throw $_
@@ -76,6 +90,11 @@ try {
     Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1" "Getting `"e5r.ps1`"..."
     Get-WebFile "$repositoryBase/scripts/common.ps1" "$e5rLib\common.ps1" "Getting `"common.ps1`"..."
 }catch [Exception]{
+    Write-Host "----> " -NoNewLine -ForegroundColor DarkRed
+    Write-Host "E5R Install Error!" -ForegroundColor Red
+    Write-Host "      >> " -NoNewLine -ForegroundColor Red
+    Write-Host $_ -ForegroundColor DarkRed
+
     Invoke-Uninstall
     Start-Sleep -s 5
     Exit

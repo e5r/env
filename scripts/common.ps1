@@ -22,6 +22,20 @@ Function Get-WebFile([string]$url, [string]$path, $message = $null, $requestNum 
         $fileStream.Close()
         $webStream.Close()
         $webResponse.Close()
+    } catch [System.Net.WebException] {
+        if($_.Exception.Response -and $_.Exception.Response.StatusCode -eq "NotFound") {
+            throw $_
+        }
+        if($requestNum -ge $maxDownloadRequest){
+            throw $_
+        }
+        $requestNum++
+        if(!$silent){
+            Write-Host "      >> Download error"
+        }
+        Write-Host "      -> Attempt $requestNum of $maxDownloadRequest..."
+        Start-Sleep -m $sleepAttemptDownload
+        Get-WebFile $url $path $message $requestNum $true
     } catch [System.Exception] {
         if($requestNum -ge $maxDownloadRequest){
             throw $_
