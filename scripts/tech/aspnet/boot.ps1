@@ -1,12 +1,19 @@
 param(
-    [parameter(Position=0, ValueFromRemainingArguments=$true)]
-    [string[]]$args=@()
+    [string] $workdir,
+    [parameter(Position=1, ValueFromRemainingArguments=$true)]
+    [string[]] $args=@()
 )
 
-Write-Host "Boot for AspNet vNext running..."
+@"
+
+Exec E5R Environment Boot for AspNet vNext
+---------------------------------------------------------------
+  workdir => $workdir
+---------------------------------------------------------------
+"@ | Write-Host
 
 $count = 0
 foreach($arg in $args) {
-    Write-Host "  arg[$count] => $arg"
+    Write-Host "  arg[$count]  => $arg"
     $count++
 }

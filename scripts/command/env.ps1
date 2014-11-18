@@ -3,6 +3,7 @@ param(
     [string] $workdir = $null,
     [string] $tech = $null,
     [string] $version = $null,
+    [string] $saveVersion = $null,
     [parameter(Position=1, ValueFromRemainingArguments=$true)]
     [string[]]$args=@()
 )
@@ -49,6 +50,13 @@ if([String]::IsNullOrEmpty($version)) {
             $version = "$versionFileContent".Trim()
         }
     }
+}
+
+if(![String]::IsNullOrEmpty($saveVersion)) {
+    if(![String]::IsNullOrEmpty($version)) {
+        Write-Host "----> #Notice: Assuming version $version" -ForegroundColor DarkGray
+    }
+    $version = $saveVersion
 }
 
 for($count = 0; $count -lt $args.length; $count++) {
@@ -136,13 +144,32 @@ param(
             return $_
         }
     }
+}
+
+Function Invoke-Command() {
+param(
+    [parameter(Position=0)]
+    [string]$commandName,
+    [parameter(Position=1, ValueFromRemainingArguments=$true)]
+    [string[]]$args=@()
+)
+    $commandPath = "$e5rCmdBase\$tech"
+    $commandFile = "$commandPath\$commandName.ps1"
     if(!(Test-Path $commandFile)) {
-        if($commandPathCreated){
-            $outputSilent = Remove-Item $commandPath -Recurse -Force
-        }
         return "Command [$commandName] not found!"
     }
-    Invoke-Expression "& `"$commandFile`" -workdir `"$workdir`" -version `"$version`" $args"
+    $invokeArguments = "-workdir `"$workdir`" $args"
+    if(![String]::IsNullOrEmpty($version)) {
+        $invokeArguments += " -version `"$version`""
+    }
+    Invoke-Expression "& `"$commandFile`" $invokeArguments"
+    # Save version file if not exists
+    if(![String]::IsNullOrEmpty($saveVersion)) {
+        $versionFile = "$workdir\.e5r\version"
+        if(!(Test-Path $versionFile)) {
+            $outputSilent = New-Item -ItemType File -Force -Path $versionFile -Value $saveVersion
+        }
+    }
 }
 
 $commandName, $args = $args
@@ -164,13 +191,13 @@ if([String]::IsNullOrEmpty($tech)) {
     Exit
 }
 
-if([String]::IsNullOrEmpty($version)) {
-    Show-Error "Parameter -version is required"
-    Exit
-}
-
 try {
     $error = Install-Command $commandName $args
+    if($error -ne $null) {
+        Show-Error $error
+        Exit
+    }
+    $error = Invoke-Command $commandName $args
     if($error -ne $null) {
         Show-Error $error
         Exit
