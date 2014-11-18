@@ -7,11 +7,49 @@ param(
     [string[]]$args=@()
 )
 
-$e5rPath = "$env:UserProfile\.e5r"
+$e5rPath        = "$env:UserProfile\.e5r"
 
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
-$version = Get-E5RVersion
+# Note: Do not confuse with [$version] parameter
+$e5rVersion     = Get-E5RVersion
+
+$e5rCmdBase     = "$e5rPath\lib\env"
+$e5rCmdBaseUrl  = "https://raw.githubusercontent.com/e5r/env/$e5rVersion/scripts/tech"
+
+if([String]::IsNullOrEmpty($workdir)) {
+    $workdir = Get-Location
+}
+
+if($workdir[0] -eq '$') {
+    $e5rHome = $env:UserProfile
+    if($env:E5R_HOME -ne $null) {
+        $e5rHome = $env:E5R_HOME
+    }
+    $workdir = $workdir.Replace('$', $e5rHome)
+}
+
+$workdir = [System.IO.Path]::GetFullPath($workdir)
+
+if([String]::IsNullOrEmpty($tech)) {
+    $techFile = "$workdir\.e5r\tech"
+    if(Test-Path $techFile) {
+        $techFileContent = Get-Content $techFile
+        if(![String]::IsNullOrEmpty($techFileContent)) {
+            $tech = "$techFileContent".Trim()
+        }
+    }
+}
+
+if([String]::IsNullOrEmpty($version)) {
+    $versionFile = "$workdir\.e5r\version"
+    if(Test-Path $versionFile) {
+        $versionFileContent = Get-Content $versionFile
+        if(![String]::IsNullOrEmpty($versionFileContent)) {
+            $version = "$versionFileContent".Trim()
+        }
+    }
+}
 
 for($count = 0; $count -lt $args.length; $count++) {
     $value = $args[$count]
@@ -24,7 +62,7 @@ for($count = 0; $count -lt $args.length; $count++) {
 
 function Show-Help {
 @"
-E5R Env Command - Version $version
+E5R Env Command - Version $e5rVersion
 
 Copyright (c) 2014 E5R Development Team
 
@@ -60,30 +98,86 @@ Options:
 "@ | Write-Host
 }
 
-Function Install-Command($commandName) {
-  Write-Host "Installing [$commandName]..."
-  return $true
+Function Show-Error($message) {
+    Write-Host "----> " -NoNewLine -ForegroundColor DarkRed
+    Write-Host "E5R Env Error!" -ForegroundColor Red
+    Write-Host "      >> " -NoNewLine -ForegroundColor Red
+    Write-Host $message -ForegroundColor DarkRed
+}
+
+Function Install-Command() {
+param(
+    [parameter(Position=0)]
+    [string]$commandName,
+    [parameter(Position=1, ValueFromRemainingArguments=$true)]
+    [string[]]$args=@()
+)
+    $commandPath = "$e5rCmdBase\$tech"
+    $commandPathCreated = $false
+    $commandFile = "$commandPath\$commandName.ps1"
+    if(!(Test-Path $commandPath)){
+        $outputSilent = New-Item -ItemType Directory -Path $commandPath
+        $commandPathCreated = $true
+    }
+    if(!(Test-Path $commandFile)) {
+        $commandUrl = "$e5rCmdBaseUrl/$tech/$commandName.ps1"
+        if(!(Test-WebFile $commandUrl)) {
+            if($commandPathCreated){
+                $outputSilent = Remove-Item $commandPath -Recurse -Force
+            }
+            return "Web command [$tech/$commandName] not found!"
+        }
+        try {
+            Get-WebFile $commandUrl $commandFile "Getting remote command `"$tech/$commandName`"..."
+        }catch [Exception] {
+            if($commandPathCreated){
+                $outputSilent = Remove-Item $commandPath -Recurse -Force
+            }
+            return $_
+        }
+    }
+    if(!(Test-Path $commandFile)) {
+        if($commandPathCreated){
+            $outputSilent = Remove-Item $commandPath -Recurse -Force
+        }
+        return "Command [$commandName] not found!"
+    }
+    Invoke-Expression "& `"$commandFile`" -workdir `"$workdir`" -version `"$version`" $args"
 }
 
 $commandName, $args = $args
 
-$commandName
-$args
-Exit
-
 # -help
 # TODO: Exibir help de subcomandos
-if($help -or ($args.length -eq 1 -and $args[0] -eq "help")) {
+if($help -or $commandName -eq "help" -or !$commandName) {
     Show-Help
     Exit
 }
 
-if($args.length) {
-    if(Install-Command $args[0]){
-        Invoke-Command $args[0]
+if(!(Test-Path $workdir)){
+    Show-Error "Parameter -workdir is required"
+    Exit
+}
+
+if([String]::IsNullOrEmpty($tech)) {
+    Show-Error "Parameter -tech is required"
+    Exit
+}
+
+if([String]::IsNullOrEmpty($version)) {
+    Show-Error "Parameter -version is required"
+    Exit
+}
+
+try {
+    $error = Install-Command $commandName $args
+    if($error -ne $null) {
+        Show-Error $error
         Exit
     }
-    Write-Host "Command <" + $args[0] + "> not found!"
+    Exit
+}catch [Exception]{
+    Show-Error $_
     Exit
 }
 

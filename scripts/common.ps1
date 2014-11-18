@@ -14,7 +14,7 @@ Function Get-WebFile([string]$url, [string]$path, $message = $null, $requestNum 
     }
     try {
         $webRequest = [System.Net.WebRequest]::Create($url)
-        $webRequest.Timeout = $timeoutDownload
+        $webRequest.Timeout = $global:timeoutDownload
         [System.Net.WebResponse]$webResponse = $webRequest.GetResponse()
         [System.IO.Stream]$webStream = $webResponse.GetResponseStream()
         [System.IO.FileStream]$fileStream = [System.IO.File]::Create($path)
@@ -26,26 +26,26 @@ Function Get-WebFile([string]$url, [string]$path, $message = $null, $requestNum 
         if($_.Exception.Response -and $_.Exception.Response.StatusCode -eq "NotFound") {
             throw $_
         }
-        if($requestNum -ge $maxDownloadRequest){
+        if($requestNum -ge $global:maxDownloadRequest){
             throw $_
         }
         $requestNum++
         if(!$silent){
             Write-Host "      >> Download error"
         }
-        Write-Host "      -> Attempt $requestNum of $maxDownloadRequest..."
-        Start-Sleep -m $sleepAttemptDownload
+        Write-Host "      -> Attempt $requestNum of $global:maxDownloadRequest..."
+        Start-Sleep -m $global:sleepAttemptDownload
         Get-WebFile $url $path $message $requestNum $true
     } catch [System.Exception] {
-        if($requestNum -ge $maxDownloadRequest){
+        if($requestNum -ge $global:maxDownloadRequest){
             throw $_
         }
         $requestNum++
         if(!$silent){
             Write-Host "      >> Download error"
         }
-        Write-Host "      -> Attempt $requestNum of $maxDownloadRequest..."
-        Start-Sleep -m $sleepAttemptDownload
+        Write-Host "      -> Attempt $requestNum of $global:maxDownloadRequest..."
+        Start-Sleep -m $global:sleepAttemptDownload
         Get-WebFile $url $path $message $requestNum $true
     }
 }
@@ -86,5 +86,5 @@ Function Get-ProcessorArchitecture() {
 }
 
 Function Get-E5RVersion() {
-    return $version
+    return $global:version
 }
