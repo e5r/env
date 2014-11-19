@@ -100,10 +100,8 @@ param(
     [string] $valueSeparator = ";"
 )
     $oldValue = [Environment]::GetEnvironmentVariable($name, $targetName)
-
     if([String]::IsNullOrEmpty($replaceValue)) {
         [string[]]$newValueList = @()
-
         if(![String]::IsNullOrEmpty($oldValue)) {
             foreach($oldValueItem in $oldValue.Split($valueSeparator)) {
                 if((![String]::IsNullOrEmpty($prefixRemove)) -and ($oldValueItem.StartsWith($prefixRemove, $true, $null))){
@@ -115,9 +113,7 @@ param(
                 $newValueList += $oldValueItem
             }
         }
-
         $newValue = $newValueList -join $valueSeparator
-
         if(![String]::IsNullOrEmpty($addValue)) {
             if(![String]::IsNullOrEmpty($newValue)) {
                 $newValue += $valueSeparator
@@ -127,9 +123,7 @@ param(
     }else{
         $newValue = $replaceValue
     }
-
     [Environment]::SetEnvironmentVariable($name, $newValue, $targetName)
-
     return $newValue
 }
 
@@ -164,34 +158,24 @@ param(
         -ValueSeparator $valueSeparator
     if(![String]::IsNullOrEmpty($targetProcess)){
         $postFile = "$e5rPath\postfile.cmd"
-        
-        Write-Host "Gravando arquivo `"$postfile`""
-        $commandPrefix="@echo set $name=" #TODO delete @echo
+        $commandPrefix="set $name="
         $command = "$commandPrefix$targetProcess"
-
         $postFileContent  = ""
-        
         if(Test-Path $postFile) {
-            Write-Host "File content [$postFile]:"
             foreach ($postFileLine in (Get-Content $postFile)) {
-                Write-Host "-> " $postFileLine
                 if($postFileLine.StartsWith($commandPrefix, $true, $null)){
                     continue
                 }
-                $postFileContent += $command
-                $postFileContent += [System.Environment]::NewLine
+                if(![String]::IsNullOrEmpty($postFileContent)){
+                    $postFileContent += [System.Environment]::NewLine
+                }
+                $postFileContent += $postFileLine
             }
         }
-
-        Write-Host "***********************************"
-        Write-Host $postFileContent
-        Write-Host "***********************************"
-        #$outputSilent = New-Item -ItemType File -Force $postFile -Value $postFileContent
-
-        # Logica
-        #   > Varrer as linhas do arquivo (se existir)
-        #     * Se encontrar uma linha com o prefixo, REMOVER
-        #     * Adicionar o comando ao final
-        #   > Criar arquivo com conteúdo de $command (se não existir)
+        if(![String]::IsNullOrEmpty($postFileContent)){
+            $postFileContent += [System.Environment]::NewLine
+        }
+        $postFileContent += $command
+        $outputSilent = New-Item -ItemType File -Force $postFile -Value $postFileContent
     }
 }
