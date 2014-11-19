@@ -1,4 +1,3 @@
-[![Stories in Ready](https://badge.waffle.io/e5r/env.png?label=ready&title=Ready)](https://waffle.io/e5r/env)
 E5R Environment
 ===============
 
