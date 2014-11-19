@@ -1,4 +1,4 @@
-$version              = "0.1-alpha1"
+$version              = "1.0.0-alpha1"
 $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
 $sleepAttemptDownload = 5000

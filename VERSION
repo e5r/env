@@ -1,10 +1,11 @@
-0.1-alpha1
-==========
+1.0.0-alpha1
+============
 
 Arquivos que devem ser ajustados a cada release:
 
-* ARCHITECTURE.md
+* doc/ARCHITECTURE.md
 * README.md
-* USERGUIDE.md
-* e5r-install.bat
+* doc/USERGUIDE.md
+* e5r-install.cmd
 * scripts/e5r-install.ps1
+* scripts/common.ps1

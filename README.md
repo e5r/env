@@ -4,14 +4,14 @@ E5R Environment
 
 > Uma coleção de scripts para automação de tarefas de ambiente, para E5R Development Team.
 
-* [Saiba mais sobre a arquitetura](https://github.com/e5r/env/blob/0.1-alpha1/doc/ARCHITECTURE.md)
-* [Guia do Usuário](https://github.com/e5r/env/blob/0.1-alpha1/doc/USERGUIDE.md)
-* [Notas de Lançamento](https://github.com/e5r/env/releases/tag/0.1-alpha1) da versão **0.1-alpha1**
+* [Saiba mais sobre a arquitetura](https://github.com/e5r/env/blob/1.0.0-alpha1/doc/ARCHITECTURE.md)
+* [Guia do Usuário](https://github.com/e5r/env/blob/1.0.0-alpha1/doc/USERGUIDE.md)
+* [Notas de Lançamento](https://github.com/e5r/env/releases/tag/1.0.0-alpha1) da versão **1.0.0-alpha1**
 
 ## Instalação
 
 1. Baixe e execute o script de acordo com o sistema operacional:
-    * [Windows](https://raw.githubusercontent.com/e5r/env/0.1-alpha1/e5r-install.cmd);
+    * [Windows](https://raw.githubusercontent.com/e5r/env/1.0.0-alpha1/e5r-install.cmd);
     * ~~Unix like~~ (em breve).
 2. A mensagem *E5R Environment successfully installed!* é apresentada.
 
