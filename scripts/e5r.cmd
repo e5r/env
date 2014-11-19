@@ -6,6 +6,6 @@ set POSTFILE=%USERPROFILE%\.e5r\postfile.cmd
 @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -File "%PSSCRIPT%" %*
 
 if exist %POSTFILE% (
-    CALL %POSTFILE%
-    DEL %POSTFILE%
+    echo call %POSTFILE%
+    del %POSTFILE%
 )

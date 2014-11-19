@@ -1,0 +1,7 @@
+var PROJECT='@{ProjectName}'
+var VERSION='@{ProjectVersion}'
+var FULL_VERSION='@{ProjectFullVersion}'
+var AUTHORS='@{Authors}'
+
+use-standard-lifecycle
+k-standard-goals

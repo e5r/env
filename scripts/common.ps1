@@ -166,40 +166,32 @@ param(
         $postFile = "$e5rPath\postfile.cmd"
         
         Write-Host "Gravando arquivo `"$postfile`""
-        $commandPrefix="set $name="
+        $commandPrefix="@echo set $name=" #TODO delete @echo
         $command = "$commandPrefix$targetProcess"
-        Write-Host $command
 
-        #
-        #$outputSilent = New-Item -ItemType File -Force $postSetup -Value $command
-        #
+        $postFileContent  = ""
+        
+        if(Test-Path $postFile) {
+            Write-Host "File content [$postFile]:"
+            foreach ($postFileLine in (Get-Content $postFile)) {
+                Write-Host "-> " $postFileLine
+                if($postFileLine.StartsWith($commandPrefix, $true, $null)){
+                    continue
+                }
+                $postFileContent += $command
+                $postFileContent += [System.Environment]::NewLine
+            }
+        }
+
+        Write-Host "***********************************"
+        Write-Host $postFileContent
+        Write-Host "***********************************"
+        #$outputSilent = New-Item -ItemType File -Force $postFile -Value $postFileContent
+
         # Logica
         #   > Varrer as linhas do arquivo (se existir)
         #     * Se encontrar uma linha com o prefixo, REMOVER
         #     * Adicionar o comando ao final
         #   > Criar arquivo com conteúdo de $command (se não existir)
-        #
     }
 }
-
-
-# Function Update-EnvironmentVariables() {
-#     $path = [Environment]::GetEnvironmentVariable("Path", "User")
-#     $contains = $false
-#     if($path -ne $null) {
-#         $contains = $path.ToLower().Contains($e5rBin.ToLower())
-#     }
-#     if(!$contains) {
-#         if($path -ne $null) {
-#             $path += ";"
-#         }
-#         $path += $e5rBin
-#         if($env:Path -ne $null) {
-#             $env:Path += ";"
-#         }
-#         $env:Path += $e5rBin
-#         $command = "set PATH=%PATH%;$e5rBin"
-#         $outputSilent = New-Item -ItemType File -Force $postSetup -Value $command
-#         [Environment]::SetEnvironmentVariable("Path", $path, "User")
-#     }
-# }

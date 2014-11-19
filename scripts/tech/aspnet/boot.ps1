@@ -14,12 +14,10 @@ $kvmBase = "$env:UserProfile\.kre"
 $kvmBin = "$kvmBase\bin"
 $kvmBaseUrl = "https://raw.githubusercontent.com/aspnet/Home/$aspnetRelease"
 
-# Criar $env:UserProfile\.kre\bin
 if(!(Test-Path $kvmBin)) {
     $outputSilent = New-Item -ItemType Directory -Path $kvmBin
 }
 
-# Baixar kvm.cmd e kvm.ps1 para .kre\bin
 if(!(Test-Path "$kvmBin\kvm.cmd")){
     try{
         Get-WebFile "$kvmBaseUrl/kvm.cmd" "$kvmBin\kvm.cmd" "Downloading `"kvm.cmd`"..."
@@ -39,21 +37,13 @@ if(!(Test-Path "$kvmBin\kvm.ps1")){
     }
 }
 
-#
-# Adicionar .kre\bin a $env:PATH
 Update-EnvironmentVariables `
     -Name "PATH"  `
     -AddValue $kvmBin  `
     -PrefixRemove $kvmBase `
     -showMessage "Adding `"$kvmBin`" to PATH..."
 
-# Adicionar .kre a $env:KRE_HOME
 Update-EnvironmentVariables `
     -Name "KRE_HOME" `
     -ReplaceValue $kvmBase `
     -showMessage "Adding `"$kvmBase`" to KRE_HOME..."
-
-#
-# Atualizar PATH e KRE_HOME do usuário
-#
-# POSTFILE

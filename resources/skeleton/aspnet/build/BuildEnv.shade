@@ -1,0 +1,12 @@
+use namespace="System"
+
+functions
+  @{
+    string BuildNumber
+    {
+        get 
+        {
+            return "t" + DateTime.UtcNow.ToString("yyMMddHHmmss");
+        }
+    }
+  }

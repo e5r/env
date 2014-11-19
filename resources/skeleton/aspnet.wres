@@ -1,3 +1,22 @@
+# Defaults
 f:global.json:aspnet/global.json
 f:makefile.shade:aspnet/makefile.shade
-f:NuGet.Config:aspnet/NuGet.Config
+f:nuget.config:aspnet/nuget.config
+
+# File Append
+#  > If file exists, content is appended
+#  > If file not exists, file is added
+fa:build.cmd:aspnet/build.cmd
+
+# MyKoreBuild
+# In future -> replace for nugetpackage or e5r env boot[command]
+d:build
+f:build/_k-build.shade:aspnet/build/_k-build.shade
+f:build/_k-clean.shade:aspnet/build/_k-clean.shade
+f:build/_k-restore.shade:aspnet/build/_k-restore.shade
+f:build/_k-standard-goals.shade:aspnet/build/_k-standard-goals.shade
+f:build/_k-test.shade:aspnet/build/_k-test.shade
+f:build/_k.shade:aspnet/build/_k.shade
+f:build/_stylecop-run.shade:aspnet/build/_stylecop-run.shade
+f:build/_stylecop-setup.shade:aspnet/build/_stylecop-setup.shade
+f:build/BuildEnv.shade:aspnet/build/BuildEnv.shade
