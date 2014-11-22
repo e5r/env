@@ -1,6 +1,6 @@
 @echo off
 
-set VERSION=1.0.0-alpha1
+set VERSION=v0.1.0-alpha1
 set CDPATH=%CD%
 set SCRIPTPATH=%~dp0
 set SCRIPTNAME=%~n0

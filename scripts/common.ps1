@@ -1,4 +1,4 @@
-$version              = "1.0.0-alpha1"
+$e5rVersion              = "0.1.0-alpha1"
 $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
 $sleepAttemptDownload = 5000
@@ -77,7 +77,7 @@ Function Get-ProcessorArchitecture() {
 }
 
 Function Get-E5RVersion() {
-    return $global:version
+    return $global:e5rVersion
 }
 
 Function Update-EnvironmentVariablesForTarget() {

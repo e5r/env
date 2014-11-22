@@ -7,12 +7,12 @@ $e5rPath = "$env:UserProfile\.e5r"
 
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
-$version = Get-E5RVersion
+$e5rVersion = Get-E5RVersion
 
 function Show-Help {
 @"
 
-E5R Environment - Version $version
+E5R Environment - Version $e5rVersion
 
 Copyright (c) 2014 E5R Development Team
 

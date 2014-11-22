@@ -12,11 +12,11 @@ $e5rPath              = "$env:UserProfile\.e5r"
 
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
-$version              = Get-E5RVersion
+$e5rVersion              = Get-E5RVersion
 $skeletonBasePath     = "$e5rPath\resources\skeleton"
-$skeletonBaseUrl      = "https://raw.githubusercontent.com/e5r/env/$version/resources/skeleton"
+$skeletonBaseUrl      = "https://raw.githubusercontent.com/e5r/env/v$e5rVersion/resources/skeleton"
 $licenseBasePath      = "$e5rPath\resources\license"
-$licenseBaseUrl       = "https://raw.githubusercontent.com/e5r/env/$version/resources/license"
+$licenseBaseUrl       = "https://raw.githubusercontent.com/e5r/env/v$e5rVersion/resources/license"
 
 Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $pathBase) {
     $resourceUrl = "$urlBase/$resourceName"
@@ -114,7 +114,7 @@ $workdir = [System.IO.Path]::GetFullPath($workdir)
 
 Function Run-Usage() {
 @"
-E5R Skeleton Command - Version $version
+E5R Skeleton Command - Version $e5rVersion
 
 Copyright (c) 2014 E5R Development Team
 

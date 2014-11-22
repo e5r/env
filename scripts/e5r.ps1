@@ -8,8 +8,8 @@ $e5rPath              = "$env:UserProfile\.e5r"
 
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
-$version              = Get-E5RVersion
-$commandBaseUrl       = "https://raw.githubusercontent.com/e5r/env/$version/scripts/command"
+$e5rVersion              = Get-E5RVersion
+$commandBaseUrl       = "https://raw.githubusercontent.com/e5r/env/v$e5rVersion/scripts/command"
 
 
 for($count = 0; $count -lt $args.length; $count++) {
@@ -23,7 +23,7 @@ for($count = 0; $count -lt $args.length; $count++) {
 
 function Print-Usage {
 @"
-E5R Environment - Version $version
+E5R Environment - Version $e5rVersion
 Copyright (c) 2014 E5R Development Team
 
 Usage:

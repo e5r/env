@@ -1,9 +1,9 @@
-$version              = "1.0.0-alpha1"
+$e5rVersion              = "0.1.0-alpha1"
 $e5rPath              = $env:USERPROFILE + "\.e5r"
 $e5rBin               = "$e5rPath\bin"
 $e5rLib               = "$e5rPath\lib"
 $postSetup            = "$e5rPath\postsetup.cmd"
-$repositoryBase       = "https://raw.githubusercontent.com/e5r/env/$version"
+$repositoryBase       = "https://raw.githubusercontent.com/e5r/env/v$e5rVersion"
 $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
 $sleepAttemptDownload = 5000
