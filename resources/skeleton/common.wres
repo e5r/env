@@ -1,7 +1,6 @@
 d:src
 d:test
 d:doc
-f:build.sh:common/build.sh
 f:build.cmd:common/build.cmd
 f:README.md:common/README.md
 
