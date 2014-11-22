@@ -58,4 +58,5 @@ if ((Test-Path $commandFilePath) -ne 1) {
     Exit
 }
 
+# TODO: Verify $LastExitCode
 Invoke-Expression "& `"$commandFilePath`" $args"

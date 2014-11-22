@@ -24,7 +24,7 @@ if(!(Test-Path "$kvmBin\kvm.cmd")){
     }catch [Exception] {
         Write-Host "      >> Download failed!" -ForegroundColor DarkGray
         Write-Host "      -> URL: $kvmBaseUrl/kvm.cmd" -ForegroundColor DarkGray
-        Exit
+        Exit 1
     }
 }
 if(!(Test-Path "$kvmBin\kvm.ps1")){
@@ -33,7 +33,7 @@ if(!(Test-Path "$kvmBin\kvm.ps1")){
     }catch [Exception] {
         Write-Host "      >> Download failed!" -ForegroundColor DarkGray
         Write-Host "      -> URL: $kvmBaseUrl/kvm.ps1" -ForegroundColor DarkGray
-        Exit
+        Exit 1
     }
 }
 
@@ -47,3 +47,9 @@ Update-EnvironmentVariables `
     -Name "KRE_HOME" `
     -ReplaceValue $kvmBase `
     -showMessage "Adding `"$kvmBase`" to KRE_HOME..."
+
+if(Test-Command "kvm" -ne $true) {
+    Write-Host "----> Unexpected error while installing [kvm]" -ForegroundColor Red
+    Write-Host "      >> Command not available" -ForegroundColor DarkRed
+    Exit 1
+}

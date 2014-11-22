@@ -65,20 +65,11 @@ Function Test-WebFile([string]$url) {
 }
 
 Function Test-Command([string] $commandName) {
-    $__ = $ErrorActionPreference
-    $ErrorActionPreference = "stop"
-    try {
-        $command = Get-Command $commandName
-        if($command) {
-            return $true
-        }
-    } catch {
+    if(Get-Command $commandName -ErrorAction SilentlyContinue){
+        return $true
+    }els{
         return $false
-    } finally {
-        $ErrorActionPreference = $__
     }
-    
-    return $false
 }
 
 Function Get-ProcessorArchitecture() {

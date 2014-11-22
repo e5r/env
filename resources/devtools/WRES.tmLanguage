@@ -50,7 +50,7 @@
         </dict>
         <dict>
             <key>match</key>
-            <string>\b(f|fa|d)\b</string>
+            <string>\b(f|fa|d|localprefix|remoteprefix)\b</string>
             <key>name</key>
             <string>keyword.control.wres</string>
         </dict>
