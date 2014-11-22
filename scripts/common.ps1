@@ -67,7 +67,7 @@ Function Test-WebFile([string]$url) {
 Function Test-Command([string] $commandName) {
     if(Get-Command $commandName -ErrorAction SilentlyContinue){
         return $true
-    }els{
+    }else{
         return $false
     }
 }
