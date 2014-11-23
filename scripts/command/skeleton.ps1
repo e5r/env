@@ -21,74 +21,82 @@ $licenseBaseUrl       = "https://raw.githubusercontent.com/e5r/env/v$e5rVersion/
 Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $pathBase) {
     $resourceUrl = "$urlBase/$resourceName"
     $resourceFilePath = "$pathBase\$resourceName"
-    if(!(Test-WebFile $resourceUrl)) {
+    if(!(Test-Path $resourceFilePath) -and !(Test-WebFile $resourceUrl)) {
         Write-Host "----> Web resource $resourceName not found!"
         Write-Host "      URL: $resourceUrl"
-        Exit
+        Exit 1
     }
     if(!(Test-Path $pathBase)) {
         $outputSilent = New-Item -ItemType Directory -Path $pathBase
     }
     try {
-        Get-WebFile $resourceUrl $resourceFilePath "Getting remote resource `"$resourceName`"..."
+        if(!(Test-Path $resourceFilePath)) {
+            Get-WebFile $resourceUrl $resourceFilePath "Getting remote resource `"$resourceName`"..."
+        }
     }catch [Exception] {
         Write-Host "      >> Download failed!"
         Write-Host "      -> URL: $resourceUrl"
         $outputSilent = Remove-Item $pathBase -Recurse -Force
-        Exit
+        Exit 1
     }
     $lineNumber = 0
     foreach ($line in (Get-Content $resourceFilePath))
     {
         $lineNumber += 1
         $line = "$line".Trim()
-
+        # comment
         if($line.length -lt 1 -or $line[0] -eq "#") {
             continue
         }
-
+        # directory
         if($line.length -gt 1 -and $line[1] -eq ":" -and $line[0] -eq "d") {
-            $directory = $line.Substring(2)
-            $outputSilent = New-Item -ItemType Directory -Path "$pathBase\$directory"
+            $directory     = $line.Substring(2)
+            $directoryPath = "$pathBase\$directory"
+            if(!(Test-Path $directoryPath)) {
+                $outputSilent = New-Item -ItemType Directory -Path $directoryPath
+            }
             continue
         }
-
-        if($line.length -gt 1 -and $line[1] -eq ":" -and $line[0] -eq "f") {
-            $parts = $line.Substring(2).Split(":")
-            if($parts.length -ne 2) {
-                Write-Host "Syntax error in web resource file [$resourceName]" -ForegroundColor Red
-                Write-Host "  URL: " -NoNewLine -ForegroundColor DarkRed
-                Write-Host "$resourceUrl"  -ForegroundColor DarkGray
-                Write-Host "  Line $lineNumber`: " -NoNewLine -ForegroundColor DarkRed
-                Write-Host "$line" -ForegroundColor DarkGray
-                $outputSilent = Remove-Item $pathBase -Recurse -Force
-                Exit
-            }
-            $fileName = $parts[1]
+        # file
+        $parts = $line.Split(":")
+        if($parts.length -ne 3) {
+            Write-Host "Syntax error in web resource file [$resourceName]" -ForegroundColor Red
+            Write-Host "  URL: " -NoNewLine -ForegroundColor DarkRed
+            Write-Host "$resourceUrl"  -ForegroundColor DarkGray
+            Write-Host "  Line $lineNumber`: " -NoNewLine -ForegroundColor DarkRed
+            Write-Host "$line" -ForegroundColor DarkGray
+            $outputSilent = Remove-Item $pathBase -Recurse -Force
+            Exit 1
+        }
+        if($parts[0] -eq "f" -or $parts[0] -eq "fa") {
+            $fileName = $parts[2]
             $fileUrl = "$urlBase/$fileName"
-            $filePath = "$pathBase\" + $parts[0]
+            $filePath = "$pathBase\" + $parts[1]
             $filePathBase = [System.IO.Path]::GetDirectoryName($filePath)
             if(!(Test-Path $filePathBase)) {
                 $outputSilent = New-Item -ItemType Directory -Path $filePathBase
             }
-            if(!(Test-WebFile $fileUrl)) {
+            if(!(Test-Path $filePath) -and !(Test-WebFile $fileUrl)) {
                 Write-Host "Web resource not found!" -ForegroundColor Red
                 Write-Host "  URL: " -NoNewLine -ForegroundColor DarkRed
                 Write-Host "$fileUrl"  -ForegroundColor DarkGray
                 $outputSilent = Remove-Item $pathBase -Recurse -Force
-                Exit
+                Exit 1
             }
-            Get-WebFile $fileUrl $filePath "Getting file `"$fileName`"..."
+            # TODO: implement [fa]
+            if(!(Test-Path $filePath)) {
+                Get-WebFile $fileUrl $filePath "Getting file `"$fileName`"..."
+            }
             continue
         }
-
+        # undefined
         Write-Host "Syntax error in web resource file [$resourceName]" -ForegroundColor Red
         Write-Host "  URL: " -NoNewLine -ForegroundColor DarkRed
         Write-Host "$resourceUrl"  -ForegroundColor DarkGray
         Write-Host "  Line $lineNumber`: " -NoNewLine -ForegroundColor DarkRed
         Write-Host "$line" -ForegroundColor DarkGray
         $outputSilent = Remove-Item $pathBase -Recurse -Force
-        Exit
+        Exit 1
     }
     $outputSilent = Remove-Item $resourceFilePath
 }
@@ -167,31 +175,31 @@ Function Run-Init() {
         Write-Host
 
         Run-Usage
-        Exit
+        Exit 1
     }
 
     if ((Get-ChildItem $workdir).count -gt 0) {
         Write-Host "Not empty directories can not be initialized." -ForegroundColor Red
-        Exit
+        Exit 1
     }
 
     $skeletonCommon = "$skeletonBasePath\common"
     $skeletonTech   = "$skeletonBasePath\$tech"
 
-    if(!(Test-Path $skeletonCommon)) {
+    if(!(Test-Path $skeletonCommon) -or ((Test-Path $skeletonCommon) -and (Test-Path "$skeletonCommon\common.wres"))) {
         Make-WebResource $skeletonBaseUrl "common.wres" $skeletonCommon
     }
-    if(!(Test-Path $skeletonTech)) {
+    if(!(Test-Path $skeletonTech) -or ((Test-Path $skeletonTech) -and (Test-Path "$skeletonTech\$tech.wres"))) {
         Make-WebResource $skeletonBaseUrl "$tech.wres" $skeletonTech
     }
 
     if(!(Test-Path $skeletonCommon)) {
         Write-Host "E5R Skeleton Template <common> not found!"
-        Exit
+        Exit 1
     }
     if(!(Test-Path $skeletonTech)) {
         Write-Host "E5R Skeleton Template <common> not found!"
-        Exit
+        Exit 1
     }
 
     Copy-Skeleton "common" $workdir
@@ -257,13 +265,14 @@ Function Run-Init() {
 # TODO: Exibir help de subcomandos
 if($help -or ($args.length -eq 1 -and $args[0] -eq "help")) {
     Run-Help
-    Exit
+    Exit 0
 }
 
 # -init
 if($init) {
     Run-Init
-    Exit
+    Exit 0
 }
 
 Run-Usage
+Exit 0

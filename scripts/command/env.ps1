@@ -54,7 +54,7 @@ if([String]::IsNullOrEmpty($version)) {
 
 if(![String]::IsNullOrEmpty($saveVersion)) {
     if(![String]::IsNullOrEmpty($version)) {
-        Write-Host "----> #Notice: Assuming version $version" -ForegroundColor DarkGray
+        Write-Host "----> #Notice: Assuming version $saveVersion" -ForegroundColor DarkGray
     }
     $version = $saveVersion
 }
