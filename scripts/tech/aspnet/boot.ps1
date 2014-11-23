@@ -4,15 +4,15 @@ param(
     [string[]] $args=@()
 )
 
-$e5rPath = "$env:UserProfile\.e5r"
+$e5rPath       = "$env:UserProfile\.e5r"
 
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
-$e5rVersion = Get-E5RVersion
+$e5rVersion    = Get-E5RVersion
 $aspnetRelease = "v1.0.0-beta1"
-$kvmBase = "$env:UserProfile\.kre"
-$kvmBin = "$kvmBase\bin"
-$kvmBaseUrl = "https://raw.githubusercontent.com/aspnet/Home/$aspnetRelease"
+$kvmBase     = "$env:UserProfile\.kre"
+$kvmBin        = "$kvmBase\bin"
+$kvmBaseUrl    = "https://raw.githubusercontent.com/aspnet/Home/$aspnetRelease"
 
 if(!(Test-Path $kvmBin)) {
     $outputSilent = New-Item -ItemType Directory -Path $kvmBin
@@ -48,7 +48,7 @@ Update-EnvironmentVariables `
     -ReplaceValue $kvmBase `
     -showMessage "Adding `"$kvmBase`" to KRE_HOME..."
 
-if(Test-Command "kvm" -ne $true) {
+if(!(Test-Command "kvm")) {
     Write-Host "----> Unexpected error while installing [kvm]" -ForegroundColor Red
     Write-Host "      >> Command not available" -ForegroundColor DarkRed
     Exit 1

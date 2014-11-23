@@ -1,4 +1,6 @@
-$e5rVersion              = "0.1.0-alpha1"
+$e5rVersion           = "0.1.0-alpha1"
+$e5rPath              = "$env:UserProfile\.e5r"
+$e5rPostFile          = "$e5rPath\postfile.cmd"
 $maxDownloadRequest   = 5
 $timeoutDownload      = 30000
 $sleepAttemptDownload = 5000
@@ -80,6 +82,11 @@ Function Get-E5RVersion() {
     return $global:e5rVersion
 }
 
+Function Get-E5RPostFile() {
+    return $global:e5rPostFile
+}
+
+
 Function Update-EnvironmentVariablesForTarget() {
 param(
     [string] $targetName,
@@ -148,7 +155,7 @@ param(
         -SufixRemove $sufixRemove `
         -ValueSeparator $valueSeparator
     if(![String]::IsNullOrEmpty($targetProcess)){
-        $postFile = "$e5rPath\postfile.cmd"
+        $postFile = Get-E5RPostFile
         $commandPrefix="set $name="
         $command = "$commandPrefix$targetProcess"
         $postFileContent  = ""
