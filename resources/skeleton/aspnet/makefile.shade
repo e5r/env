@@ -1,6 +1,5 @@
-var PROJECT='@{ProjectName}'
-var VERSION='@{ProjectVersion}'
-var FULL_VERSION='@{ProjectFullVersion}'
+var VERSION='@{Version}'
+var FULL_VERSION='@{FullVersion}'
 var AUTHORS='@{Authors}'
 
 use-standard-lifecycle
