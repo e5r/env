@@ -1,5 +1,4 @@
 param(
-    [string] $repository = $null,
     [switch] $noWait = $false,
     [parameter(Position=1, ValueFromRemainingArguments=$true)]
     [string[]]$args=@()
@@ -10,6 +9,7 @@ $e5rPath              = "$env:UserProfile\.e5r"
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
 $e5rVersion           = Get-E5RVersion
+$repository           = Get-E5RRepository
 $e5rBin               = "$e5rPath\bin"
 $e5rLib               = "$e5rPath\lib"
 $postSetup            = "$e5rPath\postsetup.cmd"

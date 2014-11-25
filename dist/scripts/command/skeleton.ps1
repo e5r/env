@@ -12,11 +12,12 @@ $e5rPath              = "$env:UserProfile\.e5r"
 
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
-$e5rVersion              = Get-E5RVersion
+$e5rVersion           = Get-E5RVersion
+$repository           = Get-E5RRepository
 $skeletonBasePath     = "$e5rPath\resources\skeleton"
-$skeletonBaseUrl      = "https://raw.githubusercontent.com/e5r/env/v$e5rVersion/resources/skeleton"
+$skeletonBaseUrl      = "$repository/resources/skeleton"
 $licenseBasePath      = "$e5rPath\resources\license"
-$licenseBaseUrl       = "https://raw.githubusercontent.com/e5r/env/v$e5rVersion/resources/license"
+$licenseBaseUrl       = "$repository/resources/license"
 
 Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $pathBase) {
     $resourceUrl = "$urlBase/$resourceName"
@@ -70,6 +71,9 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
         }
         if($parts[0] -eq "f" -or $parts[0] -eq "fa") {
             $fileName = $parts[2]
+            if($parts[0] -eq "fa"){
+                $fileName += ".__append__"
+            }
             $fileUrl = "$urlBase/$fileName"
             $filePath = "$pathBase\" + $parts[1]
             $filePathBase = [System.IO.Path]::GetDirectoryName($filePath)

@@ -35,7 +35,7 @@ Commands:
                     selection of several versions of your
                     development environment
 
-"@ | Write-Host -ForegroundColor Cyan
+"@ | Write-Host
 }
 
 Show-Help
