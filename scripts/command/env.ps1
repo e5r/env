@@ -16,7 +16,8 @@ Import-Module -Name "$e5rPath\lib\common.ps1"
 $e5rVersion     = Get-E5RVersion
 
 $e5rCmdBase     = "$e5rPath\lib\env"
-$e5rCmdBaseUrl  = Get-E5RRepository + "/scripts/tech"
+$e5rRepository  = Get-E5RRepository
+$e5rCmdBaseUrl  = "$e5rRepository/scripts/tech"
 
 if([String]::IsNullOrEmpty($workdir)) {
     $workdir = Get-Location

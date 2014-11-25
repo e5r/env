@@ -9,21 +9,21 @@ $e5rPath              = "$env:UserProfile\.e5r"
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
 $e5rVersion           = Get-E5RVersion
-$repository           = Get-E5RRepository
+$e5rRepository        = Get-E5RRepository
 $e5rBin               = "$e5rPath\bin"
 $e5rLib               = "$e5rPath\lib"
 $postSetup            = "$e5rPath\postsetup.cmd"
 
 Write-Host "Installing E5R Environment $e5rVersion..."
-Write-Host "  from $repository`n" -ForegroundColor DarkGray
+Write-Host "  from $e5rRepository`n" -ForegroundColor DarkGray
 
 $outputSilent = New-Item -ItemType Directory -Force $e5rBin
 $outputSilent = New-Item -ItemType Directory -Force $e5rLib
 
 try {
-    Get-WebFile "$repository/scripts/e5r.cmd" "$e5rBin\e5r.cmd" "Getting `"e5r.cmd`"..."
-    Get-WebFile "$repository/scripts/e5r.ps1" "$e5rBin\e5r.ps1" "Getting `"e5r.ps1`"..."
-    Get-WebFile "$repository/scripts/common.ps1" "$e5rLib\common.ps1" "Getting `"common.ps1`"..."
+    Get-WebFile "$e5rRepository/scripts/e5r.cmd" "$e5rBin\e5r.cmd" "Getting `"e5r.cmd`"..."
+    Get-WebFile "$e5rRepository/scripts/e5r.ps1" "$e5rBin\e5r.ps1" "Getting `"e5r.ps1`"..."
+    Get-WebFile "$e5rRepository/scripts/common.ps1" "$e5rLib\common.ps1" "Getting `"common.ps1`"..."
 }catch [Exception]{
     Write-Host "----> " -NoNewLine -ForegroundColor DarkRed
     Write-Host "E5R Install Error!" -ForegroundColor Red

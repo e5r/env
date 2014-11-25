@@ -13,11 +13,11 @@ $e5rPath              = "$env:UserProfile\.e5r"
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
 $e5rVersion           = Get-E5RVersion
-$repository           = Get-E5RRepository
+$e5rRepository        = Get-E5RRepository
 $skeletonBasePath     = "$e5rPath\resources\skeleton"
-$skeletonBaseUrl      = "$repository/resources/skeleton"
+$skeletonBaseUrl      = "$e5rRepository/resources/skeleton"
 $licenseBasePath      = "$e5rPath\resources\license"
-$licenseBaseUrl       = "$repository/resources/license"
+$licenseBaseUrl       = "$e5rRepository/resources/license"
 
 Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $pathBase) {
     $resourceUrl = "$urlBase/$resourceName"
