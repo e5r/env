@@ -71,12 +71,11 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
         }
         if($parts[0] -eq "f" -or $parts[0] -eq "fa") {
             $fileName = $parts[2]
-            $fileAppend = ""
-            if($parts[0] -eq "fa"){
-                $fileAppend = ".__append__"
-            }
             $fileUrl = "$urlBase/$fileName"
             $filePath = "$pathBase\" + $parts[1]
+            if($parts[0] -eq "fa"){
+                $filePath += ".__append__"
+            }
             $filePathBase = [System.IO.Path]::GetDirectoryName($filePath)
             if(!(Test-Path $filePathBase)) {
                 $outputSilent = New-Item -ItemType Directory -Path $filePathBase
@@ -90,7 +89,7 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
             }
             # TODO: implement [fa]
             if(!(Test-Path $filePath)) {
-                Get-WebFile $fileUrl $filePath "Getting file `"$fileName$fileAppend`"..."
+                Get-WebFile $fileUrl $filePath "Getting file `"$fileName`"..."
             }
             continue
         }
