@@ -1,4 +1,5 @@
 f:global.json:aspnet/global.json
 f:makefile.shade:aspnet/makefile.shade
 f:nuget.config:aspnet/nuget.config
+f:package.config:aspnet/package.config
 fa:build.cmd:aspnet/build.cmd

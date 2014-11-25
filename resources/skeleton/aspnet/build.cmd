@@ -9,9 +9,9 @@ if not exist "%NUGETPATH%" md "%NUGETPATH%"
 
 :bootstrap
 echo E5R Bootstrap...
-e5r env boot
-e5r env install 1.0.0-beta1 -runtime CLR -x86
-e5r env use 1.0.0-beta1 -runtime CLR -x86
+call e5r env boot
+call e5r env install -version 1.0.0-beta1 -runtime CLR -x86
+call e5r env use -version 1.0.0-beta1 -runtime CLR -x86
 
 :build
 echo Building...

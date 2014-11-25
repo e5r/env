@@ -37,16 +37,20 @@ if(!(Test-Path "$kvmBin\kvm.ps1")){
     }
 }
 
-Update-EnvironmentVariables `
-    -Name "PATH"  `
-    -AddValue $kvmBin  `
-    -PrefixRemove $kvmBase `
-    -showMessage "Adding `"$kvmBin`" to PATH..."
+if(!"$env:Path".Contains($kvmBin)){
+    Update-EnvironmentVariables `
+        -Name "PATH"  `
+        -AddValue $kvmBin  `
+        -PrefixRemove $kvmBase `
+        -showMessage "Adding `"$kvmBin`" to PATH..."
+}
 
-Update-EnvironmentVariables `
-    -Name "KRE_HOME" `
-    -ReplaceValue $kvmBase `
-    -showMessage "Adding `"$kvmBase`" to KRE_HOME..."
+if(!"$env:Path".Contains($kvmBase)){
+    Update-EnvironmentVariables `
+        -Name "KRE_HOME" `
+        -ReplaceValue $kvmBase `
+        -showMessage "Adding `"$kvmBase`" to KRE_HOME..."
+}
 
 if(!(Test-Command "kvm")) {
     Write-Host "----> Unexpected error while installing [kvm]" -ForegroundColor Red
