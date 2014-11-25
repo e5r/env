@@ -11,7 +11,6 @@ Import-Module -Name "$e5rPath\lib\common.ps1"
 $e5rVersion              = Get-E5RVersion
 $commandBaseUrl       = "https://raw.githubusercontent.com/e5r/env/v$e5rVersion/scripts/command"
 
-
 for($count = 0; $count -lt $args.length; $count++) {
     $value = $args[$count]
     if($value.contains(" ")) {

@@ -1,27 +1,39 @@
 @echo off
 
-set VERSION=v0.1.0-alpha1
+set VERSION=0.1.0-alpha1
+set REPOSITORYURL="https://raw.githubusercontent.com/e5r/env/v%VERSION%"
 set CDPATH=%CD%
-set SCRIPTPATH=%~dp0
 set SCRIPTNAME=%~n0
-set POSTSETUPFILE=%USERPROFILE%\.e5r\postsetup.cmd
-set PSSCRIPT=%SCRIPTPATH%%SCRIPTNAME%.ps1
-set PSSCRIPTURL="https://raw.githubusercontent.com/e5r/env/%VERSION%/scripts/%SCRIPTNAME%.ps1"
-set PSSCRIPTDOWNLOAD="(New-Object System.Net.WebClient).DownloadFile('%PSSCRIPTURL%', '%PSSCRIPT%')"
+set E5RPATH=%USERPROFILE%\.e5r
+set POSTSETUPFILE=%E5RPATH%\postsetup.cmd
+set PSCOMMONFILE=%E5RPATH%\lib\common.ps1
+set PSINSTALLFILE=%E5RPATH%\bin\%SCRIPTNAME%.ps1
+set PSCOMMONURL=%REPOSITORYURL%/scripts/common.ps1
+set PSINSTALLURL=%REPOSITORYURL%/scripts/%SCRIPTNAME%.ps1
 
-if exist %PSSCRIPT% goto psrun
-@PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command %PSSCRIPTDOWNLOAD%
+if not exist %E5RPATH%\bin md %E5RPATH%\bin
+if not exist %E5RPATH%\lib md %E5RPATH%\lib
+
+:downloadinstall
+    if exist %PSINSTALLFILE% goto downloadcommon
+    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted ^
+        -Command "(New-Object System.Net.WebClient).DownloadFile('%PSINSTALLURL%', '%PSINSTALLFILE%')"
+
+:downloadcommon
+    if exist %PSCOMMONFILE% goto psrun
+    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted ^
+        -Command "(New-Object System.Net.WebClient).DownloadFile('%PSCOMMONURL%', '%PSCOMMONFILE%')"
 
 :psrun
-echo.%* | findstr /C:"-workdir" 1> nul
+    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted ^
+        -File "%PSINSTALLFILE%" ^
+        -Repository %REPOSITORYURL% %*
 
-if errorlevel 1 (
-    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted "%PSSCRIPT%" -workdir %CDPATH% %*
-) else (
-    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted "%PSSCRIPT%" %*
-)
+    if exist %POSTSETUPFILE% (
+        CALL %POSTSETUPFILE%
+        DEL %POSTSETUPFILE%
+    )
 
-if exist %POSTSETUPFILE% (
-    CALL %POSTSETUPFILE%
-    DEL %POSTSETUPFILE%
-)
+:gc
+    if exist %PSINSTALLFILE% DEL %PSINSTALLFILE%
+    if not exist %E5RPATH%\bin\e5r.cmd rd /s /q %E5RPATH%

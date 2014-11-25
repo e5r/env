@@ -1,107 +1,50 @@
-$e5rVersion              = "0.1.0-alpha1"
-$e5rPath              = $env:USERPROFILE + "\.e5r"
+param(
+    [string] $repository = $null,
+    [switch] $noWait = $false,
+    [parameter(Position=1, ValueFromRemainingArguments=$true)]
+    [string[]]$args=@()
+)
+
+$e5rPath              = "$env:UserProfile\.e5r"
+
+Import-Module -Name "$e5rPath\lib\common.ps1"
+
+$e5rVersion           = Get-E5RVersion
 $e5rBin               = "$e5rPath\bin"
 $e5rLib               = "$e5rPath\lib"
 $postSetup            = "$e5rPath\postsetup.cmd"
-$repositoryBase       = "https://raw.githubusercontent.com/e5r/env/v$e5rVersion"
-$maxDownloadRequest   = 5
-$timeoutDownload      = 30000
-$sleepAttemptDownload = 5000
 
-Function Get-WebFile([string]$url, [string]$path, $message = $null, $requestNum = 1, $silent = $false) {
-    if(!$silent) {
-        if($message -ne $null) {
-            Write-Host "----> $message"
-        }else{
-            Write-Host "----> Downloading $url"
-            Write-Host "      To: $path"
-        }
-    }
-    try {
-        $webRequest = [System.Net.WebRequest]::Create($url)
-        $webRequest.Timeout = $timeoutDownload
-        [System.Net.WebResponse]$webResponse = $webRequest.GetResponse()
-        [System.IO.Stream]$webStream = $webResponse.GetResponseStream()
-        [System.IO.FileStream]$fileStream = [System.IO.File]::Create($path)
-        $webStream.CopyTo($fileStream)
-        $fileStream.Close()
-        $webStream.Close()
-        $webResponse.Close()
-    } catch [System.Net.WebException] {
-        if($_.Exception.Response -and $_.Exception.Response.StatusCode -eq "NotFound") {
-            throw $_
-        }
-        if($requestNum -ge $maxDownloadRequest){
-            throw $_
-        }
-        $requestNum++
-        if(!$silent){
-            Write-Host "      >> Download error"
-        }
-        Write-Host "      -> Attempt $requestNum of $maxDownloadRequest..."
-        Start-Sleep -m $sleepAttemptDownload
-        Get-WebFile $url $path $message $requestNum $true
-    } catch [System.Exception] {
-        if($requestNum -ge $maxDownloadRequest){
-            throw $_
-        }
-        $requestNum++
-        if(!$silent){
-            Write-Host "      >> Download error"
-        }
-        Write-Host "      -> Attempt $requestNum of $maxDownloadRequest..."
-        Start-Sleep -m $sleepAttemptDownload
-        Get-WebFile $url $path $message $requestNum $true
-    }
-}
-
-Function Invoke-Uninstall() {
-    if(Test-Path $e5rPath) {
-        $outputSilent = Remove-Item $e5rPath -Recurse -Force
-    }
-}
-
-Function Update-EnvironmentVariables() {
-    $path = [Environment]::GetEnvironmentVariable("Path", "User")
-    $contains = $false
-    if($path -ne $null) {
-        $contains = $path.ToLower().Contains($e5rBin.ToLower())
-    }
-    if(!$contains) {
-        if($path -ne $null) {
-            $path += ";"
-        }
-        $path += $e5rBin
-        if($env:Path -ne $null) {
-            $env:Path += ";"
-        }
-        $env:Path += $e5rBin
-        $command = "set PATH=%PATH%;$e5rBin"
-        $outputSilent = New-Item -ItemType File -Force $postSetup -Value $command
-        [Environment]::SetEnvironmentVariable("Path", $path, "User")
-    }
-}
+Write-Host "Installing E5R Environment $e5rVersion..."
+Write-Host "  from $repository`n" -ForegroundColor DarkGray
 
 $outputSilent = New-Item -ItemType Directory -Force $e5rBin
 $outputSilent = New-Item -ItemType Directory -Force $e5rLib
 
 try {
-    Get-WebFile "$repositoryBase/scripts/e5r.cmd" "$e5rBin\e5r.cmd" "Getting `"e5r.cmd`"..."
-    Get-WebFile "$repositoryBase/scripts/e5r.ps1" "$e5rBin\e5r.ps1" "Getting `"e5r.ps1`"..."
-    Get-WebFile "$repositoryBase/scripts/common.ps1" "$e5rLib\common.ps1" "Getting `"common.ps1`"..."
+    Get-WebFile "$repository/scripts/e5r.cmd" "$e5rBin\e5r.cmd" "Getting `"e5r.cmd`"..."
+    Get-WebFile "$repository/scripts/e5r.ps1" "$e5rBin\e5r.ps1" "Getting `"e5r.ps1`"..."
+    Get-WebFile "$repository/scripts/common.ps1" "$e5rLib\common.ps1" "Getting `"common.ps1`"..."
 }catch [Exception]{
     Write-Host "----> " -NoNewLine -ForegroundColor DarkRed
     Write-Host "E5R Install Error!" -ForegroundColor Red
     Write-Host "      >> " -NoNewLine -ForegroundColor Red
     Write-Host $_ -ForegroundColor DarkRed
 
-    Invoke-Uninstall
-    Start-Sleep -s 5
-    Exit
+    if(!$noWait) {
+        Start-Sleep -s 5
+    }
+    Exit 1
 }
 
-Update-EnvironmentVariables
+Update-EnvironmentVariables `
+    -Name "PATH"  `
+    -AddValue $e5rBin  `
+    -PrefixRemove $e5rPath `
+    -showMessage "Adding `"$e5rBin`" to PATH..."
 
 Write-Host ""
-Write-Host "----> E5R Environment successfully installed!"
-Start-Sleep -s 5
+Write-Host "----> E5R Environment successfully installed!" -ForegroundColor Green
+
+if(!$noWait){
+    Start-Sleep -s 5
+}
