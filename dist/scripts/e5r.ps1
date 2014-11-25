@@ -9,7 +9,8 @@ $e5rPath              = "$env:UserProfile\.e5r"
 Import-Module -Name "$e5rPath\lib\common.ps1"
 
 $e5rVersion           = Get-E5RVersion
-$commandBaseUrl       = Get-E5RRepository + "/scripts/command"
+$e5rRepository        = Get-E5RRepository
+$commandBaseUrl       = "$e5rRepository/scripts/command"
 
 for($count = 0; $count -lt $args.length; $count++) {
     $value = $args[$count]
