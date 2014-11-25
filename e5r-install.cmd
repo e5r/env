@@ -5,7 +5,7 @@ set REPOSITORYURL="https://raw.githubusercontent.com/e5r/env/v%VERSION%"
 set CDPATH=%CD%
 set SCRIPTNAME=%~n0
 set E5RPATH=%USERPROFILE%\.e5r
-set POSTSETUPFILE=%E5RPATH%\postsetup.cmd
+set POSTFILE=%E5RPATH%\postfile.cmd
 set PSCOMMONFILE=%E5RPATH%\lib\common.ps1
 set PSINSTALLFILE=%E5RPATH%\bin\%SCRIPTNAME%.ps1
 set PSCOMMONURL=%REPOSITORYURL%/scripts/common.ps1
@@ -29,9 +29,9 @@ if not exist %E5RPATH%\lib md %E5RPATH%\lib
         -File "%PSINSTALLFILE%" ^
         -Repository %REPOSITORYURL% %*
 
-    if exist %POSTSETUPFILE% (
-        CALL %POSTSETUPFILE%
-        DEL %POSTSETUPFILE%
+    if exist %POSTFILE% (
+        CALL %POSTFILE%
+        DEL %POSTFILE%
     )
 
 :gc
