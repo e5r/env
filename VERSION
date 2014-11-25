@@ -11,7 +11,6 @@ value, but the links must be preceded by "v", eg:
 
 The version is mentioned in the following files:
 
-* doc/ARCHITECTURE.md
 * README.md
 * doc/USERGUIDE.md
 * scripts/common.ps1

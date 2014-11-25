@@ -52,7 +52,7 @@ Depois de ponderá sobre todos esses pensamentos, chegamos a proposta abaixo.
 
 Decidimos que atendemos aos três primeiros requisitos se fizermos a instalação de um único comando e disponibilizarmos para o usuário; o comando `e5r`.
 
-Esse pode ser instalado facilmente (atendendo ao 1º requisito) como visto em [README.md](https://github.com/e5r/env/blob/v0.1.0-alpha1/README.md).
+Esse pode ser instalado facilmente (atendendo ao 1º requisito) como visto em [README.md](../README.md).
 
 Por ser somente script não requer compilação (atendendo o 2º requisito).
 
