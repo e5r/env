@@ -1,7 +1,6 @@
 @echo off
 
-set VERSION=0.1.0-alpha1
-set REPOSITORYURL="https://raw.githubusercontent.com/e5r/env/v%VERSION%"
+set REPOSITORYURL="http://e5r.github.io/env/dist"
 set CDPATH=%CD%
 set SCRIPTNAME=%~n0
 set E5RPATH=%USERPROFILE%\.e5r
@@ -25,9 +24,7 @@ if not exist %E5RPATH%\lib md %E5RPATH%\lib
         -Command "(New-Object System.Net.WebClient).DownloadFile('%PSCOMMONURL%', '%PSCOMMONFILE%')"
 
 :psrun
-    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted ^
-        -File "%PSINSTALLFILE%" ^
-        -Repository %REPOSITORYURL% %*
+    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -File "%PSINSTALLFILE%"  %*
 
     if exist %POSTFILE% (
         CALL %POSTFILE%

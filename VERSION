@@ -14,5 +14,4 @@ The version is mentioned in the following files:
 * doc/ARCHITECTURE.md
 * README.md
 * doc/USERGUIDE.md
-* e5r-install.cmd
 * scripts/common.ps1

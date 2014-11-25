@@ -1,4 +1,5 @@
 $e5rVersion           = "0.1.0-alpha1"
+$e5rRepository        = "http://e5r.github.io/env/dist"
 $e5rPath              = "$env:UserProfile\.e5r"
 $e5rPostFile          = "$e5rPath\postfile.cmd"
 $maxDownloadRequest   = 5
@@ -84,6 +85,10 @@ Function Get-E5RVersion() {
 
 Function Get-E5RPostFile() {
     return $global:e5rPostFile
+}
+
+Function Get-E5RRepository() {
+    return $global:e5rRepository
 }
 
 
