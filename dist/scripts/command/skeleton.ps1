@@ -114,7 +114,7 @@ Function Copy-Skeleton([string] $skeleton, [string] $toPath) {
         $filePathTo = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($filePath), `
             [System.IO.Path]::GetFileNameWithoutExtension($filePath))
         if(Test-Path $filePathTo) {
-            Get-Content $filePathTo, $filePath > "$filePathTo.__appended__"
+            Get-Content $filePathTo, $filePath | Set-Content "$filePathTo.__appended__"
         }
         $outputSilent = Remove-Item "$filePath" -Force
         $outputSilent = Move-Item -Path "$filePathTo.__appended__" -Destination "$filePathTo" -Force
