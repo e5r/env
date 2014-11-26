@@ -87,7 +87,6 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
                 $outputSilent = Remove-Item $pathBase -Recurse -Force
                 Exit 1
             }
-            # TODO: implement [fa]
             if(!(Test-Path $filePath)) {
                 Get-WebFile $fileUrl $filePath "Getting file `"$fileName`"..."
             }
@@ -108,6 +107,18 @@ Function Make-WebResource([string] $urlBase, [string] $resourceName, [string] $p
 Function Copy-Skeleton([string] $skeleton, [string] $toPath) {
     $fromPath = "$skeletonBasePath\$skeleton"
     $outputSilent = Copy-Item "$fromPath\*" $toPath -Recurse -Force
+    # replace files "*.__replace__"
+    $list = Get-ChildItem "$toPath\*.__append__" -Recurse
+    foreach($file in $list){
+        $filePath   = $file.FullName
+        $filePathTo = [System.IO.Path]::Combine([System.IO.Path]::GetDirectoryName($filePath), `
+            [System.IO.Path]::GetFileNameWithoutExtension($filePath))
+        if(Test-Path $filePathTo) {
+            Get-Content $filePathTo, $filePath > "$filePathTo.__appended__"
+        }
+        $outputSilent = Remove-Item "$filePath" -Force
+        $outputSilent = Move-Item -Path "$filePathTo.__appended__" -Destination "$filePathTo" -Force
+    }
 }
 
 if([String]::IsNullOrEmpty($workdir)) {
