@@ -1,0 +1,13 @@
+d:src
+d:test
+d:doc
+f:build.cmd:common/build.cmd
+f:README.md:common/README.md
+
+#d: Create a directory
+# syntax
+#   d:directory/patn
+
+#f: Create a file
+# syntax
+#   f:file/path.txt:web/path/content.txt

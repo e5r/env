@@ -1,14 +1,27 @@
-[![Stories in Ready](https://badge.waffle.io/e5r/env.png?label=ready&title=Ready)](https://waffle.io/e5r/env)
 E5R Environment
 ===============
 
-Collection of scripts for managing the development environment for E5R team.
+> Uma coleção de scripts para automação de tarefas de ambiente, para E5R Development Team.
 
-## Scripts
+* [Saiba mais sobre a arquitetura](doc/ARCHITECTURE.md)
+* [Guia do Usuário](doc/USERGUIDE.md)
+* [Notas de Lançamento](https://github.com/e5r/env/releases/tag/v0.1.0-alpha1) da versão **0.1.0-alpha1**
 
-* bootstrapper
-* e5r-help
+## Instalação
 
-## Supports
+1. Baixe e execute o script de acordo com o sistema operacional:
+    * [Windows](http://e5r.github.io/env/dist/e5r-install.cmd);
+    * ~~Unix like~~ (em breve).
+2. A mensagem *E5R Environment successfully installed!* é apresentada.
 
-* .NET vNext `não implementado`
+PRONTO! Você já pode começar a usar a ferramenta.
+
+## Problemas?
+
+Caso encontre algum problema durante a instalação, ou até mesmo durante a utilização da ferramenta, [abra um incidente](https://github.com/e5r/env/issues).
+
+## Métricas
+
+[![Throughput Graph](https://graphs.waffle.io/e5r/env/throughput.svg)](https://waffle.io/e5r/env/metrics)
+
+[![Stories in Ready](https://badge.waffle.io/e5r/env.svg?label=ready&title=Ready)](http://waffle.io/e5r/env) [![Stories in Ready](https://badge.waffle.io/e5r/env.svg?label=In%20Progress&title=In%20Progress)](http://waffle.io/e5r/env)

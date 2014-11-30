@@ -1,0 +1,16 @@
+Current version: 0.1.0-alpha1
+=============================
+
+See http://semver.org
+
+By mentioning the version in the documentation use the current
+value, but the links must be preceded by "v", eg:
+
+  Version: 0.1.0
+  Link:    v0.1.0
+
+The version is mentioned in the following files:
+
+* README.md
+* doc/USERGUIDE.md
+* scripts/common.ps1
