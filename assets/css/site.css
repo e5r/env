@@ -1,0 +1,76 @@
+/* Site custom styles
+ *
+ * Based on: http://i.imgur.com/bjkLCnl.png
+ *
+ * Sample with highlight.js (https://highlightjs.org):
+ *
+ <div class="e5r-window">
+    <div class="e5r-window-title">
+        <i class="close"></i>
+        <i class="restore"></i>
+        <i class="minimize"></i>
+        <p>Window Title</p>
+    </div>
+    <div class="e5r-window-content hljs">
+        <pre><code class="js">// TODO: You code here!</code></pre>
+    </div>
+</div>
+*/
+
+.e5r-window {
+    border:solid 1px #DDDDDD;
+    box-shadow: 0px 0px 10px #DDDDDD;
+    border-radius: 7px;
+    padding:0px;
+}
+    .e5r-window .e5r-window-title {
+        background: linear-gradient(#FCFCFC, #F5F5F5, #F5F5F5, #F7F7F7);
+        border-radius: 7px 7px 0px 0px;
+        border-bottom: solid 1px #CCCCCC;
+        padding: 10px;
+    }
+        .e5r-window .e5r-window-title i {
+            position: absolute;
+            border:solid 1px;
+            border-radius: 20px;
+            padding: 8px;
+        }
+        .e5r-window .e5r-window-title i.close {
+            left: 20px;
+            background-color: #E85F5F;
+            border-color: #A62C2C;
+        }
+        .e5r-window .e5r-window-title i.restore {
+            left: 45px;
+            background-color: #F6CF20;
+            border-color: #F6B220;
+        }
+        .e5r-window .e5r-window-title i.minimize {
+            left: 70px;
+            background-color: #4BBA43;
+            border-color: #3C8B36;
+        }
+        .e5r-window .e5r-window-title p {
+            text-shadow: 1px 1px #FFFFFF;
+            margin:0px;
+            padding:0px;
+            text-align: center;
+            color:#999999;
+            font-weight: bold;
+        }
+    .e5r-window .e5r-window-content {
+        border-radius: 0px 0px 7px 7px;
+        padding: 0px;
+        font-size: 14px;
+    }
+        .e5r-window .e5r-window-content pre {
+            padding-left:20px;
+            padding-right:20px;
+        }
+    .e5r-window .e5r-code-small {
+        font-size: 10px;
+    }
+    .e5r-window .e5r-code-big {
+        font-size: 18px;
+    }
+    
