@@ -1,4 +1,14 @@
-/* Site custom styles
+/*!
+ * E5R Environment site custom styles
+ *
+ * Copyright 2014 E5R Development Team.
+ */
+
+@import url(http://fonts.googleapis.com/css?family=Inconsolata:400,700);
+
+/* ================================================
+ * .e5r-window
+ * ================================================
  *
  * Based on: http://i.imgur.com/bjkLCnl.png
  *
@@ -6,17 +16,16 @@
  *
  <div class="e5r-window">
     <div class="e5r-window-title">
-        <i class="close"></i>
-        <i class="restore"></i>
-        <i class="minimize"></i>
+        <i class="e5r-window-button-close"></i>
+        <i class="e5r-window-button-restore"></i>
+        <i class="e5r-window-button-minimize"></i>
         <p>Window Title</p>
     </div>
     <div class="e5r-window-content hljs">
         <pre><code class="js">// TODO: You code here!</code></pre>
     </div>
 </div>
-*/
-
+ */
 .e5r-window {
     border:solid 1px #DDDDDD;
     box-shadow: 0px 0px 10px #DDDDDD;
@@ -35,17 +44,17 @@
             border-radius: 20px;
             padding: 8px;
         }
-        .e5r-window .e5r-window-title i.close {
+        .e5r-window .e5r-window-title i.e5r-window-button-close {
             left: 20px;
             background-color: #E85F5F;
             border-color: #A62C2C;
         }
-        .e5r-window .e5r-window-title i.restore {
+        .e5r-window .e5r-window-title i.e5r-window-button-restore {
             left: 45px;
             background-color: #F6CF20;
             border-color: #F6B220;
         }
-        .e5r-window .e5r-window-title i.minimize {
+        .e5r-window .e5r-window-title i.e5r-window-button-minimize {
             left: 70px;
             background-color: #4BBA43;
             border-color: #3C8B36;
@@ -63,10 +72,17 @@
         padding: 0px;
         font-size: 14px;
     }
-        .e5r-window .e5r-window-content pre {
+        /*.e5r-window .e5r-window-content pre {
             padding-left:20px;
             padding-right:20px;
-        }
+        }*/
+    .e5r-window-code {
+        font-family: 'Inconsolata', 'Consolas', sans-serif;
+        font-size: 115%;
+        border-radius: 0px 0px 7px 7px;
+        white-space: pre;
+        padding: 20px;
+    }
     .e5r-window .e5r-code-small {
         font-size: 10px;
     }
@@ -74,3 +90,33 @@
         font-size: 18px;
     }
     
+/* ================================================
+ * commons
+ * ================================================
+ */
+body {
+    margin-top:50px;
+    margin-bottom: 60px;
+}
+
+.header-background {
+    background-image: url(../img/background.jpg);
+    background-attachment: fixed;
+}
+.icon-home {
+    margin-top:-7px;
+}
+
+.footer-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    display: block;
+    zoom: 1;
+}
+    .footer-menu li {
+        display: inline-block;
+        padding: 0;
+        margin-top:8px;
+    }

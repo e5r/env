@@ -1,38 +1,164 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Uma coleção de scripts para automação de tarefas de ambiente, para E5R Development Team.">
+  <meta name="keywords" content="development, web development, coder, programmer, e5r, environment, desenvolvimento, desenvolvimento web, codificador, programador, ambiente">
+  <meta name="author" content="E5R Development Team">
+
   <title>E5R Environment</title>
-  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/styles/railscasts.min.css">
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.2/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
+
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/hybrid.min.css">
+  <link rel="stylesheet" href="assets/css/bootstrap-e5r.min.css">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="icon" href="assets/img/e5r.ico">
+
+  <script src="http://cdn.jsdelivr.net/highlight.js/8.4/highlight.min.js"></script>
+  <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 </head>
 <body>
-  <h1>E5R Environment</h1>
-  <p>Uma coleção de scripts para automação de tarefas de ambiente, para E5R Development Team.</p>
+  <header class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="index.html" class="navbar-brand">
+          <img class="icon-home" alt="E5R Environment Home" src="assets/img/e5rlogo-xs.png">
+        </a>
+      </div>
+      <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+        <ul class="nav navbar-nav">
+          <li class="active">
+            <a href="index.html">
+              <i class="glyphicon glyphicon-home"></i>
+              Home
+            </a>
+          </li>
+          <li>
+            <a href="https://waffle.io/e5r/env" target="_blank">
+              <i class="glyphicon glyphicon-signal"></i>
+              Acompanhamento
+            </a>
+          </li>
+          <li>
+            <a href="https://gitter.im/e5r/env" target="_blank">
+              <i class="glyphicon glyphicon-comment"></i>
+              Chat
+            </a>
+          </li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a href="https://github.com/e5r/env" target="_blank" class="navbar-brand">
+              <i title="Ver no GitHub" class="glyphicon glyphicon-cloud"></i>
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/e5r/env/archive/v0.1.0-alpha1.zip" target="_bank" class="navbar-brand">
+              <span title="Baixar código fonte" class="glyphicon glyphicon-compressed"></span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-  <h2>Notícias</h2>
-  <ul>
-  	<li><a target="_blank" href="https://github.com/e5r/env/releases/tag/v0.1.0-alpha1">Lançamento da versão <strong>0.1.0-alpha1</strong></a></li>
-  </ul>
+  <div class="jumbotron header-background">
+    <div class="container">
+      <h1>E5R Environment</h1>
+      <p>Uma coleção de scripts para automação de tarefas de ambiente, para E5R Development Team.</p>
+    </div>
+  </div>
 
-  <h2>Instalar</h2>
-  <ol>
-  	<li>Baixe e execute o script <strong>e5r-install</strong> de acordo com o sistema operacional
-  		<ul>
-  			<li><a target="_blank" href="dist/e5r-install.cmd">Windows</a></li>
-  			<li><span style="text-decoration:line-through">Unix</span> (em breve)</li>
-  		</ul>
-  	</li>
-  	<li>A mensagem <strong>E5R Environment successfully installed!</strong> é apresentada</li>
-  </ol>
+  <div class="container">
+    <blockquote cite="https://github.com/e5r/env/blob/master/doc/ARCHITECTURE.md">
+      <p>E5R Environment, é uma coleção de scripts para automação de tarefas que dizem respeito ao ambiente de desenvolvimento do Time de Desenvolvimento E5R. Mas que pode facilmente ser usada por qualquer desenvolvedor (ou time de desenvolvimento) que pretenda aplicar os conceitos e padrões de desenvolvimento usados pelo E5R Development Team, em seus projetos.</p>
+      <footer>https://github.com/e5r/env/blob/master/doc/ARCHITECTURE.md</footer>
+    </blockquote>
+  </div>
 
-  <pre><code class="hljs bash">
-    e5r-install
+  <div class="container">
+    <div class="page-header">
+      <h1>Notícias</h1>
+    </div>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <span class="badge">New !</span>
+        <a target="_blank" href="https://github.com/e5r/env/releases/tag/v0.1.0-alpha1">
+          Lançamento da versão inicial de pré-lançamento
+          <mark class=""><strong>0.1.0-alpha1</strong></mark>
+        </a>
+      </li>
+    </ul>
+  </div>
 
-    'E5R Environment successfully installed!'
-  </code></pre>
+  <div class="container">
+    <div class="page-header">
+      <h1>Instalar</h1>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <p>Instalar o ambiente de desenvolvimento <strong>E5R</strong> é tão simples quanto:</p>
+        <ol>
+          <li><kbd>Ctrl + C</kbd> no código a seguir;</li>
+          <li><kbd>Ctrl + V</kbd> em um terminal;</li>
+          <li><kbd>Enter</kbd> e pronto!</li>
+        </ol>
+      </div>
+
+      <div class="col-md-6">
+        <div class="e5r-window">
+          <div class="e5r-window-title">
+              <i class="e5r-window-button-close"></i>
+                <i class="e5r-window-button-restore"></i>
+                <i class="e5r-window-button-minimize"></i>
+              <p>~shell</p>
+          </div>
+          <div class="e5r-window-content">
+            <div class="e5r-window-code">e5r-install
+  ...
+  E5R Environment successfully installed!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container footer-menu">
+      <ul class="nav text-center">
+        <li>
+          <a href="#">Versão atual</a>
+        </li>
+        <li>
+          <a>Home</a>
+        </li>
+        <li>
+          <a>Código</a>
+        </li>
+        <li>
+          <a>Home</a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+
   
-  <p>Acompanhe o projeto no <a href="https://github.com/e5r/env">GitHub</a>.
+  <!-- Startup scripts -->
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('div.e5r-window-code').each(function(i, block) {
+        hljs.highlightBlock(block);
+      });
+    });
+  </script>
 </body>
 </html>
