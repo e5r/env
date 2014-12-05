@@ -102,6 +102,7 @@ body {
 .header-background {
     background-image: url(../img/background.jpg);
     background-attachment: fixed;
+    color:#ffffff;
 }
 .icon-home {
     margin-top:-7px;
