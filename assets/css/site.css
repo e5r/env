@@ -45,17 +45,17 @@
             padding: 8px;
         }
         .e5r-window .e5r-window-title i.e5r-window-button-close {
-            left: 20px;
+            left: 30px;
             background-color: #E85F5F;
             border-color: #A62C2C;
         }
         .e5r-window .e5r-window-title i.e5r-window-button-restore {
-            left: 45px;
+            left: 55px;
             background-color: #F6CF20;
             border-color: #F6B220;
         }
         .e5r-window .e5r-window-title i.e5r-window-button-minimize {
-            left: 70px;
+            left: 80px;
             background-color: #4BBA43;
             border-color: #3C8B36;
         }
