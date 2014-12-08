@@ -29,9 +29,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a href="index.html" class="navbar-brand">
-          <img class="icon-home" alt="E5R Environment Home" src="assets/img/e5rlogo-xs.png">
-        </a>
+        <a href="http://e5r.github.io" target="_blank" class="navbar-brand icon-e5r"></a>
       </div>
       <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
         <ul class="nav navbar-nav">
@@ -70,10 +68,14 @@
     </div>
   </header>
 
-  <div class="jumbotron header-background">
+  <div class="header-banner">
     <div class="container">
-      <h1>E5R Environment</h1>
-      <p>Uma coleção de scripts para automação de tarefas de ambiente, para E5R Development Team.</p>
+      <div class="row">
+        <div class="col-md-6 col-md-offset-6">
+          <h1>E5R Environment</h1>
+          <p>Uma coleção de scripts para automação de tarefas de ambiente, para E5R Development Team.</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -122,29 +124,33 @@
               <p>~shell</p>
           </div>
           <div class="e5r-window-content">
-            <div class="e5r-window-code">e5r-install
-  ...
-  E5R Environment successfully installed!</div>
+            <div class="e5r-window-code">bitsadmin /TRANSFER "Installing E5R Env..." "http://e5r.github.io/env/dist/e5r-install.cmd" "%CD%\e5r-install.cmd" &amp;&amp; e5r-install.cmd</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <footer class="navbar navbar-default navbar-fixed-bottom">
+  <footer class="pg-footer">
     <div class="container footer-menu">
-      <ul class="nav text-center">
+      <ul class="text-center">
         <li>
-          <a href="#">Versão atual</a>
+          <a href="http://e5r.github.io" target="_blank">//E5R</a>
         </li>
         <li>
-          <a>Home</a>
+          <a href="index.html">Home</a>
         </li>
         <li>
-          <a>Código</a>
+          <a href="https://waffle.io/e5r/env" target="_blank">Acompanhamento</a>
         </li>
         <li>
-          <a>Home</a>
+          <a href="https://gitter.im/e5r/env" target="_blank">Chat</a>
+        </li>
+        <li>
+          <a href="https://github.com/e5r/env" target="_blank">Ver no GitHub</a>
+        </li>
+        <li>
+          <a href="https://github.com/e5r/env/archive/v0.1.0-alpha1.zip" target="_blank">Baixar código fonte</a>
         </li>
       </ul>
     </div>

@@ -72,23 +72,19 @@
         padding: 0px;
         font-size: 14px;
     }
-        /*.e5r-window .e5r-window-content pre {
-            padding-left:20px;
-            padding-right:20px;
-        }*/
-    .e5r-window-code {
-        font-family: 'Inconsolata', 'Consolas', sans-serif;
-        font-size: 115%;
-        border-radius: 0px 0px 7px 7px;
-        white-space: pre;
-        padding: 20px;
-    }
-    .e5r-window .e5r-code-small {
-        font-size: 10px;
-    }
-    .e5r-window .e5r-code-big {
-        font-size: 18px;
-    }
+.e5r-window-code {
+    font-family: 'Inconsolata', 'Consolas', sans-serif;
+    font-size: 115%;
+    border-radius: 0px 0px 7px 7px;
+    white-space: pre;
+    padding: 20px;
+}
+.e5r-code-small {
+    font-size: 10px;
+}
+.e5r-code-big {
+    font-size: 18px;
+}
     
 /* ================================================
  * commons
@@ -96,28 +92,57 @@
  */
 body {
     margin-top:50px;
-    margin-bottom: 60px;
 }
 
-.header-background {
-    background-image: url(../img/background.jpg);
+.header-banner {
+    background-image: url(../img/background_ideia_desfocado.jpg);
     background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #000000;
+    background-position: left;
     color:#ffffff;
+    height: 320px;
+    padding-top:25px;
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+}
+.header-banner h1 {
+    font-size:48pt;
+}
+.header-banner p {
+    font-size: 16pt;
+}
+.icon-e5r {
+    display: block;
+    width:80px;
+    background-image: url(../img/e5rlogo-avatar-xs.png);
+    background-size: 80px;
+    background-position: left;
+    background-repeat: no-repeat;;
+    margin-right: 10px;
 }
 .icon-home {
     margin-top:-7px;
 }
+footer.pg-footer{
+    background-color: rgba(212, 85, 0, 0.1);
+    margin-top: 40px;
+    padding-top:40px;
+    padding-bottom: 40px;
+    border-top:solid 1px #D45500;
 
-.footer-menu ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    line-height: 1;
-    display: block;
-    zoom: 1;
 }
-    .footer-menu li {
-        display: inline-block;
-        padding: 0;
-        margin-top:8px;
+    .footer-menu ul {
+        list-style: none;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        line-height: 1;
+        display: block;
+        zoom: 1;
     }
+        .footer-menu li {
+            display: inline-block;
+            padding: 10px;
+        }
+            .footer-menu a {
+                color: #D45500;
+            }
