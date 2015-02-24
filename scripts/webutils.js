@@ -4,7 +4,8 @@
 // NOTE: Based on https://github.com/hakobera/nvmw/blob/master/fget.js
 //       and https://gist.github.com/udawtr/2053179
 (function(){ 'use strict'
-  var fs = sys.require('fsutils.js');
+  var fs = sys.require('fsutils.js'),
+      su = sys.require('sysutils.js');
 
   /**
    * Get a Web file.
@@ -15,13 +16,45 @@
    *
    * @return TRUE if file is downloaded, FALSE if not
    */
-  function _getFile(url, filePath, cbkError){
+  function _getFile(){
+    var url, filePath, cbkError;
+
+    if(arguments.length < 1){
+      throw new Error('<webutils._getFile> #ArgumentException: @url is required.');
+    }
+
+    url = arguments[0];
+
+    if(arguments.length > 2 || (arguments.length == 2 && typeof arguments[1] == 'string')){
+      filePath = arguments[1];
+    }else{
+      var _urlParts = url.split('/');
+      filePath = _urlParts[_urlParts.length - 1];
+    }
+
+    if(arguments.length > 2 || (arguments.length == 2 && typeof arguments[1] == 'function')){
+      cbkError = arguments[arguments.length > 2 ? 2 : 1];
+    }else{
+      cbkError = function(error){
+        throw new Error('<webutils._getFile> #' + error.name + ': ' + error.message);
+      };
+    }
+
+    if(typeof filePath != 'string'){
+      throw new Error('<webutils._getFile> #ArgumentException: @filePath type is invalid.');
+    }
+
+    if(typeof cbkError != 'function'){
+      throw new Error('<webutils._getFile> #ArgumentException: @cbkError type is invalid.');
+    }
+
     var _filePath = fs.absolutePath(filePath),
         _directoryPath = fs.getDirectoryPath(filePath),
         _http = new ActiveXObject('MSXML2.ServerXMLHTTP'),
         _stream = new ActiveXObject("ADODB.Stream")
         _completed = false,
         _error = false;
+
     _http.onreadystatechange = function() {
       try{
         if(_http.readyState === 4){
@@ -47,6 +80,7 @@
         cbkError(error);
       }
     }
+
     try {
       _http.open('GET', url, true);
       _http.send(null);
@@ -56,15 +90,17 @@
       _http.abort();
       cbkError(error);
     }
+
     while(!_completed){
-      WScript.Sleep(1000);
+      su.sleep(100);
     }
+
     _http = null;
     _stream = null;
     return !_error;
   }
 
   module.exports = {
-    getFile: _getFile
+    download: _getFile
   }
 })();

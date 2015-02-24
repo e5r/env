@@ -1,6 +1,7 @@
 tmp/
 
 *~
+*.zip
 README.html
 ARCHITECTURE.html
 USERGUIDE.html

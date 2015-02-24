@@ -37,40 +37,55 @@
     main(sys, WScript.Arguments);
   }
 })(function(sys, args){
-  var web = sys.require('webutils.js'),
-      _baseUrl = 'https://github.com/e5r/env/raw/migrate-to-javascript/',
-      _basePath = './tmp/',
-      _files = [
-        {url: _baseUrl + 'resources/license/AGPL-3.0.md', file: _basePath + 'resources/license/AGPL-3.0.md'},
-        {url: _baseUrl + 'resources/license/APACHE-2.0.md', file: _basePath + 'resources/license/APACHE-2.0.md'},
-        {url: _baseUrl + 'resources/license/ARTISTIC-2.0.md', file: _basePath + 'resources/license/ARTISTIC-2.0.md'},
-        {url: _baseUrl + 'resources/license/BSD-2-CLAUSE.md', file: _basePath + 'resources/license/BSD-2-CLAUSE.md'},
-        {url: _baseUrl + 'resources/license/BSD-3-CLAUSE.md', file: _basePath + 'resources/license/BSD-3-CLAUSE.md'},
-        {url: _baseUrl + 'resources/license/CC0.md', file: _basePath + 'resources/license/CC0.md'},
-        {url: _baseUrl + 'resources/license/EPL-1.0.md', file: _basePath + 'resources/license/EPL-1.0.md'},
-        {url: _baseUrl + 'resources/license/GPL-2.0.md', file: _basePath + 'resources/license/GPL-2.0.md'},
-        {url: _baseUrl + 'resources/license/GPL-3.0.md', file: _basePath + 'resources/license/GPL-3.0.md'},
-        {url: _baseUrl + 'resources/license/ISC.md', file: _basePath + 'resources/license/ISC.md'},
-        {url: _baseUrl + 'resources/license/LGPL-2.1.md', file: _basePath + 'resources/license/LGPL-2.1.md'},
-        {url: _baseUrl + 'resources/license/LGPL-3.0.md', file: _basePath + 'resources/license/LGPL-3.0.md'},
-        {url: _baseUrl + 'resources/license/MIT.md', file: _basePath + 'resources/license/MIT.md'},
-        {url: _baseUrl + 'resources/license/MPL-2.0.md', file: _basePath + 'resources/license/MPL-2.0.md'},
-        {url: _baseUrl + 'resources/license/UNLICENSE.md', file: _basePath + 'resources/license/UNLICENSE.md'},
-        {url: _baseUrl + 'resources/skeleton/aspnet.wres', file: _basePath + 'resources/skeleton/aspnet.wres'},
-        {url: _baseUrl + 'resources/skeleton/common.wres', file: _basePath + 'resources/skeleton/common.wres'},
-        {url: _baseUrl + 'resources/skeleton/common/README.md', file: _basePath + 'resources/skeleton/common/README.md'},
-        {url: _baseUrl + 'resources/skeleton/common/build.cmd', file: _basePath + 'resources/skeleton/common/build.cmd'},
-        {url: _baseUrl + 'resources/skeleton/aspnet/build.cmd', file: _basePath + 'resources/skeleton/aspnet/build.cmd'},
-        {url: _baseUrl + 'resources/skeleton/aspnet/global.json', file: _basePath + 'resources/skeleton/aspnet/global.json'},
-        {url: _baseUrl + 'resources/skeleton/aspnet/makefile.shade', file: _basePath + 'resources/skeleton/aspnet/makefile.shade'},
-        {url: _baseUrl + 'resources/skeleton/aspnet/nuget.config', file: _basePath + 'resources/skeleton/aspnet/nuget.config'},
-        {url: _baseUrl + 'resources/skeleton/aspnet/packages.config', file: _basePath + 'resources/skeleton/aspnet/packages.config'}
-      ];
-  for(var f in _files){
-    sys.log('\nDownloading ', _files[f].url);
-    sys.log('   To:', _files[f].file)
-    web.getFile(_files[f].url, _files[f].file, function(error){
-      sys.log('   #' + error.name + ': ' + error.description);
-    });
+  var su = sys.require('sysutils.js');
+
+  sys.log('Host: ' + su.host.name + ' v' + su.host.version + '(' + su.host.build + ')');
+  sys.log(' > ExecPath: ' + su.host.execPath);
+  sys.log(' > ExecDirectory: ' + su.host.execDirectory);
+
+  sys.log('\nScript: ' + su.script.name);
+  sys.log(' > File: ' + su.script.file );
+  sys.log(' > Directory: ' + su.script.directory );
+
+  sys.log('\n%USERPROFILE%: ' + su.buildEnvString('%USERPROFILE%'));
+
+  sys.log('\nNet: ');
+  sys.log(' > Domain: ' + su.net.domain);
+  sys.log(' > User: ' + su.net.user);
+  sys.log(' > Computer: ' + su.net.computer);
+  sys.log(' > Drives: ' + (su.net.drives.length > 0 ? '' : '[no drives mapped]'));
+  for(var d in su.net.drives){
+    var _drive = su.net.drives[d];
+    sys.log('   - Drive: ' + _drive.drive + ', Path: ' + _drive.path);
   }
+  sys.log(' > Printers: ' + (su.net.printers.length > 0 ? '' : '[no printers mapped]'));
+  for(var p in su.net.printers){
+    var _printer = su.net.printers[p];
+    sys.log('   - Id: ' + _printer.id + ', Name: ' + _printer.name);
+  }
+
+  sys.log('\nEnvironment:');
+  sys.log(' > Process.MYVAR: ' + su.getEnvironment('MYVAR', su.CONST.ENVTYPE_PROCESS));
+  sys.log(' > User.MYVAR: ' + su.getEnvironment('MYVAR', su.CONST.ENVTYPE_USER));
+  sys.log(' > System.MYVAR: ' + su.getEnvironment('MYVAR', su.CONST.ENVTYPE_SYSTEM));
+  sys.log(' > MYVAR: ' + su.getEnvironment('MYVAR'));
 });
+
+/*
+                         +-------------+
+                         | sysutils.js | <--+
+                         +-------------+    |
+                                            |
+                         +------------+     |
+                         | fsutils.js | <---|
++--------+               +------------+     |
+| e5r.js |                     ^            |
++--------+                     |            |
+                         +-------------+    |
+                         | pkgutils.js |    |
+                         +-------------+    |
+                                            |
+                         +-------------+    |
+                         | webutils.js | ---+
+                         +-------------+
+*/
