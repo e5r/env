@@ -3,9 +3,8 @@
 
 // NOTE: Based on https://github.com/hakobera/nvmw/blob/master/fget.js
 //       and https://gist.github.com/udawtr/2053179
-
-(function(){
-  var fs = require('fsutils.js');
+(function(){ 'use strict'
+  var fs = sys.require('fsutils.js');
 
   /**
    * Get a Web file.
@@ -23,46 +22,45 @@
         _stream = new ActiveXObject("ADODB.Stream")
         _completed = false,
         _error = false;
-
     _http.onreadystatechange = function() {
-      if (_http.readyState === 4) {
-        if (_http.status === 200) {
-          _stream.type = 1;
-          _stream.open();
-          _stream.write(_http.responseBody);
-
-          //...here
-
-          _stream.savetofile(_filePath, 2);
-        } else {
-          _error = true;
-          cbkError(new Error(_http.status + ' ' + _http.statusText));
+      try{
+        if(_http.readyState === 4){
+          if(_http.status === 200){
+            _stream.type = 1;
+            _stream.open();
+            if(_http.responseText){
+              _stream.write(_http.responseBody);
+            }
+            if(!fs.directoryExists(_directoryPath)){
+              fs.createDirectory(_directoryPath);
+            }
+            _stream.savetofile(_filePath, 2);
+          }else{
+            _error = true;
+            cbkError(new Error(_http.status + ' ' + _http.statusText));
+          }
+          _completed = true;
         }
+      }catch(error){
+        _error = true;
         _completed = true;
-        _http = null;
-        _stream = null;
+        cbkError(error);
       }
     }
     try {
-      if(!fs.directoryExists(_directoryPath)){
-        log('Diretorio [' + _directoryPath + '] nao existe!');
-        fs.createDirectory(_directoryPath);
-      }
-
-
-      return true;
-
       _http.open('GET', url, true);
       _http.send(null);
-    } catch (error) {
+    }catch(error){
       _error = true;
       _completed = true;
       _http.abort();
       cbkError(error);
     }
-    while (!_completed) {
+    while(!_completed){
       WScript.Sleep(1000);
     }
+    _http = null;
+    _stream = null;
     return !_error;
   }
 

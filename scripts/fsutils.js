@@ -1,7 +1,7 @@
 // Copyright (c) E5R Development Team. All rights reserved.
 // Licensed under the MIT License. See LICENSE file for license information.
 
-(function(){
+(function(){ 'use strict'
   var _fso = new ActiveXObject("Scripting.FileSystemObject"),
       _consts = {
         // SpecialFolder Bit's
@@ -70,11 +70,9 @@
   function _createDirectory(path){
     var _path = _absolutePath(path),
         _parent = _getDirectoryPath(_path);
-
-    log("-------------->s\n   ", _path, '\n   ', _parent);
-
-    if(_parent) _createDirectory(_parent);
-
+    if(_parent && !_directoryExists(_parent)){
+      _createDirectory(_parent);
+    }
     if(!_directoryExists(_path)){
       _fso.CreateFolder(_path);
     }
