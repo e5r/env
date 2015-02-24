@@ -43,14 +43,29 @@
         })()
       };
 
+  /**
+   * Get a maker for environment variables of process data
+   *
+   * @return function
+   */
   function _getterProcessEnv(){
     return _shell.Environment(_consts.ENVTYPE_PROCESS);
   }
 
+  /**
+   * Get a maker for environment variables of user data
+   *
+   * @return function
+   */
   function _getterUserEnvironment(){
     return _shell.Environment(_consts.ENVTYPE_USER);
   }
 
+  /**
+   * Get a maker for environment variables of system data
+   *
+   * @return function
+   */
   function _getterSystemEnvironment(){
     return _shell.Environment(_consts.ENVTYPE_SYSTEM);
   }

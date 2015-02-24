@@ -1,8 +1,6 @@
 // Copyright (c) E5R Development Team. All rights reserved.
 // Licensed under the MIT License. See LICENSE file for license information.
 
-// NOTE: Based on https://github.com/hakobera/nvmw/blob/master/fget.js
-//       and https://gist.github.com/udawtr/2053179
 (function(){ 'use strict'
   var fs = sys.require('fsutils.js'),
       su = sys.require('sysutils.js');

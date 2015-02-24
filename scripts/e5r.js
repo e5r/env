@@ -5,36 +5,33 @@
   // DOC: https://technet.microsoft.com/pt-br/library/ff920171(v=ws.10).aspx
   if(typeof WScript != 'object') throw new Error('WSH not detected!');
 
-  var sys = {
-    include: function(filePath){
-      var content = (new ActiveXObject("Scripting.FileSystemObject"))
-        .OpenTextFile(filePath, 1)
-        .ReadAll();
-      eval(content);
-    },
-    require: function(filePath){
-      var module = {},
-          content = (new ActiveXObject("Scripting.FileSystemObject"))
-            .OpenTextFile(filePath, 1)
-            .ReadAll();
-      eval(content);
-      return module.exports;
-    },
-    log: function(){
-      var msg = '';
-      for(var arg = 0; arg < arguments.length; arg++){
-        msg += msg.length > 0 ? ' ' : '';
-        msg += arguments[arg];
-      }
-      WScript.Echo(msg);
-    }
-  };
-  sys.console = {
-    log: sys.log
+  var _fso = new ActiveXObject("Scripting.FileSystemObject"),
+      _sys = {
+        include: function(filePath){
+          var content = _fso.OpenTextFile(filePath, 1).ReadAll();
+          eval(content);
+        },
+        require: function(filePath){
+          var module = {},
+              content = _fso.OpenTextFile(filePath, 1).ReadAll();
+          eval(content);
+          return module.exports;
+        },
+        log: function(){
+          var msg = '';
+          for(var arg = 0; arg < arguments.length; arg++){
+            msg += msg.length > 0 ? ' ' : '';
+            msg += arguments[arg];
+          }
+          WScript.Echo(msg);
+        }
+      };
+  _sys.console = {
+    log: _sys.log
   };
 
   if(typeof main == 'function'){
-    main(sys, WScript.Arguments);
+    main(_sys, WScript.Arguments);
   }
 })(function(sys, args){
   var su = sys.require('sysutils.js');
@@ -70,22 +67,3 @@
   sys.log(' > System.MYVAR: ' + su.getEnvironment('MYVAR', su.CONST.ENVTYPE_SYSTEM));
   sys.log(' > MYVAR: ' + su.getEnvironment('MYVAR'));
 });
-
-/*
-                         +-------------+
-                         | sysutils.js | <--+
-                         +-------------+    |
-                                            |
-                         +------------+     |
-                         | fsutils.js | <---|
-+--------+               +------------+     |
-| e5r.js |                     ^            |
-+--------+                     |            |
-                         +-------------+    |
-                         | pkgutils.js |    |
-                         +-------------+    |
-                                            |
-                         +-------------+    |
-                         | webutils.js | ---+
-                         +-------------+
-*/
