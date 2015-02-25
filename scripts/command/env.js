@@ -16,7 +16,6 @@
    * Return a name of Help file
    */
   function _getHelpFile(args){
-    sys.log('[env.js]._getHelpFile() called');
     return 'cmd.env.help';
   }
 

@@ -48,7 +48,7 @@
       },
       _sys = {
         product: _productInfo,
-        include: function(filePath){
+        include: function(fileName){
           var _filePath = _productInfo.meta.libPath + '\\' + fileName,
               content = _fso.OpenTextFile(_filePath, 1).ReadAll(),
               sys = _sys;
@@ -102,6 +102,7 @@
     main(_sys, _args);
   }
 })(function(sys, args){
+  sys.include('json2.js');
   var fs = sys.require('fsutils.js'),
       web = sys.require('webutils.js'),
       plugin = sys.require('cmdutils.js'),
@@ -132,7 +133,7 @@
   }
 
   // Command run
-  sys.logTask('e5r [' + _cmd + '] run');
+  _cmdRun(_cmd, _cmdArgs);
 
   /**
    * Prepare requirements
@@ -185,7 +186,6 @@
    * Call command help action
    */
   function _cmdHelp(cmd, cmdArgs){
-    // TODO: Obter o nome do arquivo de ajuda da api do comando
     var _cmdApi = plugin.getCmd(cmd);
     if(!_cmdApi){
       sys.logTask('Command ', cmd, 'not found!');
@@ -205,6 +205,39 @@
     }
   }
 
+  /**
+   * Run the command
+   */
+  function _cmdRun(cmd, cmdArgs){
+    sys.logTask('e5r [' + cmd + '] run');
+    sys.logSubTask(cmdArgs);
+
+    var _cmdApi = plugin.getCmd(cmd),
+        _runnerEnv = {
+          helpers: {
+            getWebFile: _get,
+            showCmdHelp: _cmdHelp,
+            JSON: JSON
+          },
+          meta: {
+            cmd: _cmd,
+            subCmd: _subCmd,
+            cmdPathBase: _cmdPathBase,
+            cmdFilePath: fs.combine(_cmdPathBase, '{c}.js'.replace('{c}', cmd)),
+            helpPathBase: _helpPathBase
+          }
+        };
+    if(!_cmdApi){
+      sys.logTask('Command ', cmd, 'not found!');
+      return;
+    }
+    if(plugin.checkApi(_cmdApi) && _cmdApi.setup(_runnerEnv))
+      _cmdApi.run(cmdArgs);
+  }
+
+  /**
+   * Get a web file
+   */
   function _get(name, url, path){
     var _url = sys.product.meta.makeUrl(url.replace('{name}', name)),
         _path = sys.product.meta.makePath(path.replace('{name}', name));

@@ -48,7 +48,7 @@
       },
       _sys = {
         product: _productInfo,
-        include: function(filePath){
+        include: function(fileName){
           var _filePath = _productInfo.meta.libPath + '\\' + fileName,
               content = _fso.OpenTextFile(_filePath, 1).ReadAll(),
               sys = _sys;
