@@ -1,9 +1,9 @@
 @echo off
 
-set PSSCRIPT=%~dpn0.ps1
-set POSTFILE=%USERPROFILE%\.e5r\postfile.cmd
+set RUNNER=%~dp0..\lib\cmdrunner.js
+set POSTFILE=%~dp0..\postfile.cmd
 
-@PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -File "%PSSCRIPT%" %*
+@cscript "%RUNNER%" //nologo //h:cscript //u %*
 
 if exist %POSTFILE% (
     call %POSTFILE%
