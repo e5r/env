@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file for license information.
 
 (function(main){ 'use strict'
-  // DOC: https://technet.microsoft.com/pt-br/library/ff920171(v=ws.10).aspx
+  // DOC: https://msdn.microsoft.com/pt-br/library/9bbdkx3k.aspx
   if(typeof WScript != 'object') throw new Error('WSH not detected!');
 
   var _fso = new ActiveXObject("Scripting.FileSystemObject"),
@@ -80,13 +80,13 @@
         },
         logSubTask: function(){
           _sys.logSubTask.print = function(msg){
-            WScript.Echo('     >', msg);
+            WScript.Echo('     *', msg);
           }
           _sys.log.apply(_sys.logSubTask, arguments);
         },
         logAction: function(){
           _sys.logAction.print = function(msg){
-            WScript.Echo('      ', msg);
+            WScript.Echo('       >', msg);
           }
           _sys.log.apply(_sys.logAction, arguments);
         }
