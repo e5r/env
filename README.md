@@ -9,11 +9,11 @@ E5R Environment
 
 ## Instalação
 
-1. __Windows__: Execute o comando abaixo em um prompt:
+* __Windows__: Execute o comando abaixo em um prompt:
 ```cmd
-bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.cmd" "%CD%\e5r-install.cmd" && e5r-install.cmd && del e5r-install.cmd
+bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.cmd" "%CD%\e5r-install.cmd" && "%CD%\e5r-install.cmd" && del "%CD%\e5r-install.cmd"
 ```
-2. ~~Unix like~~: (em breve).
+* ~~Unix like~~: (em breve).
 
 PRONTO! Você já pode começar a usar a ferramenta.
 
