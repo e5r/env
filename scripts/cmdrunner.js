@@ -187,9 +187,17 @@
   function _cmdHelp(cmd, cmdArgs){
     // TODO: Obter o nome do arquivo de ajuda da api do comando
     var _cmdApi = plugin.getCmd(cmd);
-    sys.log('API for <' + cmd + '>:')
-    for(var p in _cmdApi){
-      sys.log('-', p, _cmdApi[p]);
+    if(plugin.checkApi(_cmdApi)){
+      var _helpFile = _cmdApi.getHelpFile(),
+          _helpFilePath = fs.combine(_helpPathBase,_helpFile);
+      _get(_helpFile, 'resources/help/{name}', 'help/{name}');
+      if(!fs.fileExists(_helpFilePath)){
+        sys.logTask(_helpFile, 'not found!');
+        return;
+      }
+      var _helpContent = fs.getTextFileContent(_helpFilePath);
+      _printHeader();
+      sys.log(_helpContent);
     }
   }
 
