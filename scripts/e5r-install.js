@@ -105,8 +105,8 @@
       web = sys.require('webutils.js'),
       hasError = false;
 
-  sys.log(sys.product.name, 'v' + sys.product.version.toString());
-  sys.log(sys.product.meta.copyright);
+  sys.logTask('Installing ', sys.product.name, 'v' + sys.product.version.toString());
+  sys.logAction(sys.product.meta.copyright);
 
   function _downloadFile(name, url, path, force){
     var _url = sys.product.meta.makeUrl(url.replace('{name}', name)),
@@ -128,6 +128,10 @@
   _downloadFile('fsutils.js', 'scripts/{name}', 'lib/{name}', false);
   _downloadFile('pkgutils.js', 'scripts/{name}', 'lib/{name}', true);
   _downloadFile('webutils.js', 'scripts/{name}', 'lib/{name}', false);
+
+  // TODO: Add path to PATH User Environment
+
+  // TODO: Add path to PATH Process Environment
 
   if(hasError){
     sys.logTask('Errors occurred during installation');
