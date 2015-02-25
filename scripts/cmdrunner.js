@@ -178,7 +178,7 @@
     }
     var _helpContent = fs.getTextFileContent(_helpFilePath);
     _printHeader();
-    sys.log(_helpContent.join('\n'));
+    sys.log(_helpContent);
   }
 
   /**
