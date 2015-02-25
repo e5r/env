@@ -187,6 +187,10 @@
   function _cmdHelp(cmd, cmdArgs){
     // TODO: Obter o nome do arquivo de ajuda da api do comando
     var _cmdApi = plugin.getCmd(cmd);
+    if(!_cmdApi){
+      sys.logTask('Command ', cmd, 'not found!');
+      return;
+    }
     if(plugin.checkApi(_cmdApi)){
       var _helpFile = _cmdApi.getHelpFile(),
           _helpFilePath = fs.combine(_helpPathBase,_helpFile);
