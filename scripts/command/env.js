@@ -8,8 +8,9 @@
    * Set environmente configuration
    */
   function _setup(env){
-    sys.log('[env.js]._setup() called');
     _env = env;
+    sys.log('[env.js]._setup() called');
+    return true;
   }
 
   /**
@@ -24,6 +25,10 @@
    */
   function _run(args){
     sys.log('[env.js]._run() called');
+    sys.logTask('Environment information:');
+    sys.log(_env.helpers.JSON.stringify(_env, null, 4));
+    sys.logTask('Product information:');
+    sys.log(_env.helpers.JSON.stringify(sys.product, null, 4));
   }
 
   command.api = {

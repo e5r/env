@@ -209,9 +209,6 @@
    * Run the command
    */
   function _cmdRun(cmd, cmdArgs){
-    sys.logTask('e5r [' + cmd + '] run');
-    sys.logSubTask(cmdArgs);
-
     var _cmdApi = plugin.getCmd(cmd),
         _runnerEnv = {
           helpers: {
