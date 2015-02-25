@@ -100,36 +100,82 @@
     main(_sys, _args);
   }
 })(function(sys, args){
-  var su = sys.require('sysutils.js');
+  var fs = sys.require('fsutils.js'),
+      web = sys.require('webutils.js'),
+      _cmd = (args[0]||'').toLowerCase(),
+      _subCmd = (args[1]||'').toLowerCase(),
+      _cmdArgs = args.concat(),
+      _cmdPathBase = fs.combine(sys.product.meta.installPath, 'command'),
+      _helpPathBase = fs.combine(sys.product.meta.installPath, 'help');
 
-  sys.log('Host: ' + su.host.name + ' v' + su.host.version + '(' + su.host.build + ')');
-  sys.log(' > ExecPath: ' + su.host.execPath);
-  sys.log(' > ExecDirectory: ' + su.host.execDirectory);
+  _bootstrap();
 
-  sys.log('\nScript: ' + su.script.name);
-  sys.log(' > File: ' + su.script.file );
-  sys.log(' > Directory: ' + su.script.directory );
-
-  sys.log('\n%USERPROFILE%: ' + su.buildEnvString('%USERPROFILE%'));
-
-  sys.log('\nNet: ');
-  sys.log(' > Domain: ' + su.net.domain);
-  sys.log(' > User: ' + su.net.user);
-  sys.log(' > Computer: ' + su.net.computer);
-  sys.log(' > Drives: ' + (su.net.drives.length > 0 ? '' : '[no drives mapped]'));
-  for(var d in su.net.drives){
-    var _drive = su.net.drives[d];
-    sys.log('   - Drive: ' + _drive.drive + ', Path: ' + _drive.path);
-  }
-  sys.log(' > Printers: ' + (su.net.printers.length > 0 ? '' : '[no printers mapped]'));
-  for(var p in su.net.printers){
-    var _printer = su.net.printers[p];
-    sys.log('   - Id: ' + _printer.id + ', Name: ' + _printer.name);
+  // Main usage
+  if(!_cmd){
+    _mainUsage();
+    return;
   }
 
-  sys.log('\nEnvironment:');
-  sys.log(' > Process.MYVAR: ' + su.getEnvironment('MYVAR', su.CONST.ENVTYPE_PROCESS));
-  sys.log(' > User.MYVAR: ' + su.getEnvironment('MYVAR', su.CONST.ENVTYPE_USER));
-  sys.log(' > System.MYVAR: ' + su.getEnvironment('MYVAR', su.CONST.ENVTYPE_SYSTEM));
-  sys.log(' > MYVAR: ' + su.getEnvironment('MYVAR'));
+  // Main help
+  if(_cmd == 'help' && !_subCmd){
+    _mainHelp();
+    return;
+  }
+
+  // Command help
+  if(_cmd == 'help' && _subCmd){
+    _cmdHelp(_subCmd, _cmdArgs);
+    return;
+  }
+
+  // Command run
+  sys.logTask('e5r [' + _cmd + '] run');
+
+  /**
+   * Prepare requirements
+   */
+  function _bootstrap(){
+    _cmdArgs.splice(0, _cmd == 'help' ? 2 : 1);
+    if(!fs.directoryExists(_cmdPathBase)){
+      fs.createDirectory(_cmdPathBase);
+    }
+    if(!fs.directoryExists(_helpPathBase)){
+      fs.createDirectory(_helpPathBase);
+    }
+  }
+
+  /**
+   * Print main usage message
+   */
+  function _mainUsage(){
+    sys.logTask('e5r usage');
+  }
+
+  /**
+   * Print main help
+   */
+  function _mainHelp(){
+    var _helpFile = 'e5r.help';
+    _get(_helpFile, 'resources/help/{name}', 'help/{name}');
+    if(!fs.fileExists(fs.combine(_helpPathBase,_helpFile))){
+      sys.logTask(_helpFile, 'not found!');
+    }
+  }
+
+  /**
+   * Call command help action
+   */
+  function _cmdHelp(cmd, cmdArgs){
+    sys.logTask('e5r help [' + cmd + ']');
+  }
+
+  function _get(name, url, path){
+    var _url = sys.product.meta.makeUrl(url.replace('{name}', name)),
+        _path = sys.product.meta.makePath(path.replace('{name}', name));
+    if(!fs.fileExists(_path)){
+      web.download(_url, _path, function(error){
+        sys.log('#' + error.name + ':', error.message, 'on get resource', name);
+      })
+    }
+  }
 });
