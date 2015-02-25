@@ -120,6 +120,21 @@
     return _fso.GetParentFolderName(_path);
   }
 
+  /**
+   * Create a new Text file
+   *
+   * @param {string}  path      Path to file
+   * @param {bool}    overwrite If can overwrite an existing file
+   * @param {bool}    unicode   If file is created as a Unicode or ASCII
+   *
+   * @return TextStream object
+   */
+  function _createTextFile(path, overwrite, unicode, unicode){
+    overwrite = overwrite || false;
+    unicode = unicode || false;
+    return _fso.CreateTextFile(path, overwrite, unicode);
+  }
+
   module.exports = {
     CONST: _consts,
     fileExists: _fileExists,
@@ -129,6 +144,7 @@
     getSpecialDirectory: _getSpecialDirectory,
     getTempFileName: _getTempFileName,
     combine: _combinePath,
-    getDirectoryPath: _getDirectoryPath
+    getDirectoryPath: _getDirectoryPath,
+    createTextFile: _createTextFile
   }
 })();
