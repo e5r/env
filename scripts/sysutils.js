@@ -111,6 +111,29 @@
     return _getEnv(varName);
   }
 
+  /**
+   * Set a environment variable value.
+   *
+   * @param {string}  varName   Name of environment variable
+   * @param {string}  varValue  Value os environment variable
+   * @param {ENVTYPE} envType   Type of environment
+   *
+   * @return Value os variable or empty string if not found.
+   */
+  function _setEnvironment(varName, varValue, envType){
+    var _getEnv,
+        envType = envType || _consts.ENVTYPE_PROCESS;
+    if(envType == _consts.ENVTYPE_SYSTEM){
+      _getEnv = _getterSystemEnvironment();
+    }else if(envType == _consts.ENVTYPE_USER){
+      _getEnv = _getterUserEnvironment();
+    }else{
+      _getEnv = _getterProcessEnv();
+    }
+    _getEnv(varName) = varValue;
+    return _getEnv(varName);
+  }
+
   module.exports = {
     CONST: _consts,
     stdErr: WScript.StdErr,
@@ -123,6 +146,7 @@
 
     sleep: _sleep,
     buildEnvString: _buildEnvirementString,
-    getEnvironment: _getEnvironment
+    getEnvironment: _getEnvironment,
+    setEnvironment: _setEnvironment
   }
 })();
