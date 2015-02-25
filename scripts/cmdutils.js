@@ -16,7 +16,7 @@
       })
     }
     if(fs.fileExists(_path)){
-      content = _fso.OpenTextFile(_filePath, 1).ReadAll();
+      content = _fso.OpenTextFile(_path, 1).ReadAll();
       eval(content);
     }
     return command.api;
