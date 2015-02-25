@@ -124,7 +124,7 @@
               <p>~shell</p>
           </div>
           <div class="e5r-window-content">
-            <div class="e5r-window-code">bitsadmin /TRANSFER "Installing E5R Env..." "http://e5r.github.io/env/dist/e5r-install.cmd" "%CD%\e5r-install.cmd" &amp;&amp; e5r-install.cmd</div>
+            <div class="e5r-window-code">bitsadmin /TRANSFER "Installing E5R Env..." "http://e5r.github.io/env/dist/e5r-install.cmd" "%CD%\e5r-install.cmd" &amp;&amp; "e5r-install.cmd" &amp;&amp; del "e5r-install.cmd"</div>
           </div>
         </div>
       </div>
@@ -156,7 +156,7 @@
     </div>
   </footer>
 
-  
+
   <!-- Startup scripts -->
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
   <script>
