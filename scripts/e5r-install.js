@@ -112,15 +112,15 @@
     var _url = sys.product.meta.makeUrl(url.replace('{name}', name)),
         _path = sys.product.meta.makePath(path.replace('{name}', name));
     if(force || !fs.fileExists(_path)){
-      sys.logSubTask('Acquiring ' + name + '...');
+      sys.logAction(name);
       return web.download(_url, _path, function(error){
         hasError = true;
-        sys.logAction('#' + error.name + ':', error.message);
+        sys.logAction('#' + error.name + ':', error.message, 'on acquiring', name);
       })
     }
   }
 
-  sys.logTask('Installing dependencies');
+  sys.logSubTask('Acquiring dependencies');
 
   _downloadFile('e5r.cmd', 'scripts/{name}', 'bin/{name}', true);
   _downloadFile('cmdrunner.js', 'scripts/{name}', 'lib/{name}', true);
