@@ -23,6 +23,6 @@
   }
 
   module.exports = {
-    getCommand: _getCmd
+    getCmd: _getCmd
   }
 })();
