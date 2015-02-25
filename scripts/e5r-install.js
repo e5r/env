@@ -3,6 +3,8 @@
 
 (function(main){ 'use strict'
   // DOC: https://msdn.microsoft.com/pt-br/library/9bbdkx3k.aspx
+  //      https://msdn.microsoft.com/en-us/library/hbxc2t98(v=vs.84).aspx
+  //      https://msdn.microsoft.com/en-us/library/bstcxhf7(v=vs.84).aspx
   if(typeof WScript != 'object') throw new Error('WSH not detected!');
 
   var _fso = new ActiveXObject("Scripting.FileSystemObject"),
