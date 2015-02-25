@@ -148,6 +148,12 @@
     }
   });
 
+  tasks.add('Acquiring dependencies', function(next){
+    if(_get('cmdutils.js', 'scripts/{name}', 'lib/{name}')){
+      next();
+    }
+  });
+
   tasks.add('Updating environment variable PATH', function(next){
     sys.logAction('Cleaning previous installations...');
     var _userPath = (su.getEnvironment('PATH', su.CONST.ENVTYPE_USER) || '').split(';'),

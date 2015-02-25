@@ -3,6 +3,8 @@
 
 (function(main){ 'use strict'
   // DOC: https://msdn.microsoft.com/pt-br/library/9bbdkx3k.aspx
+  //      https://msdn.microsoft.com/en-us/library/hbxc2t98(v=vs.84).aspx
+  //      https://msdn.microsoft.com/en-us/library/bstcxhf7(v=vs.84).aspx
   if(typeof WScript != 'object') throw new Error('WSH not detected!');
 
   var _fso = new ActiveXObject("Scripting.FileSystemObject"),
@@ -102,6 +104,7 @@
 })(function(sys, args){
   var fs = sys.require('fsutils.js'),
       web = sys.require('webutils.js'),
+      plugin = sys.require('cmdutils.js'),
       _cmd = (args[0]||'').toLowerCase(),
       _subCmd = (args[1]||'').toLowerCase(),
       _cmdArgs = args.concat(),
@@ -145,28 +148,49 @@
   }
 
   /**
+   * Print a program header message
+   */
+  function _printHeader(){
+    sys.log(sys.product.name, 'v' + sys.product.version.toString());
+    sys.log(sys.product.meta.copyright);
+    sys.log();
+  }
+
+  /**
    * Print main usage message
    */
   function _mainUsage(){
-    sys.logTask('e5r usage');
+    _printHeader();
+    sys.log('Usage: e5r <command> [options...]');
+    sys.log('       Try \'e5r help\' or \'e5r help <command>\' for more information');
   }
 
   /**
    * Print main help
    */
   function _mainHelp(){
-    var _helpFile = 'e5r.help';
+    var _helpFile = 'e5r.help',
+        _helpFilePath = fs.combine(_helpPathBase,_helpFile);
     _get(_helpFile, 'resources/help/{name}', 'help/{name}');
-    if(!fs.fileExists(fs.combine(_helpPathBase,_helpFile))){
+    if(!fs.fileExists(_helpFilePath)){
       sys.logTask(_helpFile, 'not found!');
+      return;
     }
+    var _helpContent = fs.getTextFileContent(_helpFilePath);
+    _printHeader();
+    sys.log(_helpContent.join('\n'));
   }
 
   /**
    * Call command help action
    */
   function _cmdHelp(cmd, cmdArgs){
-    sys.logTask('e5r help [' + cmd + ']');
+    // TODO: Obter o nome do arquivo de ajuda da api do comando
+    var _cmdApi = plugin.getCmd(cmd);
+    sys.log('API for <' + cmd + '>:')
+    for(var p in _cmdApi){
+      sys.log('-', p, _cmdApi[p]);
+    }
   }
 
   function _get(name, url, path){

@@ -132,7 +132,18 @@
   function _createTextFile(path, overwrite, unicode, unicode){
     overwrite = overwrite || false;
     unicode = unicode || false;
-    return _fso.CreateTextFile(path, overwrite, unicode);
+    return _fso.CreateTextFile(_absolutePath(path), overwrite, unicode);
+  }
+
+  /**
+   * Read content of text file
+   *
+   * @param {string} path   Path to file
+   *
+   * @return Array with lines of content file
+   */
+  function _getTextFileContent(path){
+    return _fso.OpenTextFile(_absolutePath(path), 1).ReadAll();
   }
 
   module.exports = {
@@ -145,6 +156,7 @@
     getTempFileName: _getTempFileName,
     combine: _combinePath,
     getDirectoryPath: _getDirectoryPath,
-    createTextFile: _createTextFile
+    createTextFile: _createTextFile,
+    getTextFileContent:_getTextFileContent
   }
 })();
