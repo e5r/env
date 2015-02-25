@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE file for license information.
 
 (function(main){ 'use strict'
-  // DOC: https://technet.microsoft.com/pt-br/library/ff920171(v=ws.10).aspx
+  // DOC: https://msdn.microsoft.com/pt-br/library/9bbdkx3k.aspx
   if(typeof WScript != 'object') throw new Error('WSH not detected!');
 
   var _fso = new ActiveXObject("Scripting.FileSystemObject"),
@@ -80,13 +80,13 @@
         },
         logSubTask: function(){
           _sys.logSubTask.print = function(msg){
-            WScript.Echo('     >', msg);
+            WScript.Echo('     *', msg);
           }
           _sys.log.apply(_sys.logSubTask, arguments);
         },
         logAction: function(){
           _sys.logAction.print = function(msg){
-            WScript.Echo('      ', msg);
+            WScript.Echo('       >', msg);
           }
           _sys.log.apply(_sys.logAction, arguments);
         }
@@ -103,36 +103,111 @@
   var su = sys.require('sysutils.js'),
       fs = sys.require('fsutils.js'),
       web = sys.require('webutils.js'),
-      hasError = false;
+      hasError = false,
+      postFilePath = sys.product.meta.makePath('postfile.cmd'),
+      tasks = {
+        stack: [],
+        add: function(c,f){
+          tasks.stack.push({category:c,func:f});
+        },
+        run:function(){
+          if(tasks.stack.length < 1) return;
+          var _running = 0,
+              _category = tasks.stack[_running].category,
+              _next = function(){
+                if(++_running > tasks.stack.length - 1) return;
+                var _task = tasks.stack[_running];
+                if(_category != _task.category){
+                  _category = _task.category;
+                  sys.log();
+                  sys.logSubTask(_category);
+                }
+                _task.func(_next);
+              };
+          sys.log();
+          sys.logSubTask(_category);
+          tasks.stack[_running].func(_next);
+        }
+      };
 
-  sys.logTask('Installing ', sys.product.name, 'v' + sys.product.version.toString());
-  sys.logAction(sys.product.meta.copyright);
+  tasks.add('Acquiring dependencies', function(next){
+    if(_get('e5r.cmd', 'scripts/{name}', 'bin/{name}')){
+      next();
+    }
+  });
 
-  function _downloadFile(name, url, path, force){
+  tasks.add('Acquiring dependencies', function(next){
+    if(_get('cmdrunner.js', 'scripts/{name}', 'lib/{name}')){
+      next();
+    }
+  });
+
+  tasks.add('Acquiring dependencies', function(next){
+    if(_get('pkgutils.js', 'scripts/{name}', 'lib/{name}')){
+      next();
+    }
+  });
+
+  tasks.add('Updating environment variable PATH', function(next){
+    sys.logAction('Cleaning previous installations...');
+    var _userPath = (su.getEnvironment('PATH', su.CONST.ENVTYPE_USER) || '').split(';'),
+        _processPath = (su.getEnvironment('PATH', su.CONST.ENVTYPE_PROCESS) || '').split(';')
+        _userNewPath = '',
+        _procesNewPath = '';
+    for(var p in _userPath){
+      var _v = _userPath[p];
+      if(_v.indexOf(sys.product.meta.installPath) == 0) continue;
+      _userNewPath += _userNewPath.length > 0 ? ';' : '';
+      _userNewPath += _v;
+    }
+    for(var p in _processPath){
+      var _v = _processPath[p];
+      if(_v.indexOf(sys.product.meta.installPath) == 0) continue;
+      _procesNewPath += _procesNewPath.length > 0 ? ';' : '';
+      _procesNewPath += _v;
+    }
+    su.setEnvironment('PATH', _userNewPath, su.CONST.ENVTYPE_USER);
+    su.setEnvironment('PATH', _procesNewPath, su.CONST.ENVTYPE_PROCESS);
+
+    next();
+  });
+
+  tasks.add('Updating environment variable PATH', function(next){
+    var _userPath = su.getEnvironment('PATH', su.CONST.ENVTYPE_USER) || '',
+        _processPath = su.getEnvironment('PATH', su.CONST.ENVTYPE_PROCESS) || '';
+    _userPath += (_userPath.length > 0 ? ';' : '') + sys.product.meta.binPath;
+    _processPath += (_processPath.length > 0 ? ';' : '') + sys.product.meta.binPath;
+
+    sys.logAction('Adding [' + sys.product.meta.binPath + '] to user PATH...');
+    su.setEnvironment('PATH', _userPath, su.CONST.ENVTYPE_USER);
+
+    sys.logAction('Adding [' + sys.product.meta.binPath + '] to process PATH...');
+    su.setEnvironment('PATH', _processPath, su.CONST.ENVTYPE_PROCESS);
+
+    var _postFile = fs.createTextFile(postFilePath);
+    _postFile.WriteLine('set PATH={V}'.replace('{V}', _processPath));
+    _postFile.Close();
+
+    next();
+  });
+
+  function _get(name, url, path){
     var _url = sys.product.meta.makeUrl(url.replace('{name}', name)),
         _path = sys.product.meta.makePath(path.replace('{name}', name));
-    if(force || !fs.fileExists(_path)){
+    if(!fs.fileExists(_path)){
       sys.logAction(name);
       return web.download(_url, _path, function(error){
         hasError = true;
         sys.logAction('#' + error.name + ':', error.message, 'on acquiring', name);
       })
     }
+    return true;
   }
 
-  sys.log();
-  sys.logSubTask('Acquiring dependencies');
+  sys.logTask('Installing ', sys.product.name, 'v' + sys.product.version.toString());
+  sys.logAction(sys.product.meta.copyright);
 
-  _downloadFile('e5r.cmd', 'scripts/{name}', 'bin/{name}', true);
-  _downloadFile('cmdrunner.js', 'scripts/{name}', 'lib/{name}', true);
-  _downloadFile('sysutils.js', 'scripts/{name}', 'lib/{name}', false);
-  _downloadFile('fsutils.js', 'scripts/{name}', 'lib/{name}', false);
-  _downloadFile('pkgutils.js', 'scripts/{name}', 'lib/{name}', true);
-  _downloadFile('webutils.js', 'scripts/{name}', 'lib/{name}', false);
-
-  // TODO: Add path to PATH User Environment
-
-  // TODO: Add path to PATH Process Environment
+  tasks.run();
 
   sys.log();
   if(hasError){
@@ -140,6 +215,6 @@
     sys.logAction('look for technical support!');
   }else{
     sys.logSubTask('E5R Environment successfully installed!');
-    sys.logAction('run the command `e5r help` and know how to use the environment.');
+    sys.logAction('run `e5r help` command to use environmental information.');
   }
 });
