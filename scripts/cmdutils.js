@@ -22,7 +22,31 @@
     return command.api;
   }
 
+  /**
+   * Checks the integrity of the plugin api
+   *
+   * @param {object} plugin Object of plugin, returned by _getCmd
+   *
+   * @return TRUE if ok, throw exception if not ok
+   */
+  function _checkApi(plugin){
+    if(typeof plugin != 'object')
+      throw new Error('Plugin must be an object');
+
+    if(typeof plugin.setup != 'function')
+      throw new Error('Plugin does not contain the [Setup] method');
+
+    if(typeof plugin.getHelpFile != 'function')
+      throw new Error('Plugin does not contain the [GetHelpFile] method');
+
+    if(typeof plugin.run != 'function')
+      throw new Error('Plugin does not contain the [Run] method');
+
+    return true;
+  }
+
   module.exports = {
-    getCmd: _getCmd
+    getCmd: _getCmd,
+    checkApi: _checkApi
   }
 })();
