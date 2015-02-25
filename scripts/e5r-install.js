@@ -120,6 +120,7 @@
     }
   }
 
+  sys.log();
   sys.logSubTask('Acquiring dependencies');
 
   _downloadFile('e5r.cmd', 'scripts/{name}', 'bin/{name}', true);
@@ -133,11 +134,12 @@
 
   // TODO: Add path to PATH Process Environment
 
+  sys.log();
   if(hasError){
-    sys.logTask('Errors occurred during installation');
-    sys.logSubTask('look for technical support!');
+    sys.logSubTask('#Errors occurred during installation');
+    sys.logAction('look for technical support!');
   }else{
-    sys.logTask('E5R Environment successfully installed!');
+    sys.logSubTask('E5R Environment successfully installed!');
     sys.logAction('run the command `e5r help` and know how to use the environment.');
   }
 });
