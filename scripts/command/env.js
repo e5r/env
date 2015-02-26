@@ -2,14 +2,18 @@
 // Licensed under the MIT License. See LICENSE file for license information.
 
 (function(){ 'use strict'
-  var _env;
+
+  var su = sys.require('sysutils.js'),
+
+      // Read comment "Runner Plugin Environment API" in <cmdrunner.js> for
+      // more information of environment API
+      _env;
 
   /**
-   * Set environmente configuration
+   * Set environment configuration
    */
   function _setup(env){
     _env = env;
-    sys.log('[env.js]._setup() called');
     return true;
   }
 
@@ -21,14 +25,76 @@
   }
 
   /**
+   * Show usage information message
+   */
+  function _showUsage(){
+    sys.log(sys.product.meta.getHeaderText());
+    sys.log('Usage:', sys.product.cmd, 'env <command> [options...]');
+    sys.log('      ', 'Try \'' + sys.product.cmd, 'help env\' for more information.');
+  }
+
+  /**
    * Run command entry point
    */
   function _run(args){
-    sys.log('[env.js]._run() called');
-    sys.logTask('Environment information:');
-    sys.log(_env.helpers.JSON.stringify(_env, null, 4));
-    sys.logTask('Product information:');
-    sys.log(_env.helpers.JSON.stringify(sys.product, null, 4));
+
+    // Redirect to help action
+    if((args[0]||'') == 'help'){
+      _env.helpers.showCmdHelp(_env.meta.cmd, []);
+      return;
+    }
+
+    var act = su.cmdActions(
+      [
+        'value|workdir|w',
+        'value|tech|t',
+        'value|version|v'
+      ],
+      [
+        // Empty action
+        [function(opt, args){
+          _showUsage();
+        }],
+
+        // Checks and installs the prerequisites for informed
+        // environment
+        ['boot', function(opt, args){
+          sys.logSubTask('BOOT action');
+          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
+          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+        }],
+
+        // Install a specific version of the environment
+        ['install', function(opt, args){
+          sys.logSubTask('INSTALL action');
+          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
+          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+        }],
+
+        // Uninstall a specific version of the environment
+        ['uninstall', function(opt, args){
+          sys.logSubTask('UNINSTALL action');
+          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
+          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+        }],
+
+        // List all installed versions of the environment
+        ['list', function(opt, args){
+          sys.logSubTask('LIST action');
+          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
+          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+        }],
+
+        // Sets a specific version of the environment for use in the
+        // system
+        ['use', function(opt, args){
+          sys.logSubTask('USE action');
+          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
+          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+        }]
+      ]);
+
+    act.run(args);
   }
 
   command.api = {
