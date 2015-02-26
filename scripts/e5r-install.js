@@ -157,7 +157,7 @@
   });
 
   tasks.add('Acquiring dependencies', function(next){
-    if(_get('json2.js', 'scripts/third-party-lib/{name}', 'lib/third-party/{name}')){
+    if(_get('json2.js', 'third-party-lib/{name}', 'lib/third-party/{name}')){
       next();
     }
   });
