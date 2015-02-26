@@ -20,7 +20,7 @@ bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migr
 ```
 #### Prompt de Comando
 
-```ps
+```powershell
 cmd /c 'bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.cmd" "%CD%\e5r-install.cmd" && "%CD%\e5r-install.cmd" && del "%CD%\e5r-install.cmd"'
 ```
 
