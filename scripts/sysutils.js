@@ -21,7 +21,7 @@
       _script = {
         name: WScript.ScriptName,
         file: WScript.ScriptFullName,
-        directory: _shell.CurrentDirectory
+        currentDirectory: _shell.CurrentDirectory
       },
       _net = {
         domain: _network.UserDomain,
