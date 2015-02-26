@@ -44,6 +44,60 @@
       return;
     }
 
+    /**
+     * Creates a new object based on another
+     *
+     * @param {object} object  Object to copy
+     *
+     * @return New Object
+     */
+    function _copyObject(obj){
+      var _obj = {};
+      for(var p in obj) _obj[p] = obj[p];
+      return _obj;
+    }
+
+    /**
+     * Checks and make options data
+     *
+     * @param {object} opt  Original options
+     *
+     * @return Clone of opt with modified data
+     */
+    function _makeOptions(opt){
+      var _opt = _copyObject(opt);
+
+      // 1. Se --workdir não existe, usa o diretório atual
+      if(!_opt.workdir) _opt.workdir = su.script.currentDirectory;
+
+      // 2. Se --workdir inicia com '$', substituir pelo diretório %E5R_HOME% ou %USERPROFILE%
+      if((_opt.workdir||'').length > 0 && (_opt.workdir||'').charAt(0) == '$'){
+        var _home = su.getEnvironment('E5R_HOME', su.CONST.ENVTYPE_PROCESS);
+        if(!_home) _home = sys.product.meta.userPath;
+        _opt.workdir = _opt.workdir.replace('$', _home);
+      }
+
+      // 3. Expandir --workdir
+      if(_opt.workdir) _opt.workdir = fs.absolutePath(su.buildEnvString(_opt.workdir));
+
+      // 4. Se diretório --workdir não existir, Criar
+      if(!fs.directoryExists(_opt.workdir)) fs.createDirectory(_opt.workdir);
+
+      // 5. Se --tech não existe, procura pelo conteúdo do arquivo --workdir/.e5r/tech
+      if(!_opt.tech){
+        var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\tech'));
+        if(fs.fileExists(_file)) _opt.tech = fs.getTextFileContent(_file);
+      }
+
+      // 6. Se --version não existe, procura pelo conteúdo do arquivo --workdir/.e5r/version
+      if(!_opt.version){
+        var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\version'));
+        if(fs.fileExists(_file)) _opt.version = fs.getTextFileContent(_file);
+      }
+
+      return _opt;
+    }
+
     var act = su.cmdActions(
       [
         'value|workdir|w',
@@ -59,9 +113,26 @@
         // Checks and installs the prerequisites for informed
         // environment
         ['boot', function(opt, args){
-          sys.logSubTask('BOOT action');
-          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
-          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+          var _opt = _makeOptions(opt);
+
+          if(!fs.directoryExists(_opt.workdir))
+            throw new Error('Work directory not found! See --workdir param.');
+
+          if(!_opt.tech)
+            throw new Error('Param --tech is required.')
+
+          var _url = 'scripts/tech/{t}/{name}'.replace('{t}', _opt.tech),
+              _path = 'lib\\tech\\{t}\\{name}'.replace('{t}', _opt.tech);
+
+          _env.helpers.getWebFile('boot.js', _url, _path);
+
+          _path = sys.product.meta.makePath(_path.replace('{name}','boot.js'));
+
+          if(!fs.fileExists(fs.absolutePath(_path))){
+            throw new Error('Action [boot] not found! [--tech=' + _opt.tech + ']');
+          }else{
+            sys.logTask('Running', _path, args);
+          }
         }],
 
         // Install a specific version of the environment
