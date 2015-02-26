@@ -156,6 +156,12 @@
     }
   });
 
+  tasks.add('Acquiring dependencies', function(next){
+    if(_get('json2.js', 'scripts/third-party-lib/{name}', 'lib/third-party/{name}')){
+      next();
+    }
+  });
+
   tasks.add('Updating environment variable PATH', function(next){
     sys.logAction('Cleaning previous installations...');
     var _userPath = (su.getEnvironment('PATH', su.CONST.ENVTYPE_USER) || '').split(';'),
@@ -212,17 +218,27 @@
     return true;
   }
 
-  sys.logTask('Installing ', sys.product.name, 'v' + sys.product.version.toString());
-  sys.logAction(sys.product.meta.copyright);
-
-  tasks.run();
-
-  sys.log();
-  if(hasError){
-    sys.logSubTask('#Errors occurred during installation');
-    sys.logAction('look for technical support!');
-  }else{
-    sys.logSubTask('E5R Environment successfully installed!');
-    sys.logAction('run `e5r help` command to use environmental information.');
+  function _bootstrap(runner){
+    var _thirdPartyPath = fs.combine(sys.product.meta.libPath, 'third-party');
+    if(!fs.directoryExists(_thirdPartyPath)){
+      fs.createDirectory(_thirdPartyPath);
+    }
+    if(typeof runner == 'function') runner();
   }
+
+  _bootstrap(function(){
+    sys.logTask('Installing ', sys.product.name, 'v' + sys.product.version.toString());
+    sys.logAction(sys.product.meta.copyright);
+
+    tasks.run();
+
+    sys.log();
+    if(hasError){
+      sys.logSubTask('#Errors occurred during installation');
+      sys.logAction('look for technical support!');
+    }else{
+      sys.logSubTask('E5R Environment successfully installed!');
+      sys.logAction('run `e5r help` command to use environmental information.');
+    }
+  });
 });
