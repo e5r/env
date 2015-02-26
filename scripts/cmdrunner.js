@@ -12,6 +12,7 @@
       _userPath = _shell.Environment('PROCESS')('USERPROFILE'),
       _productInfo = {
         name: 'E5R Environment',
+        cmd: 'e5r',
         version: {
           major: 0,
           minor: 1,
@@ -31,6 +32,10 @@
           binPath: _userPath + '\\.e5r\\bin',
           libPath: _userPath + '\\.e5r\\lib',
           fileRepository: 'https://raw.githubusercontent.com/e5r/env/migrate-to-javascript',
+          copyright: '(C) 2014-2015, E5R Development Team. All rights reserved.',
+          authors: [
+            {name:'Erlimar Silva Campos', email:'erlimar@gmail.com', github:'erlimar'}
+          ],
           makeUrl: function(url){
             if(url.indexOf('/') != 0) url = '/' + url;
             return _productInfo.meta.fileRepository + url;
@@ -40,10 +45,13 @@
             if(path.indexOf('\\') != 0) path = '\\' + path;
             return _productInfo.meta.installPath + path;
           },
-          copyright: '(C) 2014-2015, E5R Development Team. All rights reserved.',
-          authors: [
-            {name:'Erlimar Silva Campos', email:'erlimar@gmail.com', github:'erlimar'}
-          ]
+          getHeaderText: function(){
+            var _h = '';
+            _h += _productInfo.name + ' v' + _productInfo.version.toString();
+            _h += '\n' + _productInfo.meta.copyright;
+            _h += '\n';
+            return _h;
+          }
         }
       },
       _sys = {
@@ -102,7 +110,30 @@
     main(_sys, _args);
   }
 })(function(sys, args){
-  sys.include('json2.js');
+
+  // Runner Plugin Environment API
+  // ---------------------------------------------------------------------------
+  // {
+  //   helpers: {
+  //     getWebFile: function(name, url, path),
+  //     showCmdHelp: function(cmd, cmdArgs),
+  //     JSON: {
+  //       stringify: function(value, replacer, space),
+  //       parse: function(text, reviver)
+  //     }
+  //   },
+  //   meta: {
+  //     cmd: string,
+  //     subCmd: string,
+  //     cmdPathBase: string,
+  //     cmdFilePath: string,
+  //     helpPathBase: string
+  //   }
+  // }
+  // ---------------------------------------------------------------------------
+
+  sys.include('third-party/json2.js');
+
   var fs = sys.require('fsutils.js'),
       web = sys.require('webutils.js'),
       plugin = sys.require('cmdutils.js'),
@@ -152,9 +183,7 @@
    * Print a program header message
    */
   function _printHeader(){
-    sys.log(sys.product.name, 'v' + sys.product.version.toString());
-    sys.log(sys.product.meta.copyright);
-    sys.log();
+    sys.log(sys.product.meta.getHeaderText());
   }
 
   /**
