@@ -18,7 +18,7 @@ Execute um dos códigos abaixo em seu shell favorito.
 ```cmd
 bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.cmd" "%CD%\e5r-install.cmd" && "%CD%\e5r-install.cmd" && del "%CD%\e5r-install.cmd"
 ```
-#### Prompt de Comando
+#### PowerShell
 
 ```powershell
 cmd /c 'bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.cmd" "%CD%\e5r-install.cmd" && "%CD%\e5r-install.cmd" && del "%CD%\e5r-install.cmd"'
