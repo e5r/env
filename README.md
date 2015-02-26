@@ -9,13 +9,24 @@ E5R Environment
 
 ## Instalação
 
-* __Windows__: Execute o comando abaixo em um prompt:
+### Windows 7/8 ou superior
+
+Execute um dos códigos abaixo em seu shell favorito.
+
+#### Prompt de Comando
+
 ```cmd
 bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.cmd" "%CD%\e5r-install.cmd" && "%CD%\e5r-install.cmd" && del "%CD%\e5r-install.cmd"
 ```
-* ~~Unix like~~: (em breve).
+#### Prompt de Comando
 
-PRONTO! Você já pode começar a usar a ferramenta.
+```ps
+cmd /c 'bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.cmd" "%CD%\e5r-install.cmd" && "%CD%\e5r-install.cmd" && del "%CD%\e5r-install.cmd"'
+```
+
+### ~~Unix like~~
+
+(em breve)
 
 ## Problemas?
 
