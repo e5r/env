@@ -182,6 +182,11 @@
     if(!fs.directoryExists(_helpPathBase)){
       fs.createDirectory(_helpPathBase);
     }
+    // Remove previous Hot Environment Variables files
+    var hevCmd = sys.product.meta.hotEnvVarsFileName.replace('{type}','cmd'),
+        hevPs = sys.product.meta.hotEnvVarsFileName.replace('{type}','ps1');
+    if(fs.fileExists(hevCmd)) fs.deleteFile(hevCmd);
+    if(fs.fileExists(hevPs)) fs.deleteFile(hevPs);
   }
 
   /**
