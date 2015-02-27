@@ -225,11 +225,15 @@
       return;
     }
     if(plugin.checkApi(_cmdApi)){
+      if(typeof _cmdApi.getHelpFile != 'function'){
+        throw new Error('Command [' + cmd + '] has no help information!');
+        return;
+      }
       var _helpFile = _cmdApi.getHelpFile(),
           _helpFilePath = fs.combine(_helpPathBase,_helpFile);
       _get(_helpFile, 'resources/help/{name}', 'help/{name}');
       if(!fs.fileExists(_helpFilePath)){
-        sys.logTask(_helpFile, 'not found!');
+        throw new Error(_helpFile + ' not found!');
         return;
       }
       var _helpContent = fs.getTextFileContent(_helpFilePath);
