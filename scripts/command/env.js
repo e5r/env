@@ -130,9 +130,16 @@
 
           if(!fs.fileExists(fs.absolutePath(_path))){
             throw new Error('Action [boot] not found! [--tech=' + _opt.tech + ']');
-          }else{
-            sys.logTask('Running', _path, args);
           }
+
+          sys.logTask('Running', _path, args);
+          var _pluginAction = plugin.getCmd(cmd, _opt.tech)
+          if(!_pluginAction){
+            sys.logTask('Action [env/boot] not found!');
+            return;
+          }
+          if(plugin.checkApi(_pluginAction) && _cmdApi.setup(_env))
+            _pluginAction.run(args);
         }],
 
         // Install a specific version of the environment

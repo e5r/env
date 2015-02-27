@@ -120,6 +120,10 @@
   //     JSON: {
   //       stringify: function(value, replacer, space),
   //       parse: function(text, reviver)
+  //     },
+  //     plugin: {
+  //       getCmd: function(cmd),
+  //       checkApi: function(plugin)
   //     }
   //   },
   //   meta: {
@@ -243,7 +247,8 @@
           helpers: {
             getWebFile: _get,
             showCmdHelp: _cmdHelp,
-            JSON: JSON
+            JSON: JSON,
+            plugin: plugin
           },
           meta: {
             cmd: _cmd,
