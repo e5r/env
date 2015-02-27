@@ -1,6 +1,0 @@
-var VERSION='@{Version}'
-var FULL_VERSION='@{FullVersion}'
-var AUTHORS='@{Authors}'
-
-use-standard-lifecycle
-k-standard-goals
