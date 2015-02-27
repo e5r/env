@@ -133,12 +133,11 @@
           }
 
           sys.logTask('Running', _path, args);
-          var _pluginAction = plugin.getCmd(cmd, _opt.tech)
+          var _pluginAction = _env.helpers.plugin.getCmd(cmd, _opt.tech)
           if(!_pluginAction){
-            sys.logTask('Action [env/boot] not found!');
-            return;
+            throw new Error('Action [env/boot] not found!');
           }
-          if(plugin.checkApi(_pluginAction) && _cmdApi.setup(_env))
+          if(_env.helpers.plugin.checkApi(_pluginAction) && _cmdApi.setup(_env))
             _pluginAction.run(args);
         }],
 
