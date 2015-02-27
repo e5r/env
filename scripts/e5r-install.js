@@ -147,6 +147,12 @@
   });
 
   tasks.add('Acquiring dependencies', function(next){
+    if(_get('e5r.ps1', 'scripts/{name}', 'bin/{name}')){
+      next();
+    }
+  });
+
+  tasks.add('Acquiring dependencies', function(next){
     if(_get('cmdrunner.js', 'scripts/{name}', 'lib/{name}')){
       next();
     }
