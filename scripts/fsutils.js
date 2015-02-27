@@ -162,18 +162,28 @@
     return _content;
   }
 
+  /**
+   * Remove the file
+   *
+   * @param {string} path Path to file
+   */
+  function _deleteFile(path){
+    _fso.DeleteFile(_absolutePath(path));
+  }
+
   module.exports = {
     CONST: _consts,
     fileExists: _fileExists,
     directoryExists: _directoryExists,
     createDirectory: _createDirectory,
-    absolutePath: _absolutePath,
+    createTextFile: _createTextFile,
+    deleteFile: _deleteFile,
+    getTextFileContent:_getTextFileContent,
+    getArrayFileContent:_getArrayFileContent,
     getSpecialDirectory: _getSpecialDirectory,
     getTempFileName: _getTempFileName,
-    combine: _combinePath,
     getDirectoryPath: _getDirectoryPath,
-    createTextFile: _createTextFile,
-    getTextFileContent:_getTextFileContent,
-    getArrayFileContent:_getArrayFileContent
+    absolutePath: _absolutePath,
+    combine: _combinePath
   }
 })();
