@@ -3,7 +3,7 @@
 set REPOSITORYURL="https://raw.githubusercontent.com/e5r/env/migrate-to-javascript"
 set SCRIPTNAME=%~n0
 set E5RPATH=%USERPROFILE%\.e5r
-set POSTFILE=%E5RPATH%\postfile.cmd
+set POSTFILE=%E5RPATH%\tmp-hot-envvars.cmd
 set INSTALLFILE=%E5RPATH%\bin\%SCRIPTNAME%.js
 
 if not exist %E5RPATH%\bin md %E5RPATH%\bin

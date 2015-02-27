@@ -31,7 +31,7 @@
           installPath: _userPath + '\\.e5r',
           binPath: _userPath + '\\.e5r\\bin',
           libPath: _userPath + '\\.e5r\\lib',
-          postFilePath: _userPath + '\\.e5r\\postfile.cmd', // TODO: Implements PowerShell
+          hotEnvVarsFileName: _userPath + '\\.e5r\\tmp-hot-envvars.{type}',
           fileRepository: 'https://raw.githubusercontent.com/e5r/env/migrate-to-javascript',
           copyright: '(C) 2014-2015, E5R Development Team. All rights reserved.',
           authors: [
@@ -205,11 +205,6 @@
 
     sys.logAction('Adding [' + sys.product.meta.binPath + '] to process PATH...');
     su.setEnvironment('PATH', _processPath, su.CONST.ENVTYPE_PROCESS);
-
-    // TODO: Move to <sysutils.setEnvironment>
-    var _postFile = fs.createTextFile(sys.product.meta.postFilePath);
-    _postFile.WriteLine('set PATH={V}'.replace('{V}', _processPath));
-    _postFile.Close();
 
     next();
   });

@@ -4,6 +4,7 @@
 (function(){ 'use strict'
   var _shell = new ActiveXObject("WScript.Shell"),
       _network = new ActiveXObject("WScript.Network"),
+      _fso = new ActiveXObject("Scripting.FileSystemObject"),
       _drivers = _network.EnumNetworkDrives(),
       _printers = _network.EnumPrinterConnections(),
       _consts = {
@@ -41,6 +42,31 @@
           }
           return _result;
         })()
+      },
+      // Minimalist copy of <fsutils.js>.
+      // You are here not to cause circular reference, because <fsutils.js>
+      // refers to <sysutils.js>.
+      fs = _fsUtilsLite = {
+        absolutePath: function(path){
+          return _fso.GetAbsolutePathName(path);
+        },
+        createTextFile: function(path, overwrite, unicode){
+          overwrite = overwrite || false;
+          unicode = unicode || false;
+          return _fso.CreateTextFile(this.absolutePath(path), overwrite, unicode);
+        },
+        fileExists: function(path){
+          var _path = this.absolutePath(path);
+          return _fso.FileExists(_path);
+        },
+        getArrayFileContent: function(path){
+          var _file = _fso.OpenTextFile(this.absolutePath(path), 1),
+              _content = [];
+          while(!_file.AtEndOfStream)
+            _content.push(_file.ReadLine());
+          _file.Close();
+          return _content;
+        }
       };
 
   /**
@@ -127,10 +153,37 @@
       _getEnv = _getterSystemEnvironment();
     }else if(envType == _consts.ENVTYPE_USER){
       _getEnv = _getterUserEnvironment();
-    }else{
+    }else if(envType == _consts.ENVTYPE_PROCESS){
       _getEnv = _getterProcessEnv();
+    }else{
+      throw new Error('<sysutils._setEnvironment> #ArgumentException: Invalid @envType.');
     }
     _getEnv(varName) = varValue;
+    // Creating a POSTFILE to update environment on parent process
+    if(envType == _consts.ENVTYPE_PROCESS){
+      sys.log('#WARNING: Creating a POSTFILE to update environment on parent process');
+      sys.log('#TODO: Implements PowerShell version');
+
+      var _postFilePathCmd = sys.product.meta.hotEnvVarsFileName.replace('{type}', 'cmd'),
+          _postFileContentCmd = [];
+
+      if(fs.fileExists(_postFilePathCmd)){
+        var _fileContent = fs.getArrayFileContent(_postFilePathCmd);
+        for(var l in _fileContent){
+          var _line = _fileContent[l];
+          if(_line.indexOf('set {k}='.replace('{k}', varName)) == 0) continue;
+          _postFileContentCmd.push(_line);
+        }
+      }
+
+      _postFileContentCmd.push('set {k}={v}'.replace('{k}', varName).replace('{v}', varValue));
+
+      var _postFileCmd = fs.createTextFile(_postFilePathCmd, true);
+      for(var l in _postFileContentCmd){
+        _postFileCmd.WriteLine(_postFileContentCmd[l]);
+      }
+      _postFileCmd.Close();
+    }
     return _getEnv(varName);
   }
 
