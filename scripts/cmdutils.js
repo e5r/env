@@ -6,7 +6,7 @@
       fs = sys.require('fsutils.js');
 
   function _getCmd(cmd, tech){
-    var _path = fs.combine(sys.product.meta.installPath, (tech ? 'lib/tech/' + tech : 'command') + '/{c}.js'.replace('{c}',cmd))
+    var _path = fs.combine(sys.product.meta.installPath, (tech ? 'lib\\tech\\' + tech : 'command') + '\\{c}.js'.replace('{c}',cmd))
         _url = sys.product.meta.makeUrl((tech ? 'scripts/tech/' + tech : 'scripts/command') + '/{c}.js'.replace('{c}', cmd)),
         command = {},
         content;
@@ -31,16 +31,16 @@
    */
   function _checkApi(plugin){
     if(typeof plugin != 'object')
-      throw new Error('Plugin must be an object');
+      throw new Error('<cmdutils._checkApi>: Plugin must be an object.');
 
     if(typeof plugin.setup != 'function')
-      throw new Error('Plugin does not contain the [Setup] method');
+      throw new Error('<cmdutils._checkApi>: Plugin does not contain the [Setup] method.');
 
-    if(typeof plugin.getHelpFile != 'function')
-      throw new Error('Plugin does not contain the [GetHelpFile] method');
+    if(typeof plugin.getHelpFile != 'function' && typeof plugin.getHelpFile != 'undefined')
+      throw new Error('<cmdutils._checkApi>: Plugin does not contain the [GetHelpFile] method.');
 
     if(typeof plugin.run != 'function')
-      throw new Error('Plugin does not contain the [Run] method');
+      throw new Error('<cmdutils._checkApi>: Plugin does not contain the [Run] method.');
 
     return true;
   }
