@@ -31,7 +31,7 @@
           installPath: _userPath + '\\.e5r',
           binPath: _userPath + '\\.e5r\\bin',
           libPath: _userPath + '\\.e5r\\lib',
-          postFilePath = _userPath + '\\.e5r\\postfile.cmd', // TODO: Implements PowerShell
+          postFilePath: _userPath + '\\.e5r\\postfile.cmd', // TODO: Implements PowerShell
           fileRepository: 'https://raw.githubusercontent.com/e5r/env/migrate-to-javascript',
           copyright: '(C) 2014-2015, E5R Development Team. All rights reserved.',
           authors: [
