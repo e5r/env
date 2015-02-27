@@ -31,6 +31,7 @@
           installPath: _userPath + '\\.e5r',
           binPath: _userPath + '\\.e5r\\bin',
           libPath: _userPath + '\\.e5r\\lib',
+          postFilePath = _userPath + '\\.e5r\\postfile.cmd', // TODO: Implements PowerShell
           fileRepository: 'https://raw.githubusercontent.com/e5r/env/migrate-to-javascript',
           copyright: '(C) 2014-2015, E5R Development Team. All rights reserved.',
           authors: [
@@ -114,7 +115,6 @@
       fs = sys.require('fsutils.js'),
       web = sys.require('webutils.js'),
       hasError = false,
-      postFilePath = sys.product.meta.makePath('postfile.cmd'),
       tasks = {
         stack: [],
         add: function(c,f){
@@ -206,7 +206,8 @@
     sys.logAction('Adding [' + sys.product.meta.binPath + '] to process PATH...');
     su.setEnvironment('PATH', _processPath, su.CONST.ENVTYPE_PROCESS);
 
-    var _postFile = fs.createTextFile(postFilePath);
+    // TODO: Move to <sysutils.setEnvironment>
+    var _postFile = fs.createTextFile(sys.product.meta.postFilePath);
     _postFile.WriteLine('set PATH={V}'.replace('{V}', _processPath));
     _postFile.Close();
 
