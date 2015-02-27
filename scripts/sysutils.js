@@ -159,30 +159,31 @@
       throw new Error('<sysutils._setEnvironment> #ArgumentException: Invalid @envType.');
     }
     _getEnv(varName) = varValue;
+
     // Creating a POSTFILE to update environment on parent process
     if(envType == _consts.ENVTYPE_PROCESS){
-      sys.log('#WARNING: Creating a POSTFILE to update environment on parent process');
-      sys.log('#TODO: Implements PowerShell version');
-
-      var _postFilePathCmd = sys.product.meta.hotEnvVarsFileName.replace('{type}', 'cmd'),
-          _postFileContentCmd = [];
-
-      if(fs.fileExists(_postFilePathCmd)){
-        var _fileContent = fs.getArrayFileContent(_postFilePathCmd);
-        for(var l in _fileContent){
-          var _line = _fileContent[l];
-          if(_line.indexOf('set {k}='.replace('{k}', varName)) == 0) continue;
-          _postFileContentCmd.push(_line);
+      function __(fileType, tmplSearch, tmplReplace, key, value){
+        var _path = sys.product.meta.hotEnvVarsFileName.replace('{type}', fileType),
+            _fileContent = [],
+            _tmpContent,
+            _file;
+        if(fs.fileExists(_path)){
+          _tmpContent = fs.getArrayFileContent(_path);
+          for(var l in _tmpContent){
+            var _line = _tmpContent[l];
+            if(_line.indexOf(tmplSearch.replace('{k}', key)) == 0) continue;
+            _fileContent.push(_line);
+          }
         }
+        _fileContent.push(tmplReplace.replace('{k}', key).replace('{v}', value));
+        _file = fs.createTextFile(_path, true);
+        for(var l in _fileContent){
+          _file.WriteLine(_fileContent[l]);
+        }
+        _file.Close();
       }
-
-      _postFileContentCmd.push('set {k}={v}'.replace('{k}', varName).replace('{v}', varValue));
-
-      var _postFileCmd = fs.createTextFile(_postFilePathCmd, true);
-      for(var l in _postFileContentCmd){
-        _postFileCmd.WriteLine(_postFileContentCmd[l]);
-      }
-      _postFileCmd.Close();
+      __('cmd', 'set {k}=', 'set {k}={v}', varName, varValue);
+      __('ps1', '$env:{k}=', '$env:{k}="{v}"', varName, varValue.replace(/"/g, '`"'));
     }
     return _getEnv(varName);
   }
