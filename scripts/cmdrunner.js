@@ -274,8 +274,12 @@
    * Get a web file
    */
   function _get(name, url, path){
-    var _url = sys.product.meta.makeUrl(url.replace('{name}', name)),
-        _path = sys.product.meta.makePath(path.replace('{name}', name));
+    var _url = url,
+        _path = path;
+    if(_url.indexOf('http') != 0){
+      _url = sys.product.meta.makeUrl(url.replace('{name}', name)),
+      _path = sys.product.meta.makePath(path.replace('{name}', name));
+    }
     if(!fs.fileExists(_path)){
       web.download(_url, _path, function(error){
         sys.log('#' + error.name + ':', error.message, 'on get resource', name);
