@@ -14,7 +14,7 @@ if not exist %E5RPATH%\lib md %E5RPATH%\lib
       -command "$a=('sysutils','lib'),('fsutils','lib'),('webutils','lib'),('%SCRIPTNAME%','bin');$c=new-object system.net.webclient;foreach($i in $a){$u='%REPOSITORYURL%/scripts/{0}.js'-f$i[0];$f='%E5RPATH%\{1}\{0}.js'-f$i[0],$i[1];$c.downloadfile($u,$f);}"
 
 :run
-  @cscript "%INSTALLFILE%" //nologo %*
+  @cscript "%INSTALLFILE%" //nologo
 
   if exist "%POSTFILE%" (
       call "%POSTFILE%"
