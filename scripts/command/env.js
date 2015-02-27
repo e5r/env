@@ -121,24 +121,13 @@
           if(!_opt.tech)
             throw new Error('Param --tech is required.')
 
-          var _url = 'scripts/tech/{t}/{name}'.replace('{t}', _opt.tech),
-              _path = 'lib\\tech\\{t}\\{name}'.replace('{t}', _opt.tech);
-
-          _env.helpers.getWebFile('boot.js', _url, _path);
-
-          _path = sys.product.meta.makePath(_path.replace('{name}','boot.js'));
-
-          if(!fs.fileExists(fs.absolutePath(_path))){
-            throw new Error('Action [boot] not found! [--tech=' + _opt.tech + ']');
-          }
-
-          sys.logTask('Running', _path, args);
-          var _pluginAction = _env.helpers.plugin.getCmd(cmd, _opt.tech)
+          var _pluginAction = _env.helpers.plugin.getCmd('boot', _opt.tech)
           if(!_pluginAction){
-            throw new Error('Action [env/boot] not found!');
+            throw new Error('#CmdEnv: Action [boot] not found! [--tech=' + _opt.tech + ']');
           }
-          if(_env.helpers.plugin.checkApi(_pluginAction) && _cmdApi.setup(_env))
+          if(_env.helpers.plugin.checkApi(_pluginAction) && _pluginAction.setup(_env)){
             _pluginAction.run(args);
+          }
         }],
 
         // Install a specific version of the environment
