@@ -129,7 +129,7 @@
    *
    * @return TextStream object
    */
-  function _createTextFile(path, overwrite, unicode, unicode){
+  function _createTextFile(path, overwrite, unicode){
     overwrite = overwrite || false;
     unicode = unicode || false;
     return _fso.CreateTextFile(_absolutePath(path), overwrite, unicode);
@@ -140,10 +140,26 @@
    *
    * @param {string} path   Path to file
    *
-   * @return Array with lines of content file
+   * @return String with content file
    */
   function _getTextFileContent(path){
     return _fso.OpenTextFile(_absolutePath(path), 1).ReadAll();
+  }
+
+  /**
+   * Read content of text file
+   *
+   * @param {string} path   Path to file
+   *
+   * @return Array with lines of content file
+   */
+  function _getArrayFileContent(path){
+    var _file = _fso.OpenTextFile(this.absolutePath(path), 1),
+        _content = [];
+    while(!_file.AtEndOfStream)
+      _content.push(_file.ReadLine());
+    _file.Close();
+    return _content;
   }
 
   module.exports = {
@@ -157,6 +173,7 @@
     combine: _combinePath,
     getDirectoryPath: _getDirectoryPath,
     createTextFile: _createTextFile,
-    getTextFileContent:_getTextFileContent
+    getTextFileContent:_getTextFileContent,
+    getArrayFileContent:_getArrayFileContent
   }
 })();

@@ -55,7 +55,7 @@
         throw new Error('File kvm.ps1 not found!');
       }
 
-      sys.logAction('TODO: Atualizar PATH para todos os processos pais');
+      sys.logAction('#TODO: Atualizar PATH para todos os processos pais');
 
     }catch(error){
       sys.logSubTask('Could not initialize your ASPNET/5 environment.');
