@@ -21,7 +21,7 @@ bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migr
 #### PowerShell
 
 ```powershell
-$l=get-location;(new-object system.net.webclient).downloadfile("https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.cmd","$l\\e5r-install.cmd");cmd /c "$l\\e5r-install.cmd";remove-item "$l\\e5r-install.cmd"
+(new-object system.net.webclient).downloadfile("https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.ps1","$pwd\\e5r-install.ps1");iex "$pwd\\e5r-install.ps1";del "$pwd\\e5r-install.ps1"
 ```
 
 ### ~~Unix like~~
