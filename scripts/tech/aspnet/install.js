@@ -21,15 +21,22 @@
   /**
    * Run command entry point
    */
-  function _run(args){
-    sys.logTask('Installing runtime for ASPNET/5...');
+  function _run(version, args){
+    sys.logTask('Installing runtime', version,  'for ASPNET/5...');
     try {
-
+      var _success = false;
+      su.exec('powershell -command "kvm install ' + version + '"',
+        function(exitCode, output){
+          if(exitCode != 0) throw new Error('Process return code #' + exitCode);
+        },
+        function(line){
+          sys.logSubTask(line);
+        });
     }catch(error){
-      sys.logTask('Runtime could not installed.');
+      sys.logTask('Runtime', version, 'could not installed.');
       throw error;
     }
-    sys.logTask('Runtime successfuly installed!');
+    sys.logTask('Runtime', version, 'successfuly installed!');
   }
 
   command.api = {
