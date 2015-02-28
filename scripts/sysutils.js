@@ -338,6 +338,30 @@
     }
   }
 
+  /**
+   * Exec a program
+   *
+   * @param {string}   program   A program string to execute
+   * @param {function} finish    Callback to execute on finish process
+   * @param {function} output    Callback to execute on output line
+   */
+  function _exec(program, finish, output){
+    var _process = _shell.Exec(program),
+        _output = [];
+
+    while(true){
+      if(!_process.StdOut.AtEndOfStream){
+        var _line = _process.StdOut.ReadLine();
+        if(typeof output == 'function') output(_line);
+        _output.push(_line);
+      }else{
+        break;
+      }
+    }
+
+    if(typeof finish == 'function') finish(_process.ExitCode, _output);
+  }
+
   module.exports = {
     CONST: _consts,
     stdErr: WScript.StdErr,
@@ -352,6 +376,7 @@
     buildEnvString: _buildEnvirementString,
     getEnvironment: _getEnvironment,
     setEnvironment: _setEnvironment,
-    cmdActions: _createCmdActionsDescriptor
+    cmdActions: _createCmdActionsDescriptor,
+    exec: _exec
   }
 })();
