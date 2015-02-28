@@ -1,12 +1,3 @@
-param(
-    [array]
-    [parameter(ValueFromRemainingArguments=$true)]
-    $args=@()
-)
-
-$runner = [io.path]::getfullpath("$psscriptroot\..\lib\cmdrunner.js")
-$postfile = [io.path]::getfullpath("$psscriptroot\..\tmp-hot-envvars.ps1")
-
 for($count = 0; $count -lt $args.length; $count++) {
     $value = $args[$count]
     if("$value".contains(" ")) {
@@ -15,6 +6,9 @@ for($count = 0; $count -lt $args.length; $count++) {
     }
     $args[$count] = $value
 }
+
+$runner = [io.path]::getfullpath("$psscriptroot\..\lib\cmdrunner.js")
+$postfile = [io.path]::getfullpath("$psscriptroot\..\tmp-hot-envvars.ps1")
 
 iex "& cscript `"$runner`" //nologo $args"
 
