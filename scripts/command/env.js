@@ -34,6 +34,86 @@
   }
 
   /**
+   * Creates a new object based on another
+   *
+   * @param {object} object  Object to copy
+   *
+   * @return New Object
+   */
+  function _copyObject(obj){
+    var _obj = {};
+    for(var p in obj) _obj[p] = obj[p];
+    return _obj;
+  }
+
+  /**
+   * Checks and make options data
+   *
+   * @param {object} opt  Original options
+   *
+   * @return Clone of opt with modified data
+   */
+  function _makeOptions(opt){
+    var _opt = _copyObject(opt);
+
+    // 1. Se --workdir não existe, usa o diretório atual
+    if(!_opt.workdir) _opt.workdir = su.script.currentDirectory;
+
+    // 2. Se --workdir inicia com '$', substituir pelo diretório %E5R_HOME% ou %USERPROFILE%
+    if((_opt.workdir||'').length > 0 && (_opt.workdir||'').charAt(0) == '$'){
+      var _home = su.getEnvironment('E5R_HOME', su.CONST.ENVTYPE_PROCESS);
+      if(!_home) _home = sys.product.meta.userPath;
+      _opt.workdir = _opt.workdir.replace('$', _home);
+    }
+
+    // 3. Expandir --workdir
+    if(_opt.workdir) _opt.workdir = fs.absolutePath(su.buildEnvString(_opt.workdir));
+
+    // 4. Se diretório --workdir não existir, Criar
+    if(!fs.directoryExists(_opt.workdir)) fs.createDirectory(_opt.workdir);
+
+    // 5. Se --tech não existe, procura pelo conteúdo do arquivo --workdir/.e5r/tech
+    if(!_opt.tech){
+      var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\tech'));
+      if(fs.fileExists(_file)) _opt.tech = fs.getTextFileContent(_file);
+    }
+
+    // 6. Se --version não existe, procura pelo conteúdo do arquivo --workdir/.e5r/version
+    if(!_opt.version){
+      var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\version'));
+      if(fs.fileExists(_file)) _opt.version = fs.getTextFileContent(_file);
+    }
+
+    return _opt;
+  }
+
+  /**
+   * Create and check prerequisites for command
+   *
+   * @param {string} cmd  The command name
+   * @param {object} opt  The options
+   *
+   * @return Command object
+   */
+  function _createAndCheckCommand(cmd, opt){
+    if(!fs.directoryExists(opt.workdir))
+      throw new Error('Work directory not found! See --workdir param.');
+
+    if(!opt.tech)
+      throw new Error('Param --tech is required.')
+
+    var _pluginAction = _env.helpers.plugin.getCmd(cmd, opt.tech)
+    if(!_pluginAction){
+      throw new Error('#CmdEnv: Action [' + cmd + '] not found! [--tech=' + opt.tech + ']');
+    }
+    if(_env.helpers.plugin.checkApi(_pluginAction) && _pluginAction.setup(_env)){
+      return _pluginAction;
+    }else{
+      throw new Error('#CmdEnv: An error occurred in the action [' + cmd + '] preparation! [--tech=' + opt.tech + ']');
+    }
+  }
+
+  /**
    * Run command entry point
    */
   function _run(args){
@@ -42,60 +122,6 @@
     if((args[0]||'') == 'help'){
       _env.helpers.showCmdHelp(_env.meta.cmd, []);
       return;
-    }
-
-    /**
-     * Creates a new object based on another
-     *
-     * @param {object} object  Object to copy
-     *
-     * @return New Object
-     */
-    function _copyObject(obj){
-      var _obj = {};
-      for(var p in obj) _obj[p] = obj[p];
-      return _obj;
-    }
-
-    /**
-     * Checks and make options data
-     *
-     * @param {object} opt  Original options
-     *
-     * @return Clone of opt with modified data
-     */
-    function _makeOptions(opt){
-      var _opt = _copyObject(opt);
-
-      // 1. Se --workdir não existe, usa o diretório atual
-      if(!_opt.workdir) _opt.workdir = su.script.currentDirectory;
-
-      // 2. Se --workdir inicia com '$', substituir pelo diretório %E5R_HOME% ou %USERPROFILE%
-      if((_opt.workdir||'').length > 0 && (_opt.workdir||'').charAt(0) == '$'){
-        var _home = su.getEnvironment('E5R_HOME', su.CONST.ENVTYPE_PROCESS);
-        if(!_home) _home = sys.product.meta.userPath;
-        _opt.workdir = _opt.workdir.replace('$', _home);
-      }
-
-      // 3. Expandir --workdir
-      if(_opt.workdir) _opt.workdir = fs.absolutePath(su.buildEnvString(_opt.workdir));
-
-      // 4. Se diretório --workdir não existir, Criar
-      if(!fs.directoryExists(_opt.workdir)) fs.createDirectory(_opt.workdir);
-
-      // 5. Se --tech não existe, procura pelo conteúdo do arquivo --workdir/.e5r/tech
-      if(!_opt.tech){
-        var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\tech'));
-        if(fs.fileExists(_file)) _opt.tech = fs.getTextFileContent(_file);
-      }
-
-      // 6. Se --version não existe, procura pelo conteúdo do arquivo --workdir/.e5r/version
-      if(!_opt.version){
-        var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\version'));
-        if(fs.fileExists(_file)) _opt.version = fs.getTextFileContent(_file);
-      }
-
-      return _opt;
     }
 
     var act = su.cmdActions(
@@ -113,28 +139,18 @@
         // Checks and installs the prerequisites for informed
         // environment
         ['boot', function(opt, args){
-          var _opt = _makeOptions(opt);
-
-          if(!fs.directoryExists(_opt.workdir))
-            throw new Error('Work directory not found! See --workdir param.');
-
-          if(!_opt.tech)
-            throw new Error('Param --tech is required.')
-
-          var _pluginAction = _env.helpers.plugin.getCmd('boot', _opt.tech)
-          if(!_pluginAction){
-            throw new Error('#CmdEnv: Action [boot] not found! [--tech=' + _opt.tech + ']');
-          }
-          if(_env.helpers.plugin.checkApi(_pluginAction) && _pluginAction.setup(_env)){
-            _pluginAction.run(args);
-          }
+          _createAndCheckCommand('boot', _makeOptions(opt)).run(args);
         }],
 
         // Install a specific version of the environment
         ['install', function(opt, args){
-          sys.logSubTask('INSTALL action');
-          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
-          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+          var _opt = _makeOptions(opt);
+
+          if(!opt.version)
+            throw new Error('Param --version is required.')
+
+          _createAndCheckCommand('install', _opt)
+            .run(_opt.version, args);
         }],
 
         // Uninstall a specific version of the environment
