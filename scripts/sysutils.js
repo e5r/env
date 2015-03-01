@@ -341,14 +341,24 @@
   /**
    * Exec a program
    *
-   * @param {string}   program   A program string to execute
-   * @param {function} finish    Callback to execute on finish process
-   * @param {function} output    Callback to execute on output line
+   * @param {string}    program   A program name
+   * @param {array}     args      Argument list
+   * @param {function}  output    Callback to execute on output line
+   *
+   * @return Exit code
    */
-  function _exec(program, finish, output){
-    var _process = _shell.Exec(program),
-        _output = [];
-
+  function _exec(program, args, output){
+    var _process,
+        _output = [],
+        _strArgs = '';
+    for(var _a in args){
+      _strArgs += _strArgs.length > 0 ? ' ' : '';
+      if(args[_a].indexOf(' ') >= 0)
+        _strArgs += "'" + args[_a] + "'";
+      else
+        _strArgs += args[_a];
+    }
+    _process = _shell.Exec('{p} {a}'.replace('{p}', program).replace('{a}', _strArgs));
     while(true){
       if(!_process.StdOut.AtEndOfStream){
         var _line = _process.StdOut.ReadLine();
@@ -358,8 +368,7 @@
         break;
       }
     }
-
-    if(typeof finish == 'function') finish(_process.ExitCode, _output);
+    return _process.ExitCode;
   }
 
   module.exports = {

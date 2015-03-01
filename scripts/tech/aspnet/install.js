@@ -22,21 +22,25 @@
    * Run command entry point
    */
   function _run(version, args){
-    sys.logTask('Installing runtime', version,  'for ASPNET/5...');
+    //sys.logTask('Installing runtime', version,  'for ASPNET/5...');
     try {
-      var _success = false;
-      su.exec('powershell -command "kvm install ' + version + '"',
-        function(exitCode, output){
-          if(exitCode != 0) throw new Error('Process return code #' + exitCode);
-        },
-        function(line){
-          sys.logSubTask(line);
-        });
+      var _args = [
+        'kvm.ps1',
+        'install',
+        version
+      ].concat(args);
+
+      var _job = su.exec('powershell', _args, function(line){
+        sys.logAction(line);
+      });
+
+      // TODO: Update process PATH and user PATH
+
     }catch(error){
       sys.logTask('Runtime', version, 'could not installed.');
       throw error;
     }
-    sys.logTask('Runtime', version, 'successfuly installed!');
+    //sys.logTask('Runtime', version, 'successfuly installed!');
   }
 
   command.api = {

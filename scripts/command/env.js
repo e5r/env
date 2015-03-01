@@ -144,13 +144,13 @@
 
         // Install a specific version of the environment
         ['install', function(opt, args){
-          var _opt = _makeOptions(opt);
+          var _opt = _makeOptions(opt),
+              _cmd = _createAndCheckCommand('install', _opt);
 
           if(!opt.version)
-            throw new Error('Param --version is required.')
+            throw new Error('Param --version is required.');
 
-          _createAndCheckCommand('install', _opt)
-            .run(_opt.version, args);
+          _cmd.run(_opt.version, args);
         }],
 
         // Uninstall a specific version of the environment
