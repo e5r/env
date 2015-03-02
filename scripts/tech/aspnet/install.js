@@ -35,7 +35,7 @@
       ].concat(args);
 
       var _job = su.exec('powershell', _args, function(line){
-        sys.logAction(line);
+        if(line && line.length > 0) sys.logAction(line);
         // Update process PATH and user PATH
         var _matchProcess = /Adding\s(.+)\sto process PATH/g.exec(line),
             _matchUser = /Adding\s(.+)\sto user PATH/g.exec(line),
