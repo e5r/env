@@ -8,7 +8,17 @@
 
       // Read comment "Runner Plugin Environment API" in <cmdrunner.js> for
       // more information of environment API
-      _env;
+      _env,
+
+      // ASPNET/5 information
+      _aspnetVersion = 'v1.0.0-beta3',
+      _kvmPathBase = fs.combine(sys.product.meta.userPath, '.k'),
+      _kvmPathBin = fs.combine(_kvmPathBase, 'bin'),
+      _kvmPathCmd = fs.combine(_kvmPathBin, 'kvm.cmd'),
+      _kvmPathPs = fs.combine(_kvmPathBin, 'kvm.ps1'),
+      _kvmUrlBase = 'https://raw.githubusercontent.com/aspnet/Home/{v}/kvm.{t}'.replace('{v}', _aspnetVersion),
+      _kvmUrlCmd = _kvmUrlBase.replace('{t}', 'cmd'),
+      _kvmUrlPs = _kvmUrlBase.replace('{t}', 'ps1');
 
   /**
    * Set environment configuration
@@ -24,15 +34,6 @@
   function _run(args){
     sys.logTask('Booting environment ASPNET/5...');
     try {
-      var _aspnetVersion = 'v1.0.0-beta3',
-          _kvmPathBase = fs.combine(sys.product.meta.userPath, '.k'),
-          _kvmPathBin = fs.combine(_kvmPathBase, 'bin'),
-          _kvmPathCmd = fs.combine(_kvmPathBin, 'kvm.cmd'),
-          _kvmPathPs = fs.combine(_kvmPathBin, 'kvm.ps1'),
-          _kvmUrlBase = 'https://raw.githubusercontent.com/aspnet/Home/{v}/kvm.{t}'.replace('{v}', _aspnetVersion),
-          _kvmUrlCmd = _kvmUrlBase.replace('{t}', 'cmd'),
-          _kvmUrlPs = _kvmUrlBase.replace('{t}', 'ps1');
-
       if(!fs.directoryExists(_kvmPathBin)){
         sys.logAction('Creating directory', _kvmPathBin);
         fs.createDirectory(_kvmPathBin);
