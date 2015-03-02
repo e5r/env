@@ -22,9 +22,15 @@
    * Run command entry point
    */
   function _run(args){
-    sys.logTask('Showing installed runtime for ASPNET/5...');
     try {
+      var _args = [
+        'kvm.ps1',
+        'list'
+      ].concat(args);
 
+      var _job = su.exec('powershell', _args, function(line){
+        if(line && line.length > 0) sys.logAction(line);
+      });
     }catch(error){
       sys.logTask('A error ocurred on showing installed runtime.');
       throw error;
