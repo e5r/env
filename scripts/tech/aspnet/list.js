@@ -24,13 +24,21 @@
   function _run(args){
     try {
       var _args = [
-        'kvm.ps1',
-        'list'
-      ].concat(args);
+            'kvm.ps1',
+            'list'
+          ].concat(args),
+          _found = false;
 
       var _job = su.exec('powershell', _args, function(line){
-        if(line && line.length > 0) sys.logAction(line);
+        if(line && line.length > 0){
+          sys.logAction(line);
+          _found = true;
+        }
       });
+
+      if(!_found){
+        sys.logAction('No version available.');
+      }
     }catch(error){
       sys.logTask('A error ocurred on showing installed runtime.');
       throw error;
