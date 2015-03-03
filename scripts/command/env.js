@@ -155,24 +155,30 @@
 
         // Uninstall a specific version of the environment
         ['uninstall', function(opt, args){
-          sys.logSubTask('UNINSTALL action');
-          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
-          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+          var _opt = _makeOptions(opt),
+              _cmd = _createAndCheckCommand('uninstall', _opt);
+
+          if(!opt.version)
+            throw new Error('Param --version is required.');
+
+          _cmd.run(_opt.version, args);
         }],
 
         // List all installed versions of the environment
         ['list', function(opt, args){
-          sys.logSubTask('LIST action');
-          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
-          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+          _createAndCheckCommand('list', _makeOptions(opt)).run(args);
         }],
 
         // Sets a specific version of the environment for use in the
         // system
         ['use', function(opt, args){
-          sys.logSubTask('USE action');
-          sys.log(_env.helpers.JSON.stringify(opt, null, 2));
-          sys.log(_env.helpers.JSON.stringify(args, null, 2));
+          var _opt = _makeOptions(opt),
+              _cmd = _createAndCheckCommand('use', _opt);
+
+          if(!opt.version)
+            throw new Error('Param --version is required.');
+
+          _cmd.run(_opt.version, args);
         }]
       ]);
 
