@@ -1,0 +1,187 @@
+use namespace="System"
+use namespace="System.IO"
+use namespace='System.Web.Script.Serialization'
+use assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"
+use import="Files"
+use import="Environment"
+
+default BASE_DIR='${Path.Combine(Directory.GetCurrentDirectory(), "build-stage")}'
+default ARTIFACT_DIR='${Path.Combine(BASE_DIR, "artifacts")}'
+default TEST_DIR='${Path.Combine(ARTIFACT_DIR, "test")}'
+
+default SRC='./src'
+default TEST='./test'
+default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs")}'
+
+#artifacts-dir-clean target="clean"
+    directory delete="${ARTIFACT_DIR}"
+
+#build-clean target='clean'
+    @{
+        foreach(var info in Files.Include(SRC+"/**/project.json", TEST+"/**/project.json")){
+            var projectFolder = Path.GetDirectoryName(info);
+            if(Directory.Exists(Path.Combine(projectFolder, "bin"))){
+                Directory.Delete(Path.Combine(projectFolder, "bin"), true);
+            }
+            if(Directory.Exists(Path.Combine(projectFolder, "out"))){
+                Directory.Delete(Path.Combine(projectFolder, "out"), true);
+            }
+        }
+    }
+
+#assemblyinfo-initialize target='pre-compile' if='ASSEMBLYINFO_FILES != null'
+    assemblyinfo each='var updateFile in ASSEMBLYINFO_FILES' assemblyVersion='${VERSION}' assemblyInformationalVersion='${FULL_VERSION}'
+
+#restore-packages target='pre-compile'
+    exec program='cmd' commandline='/C kpm restore' if='!IsMono'
+    exec program='kpm' commandline='restore' if='IsMono'
+
+#compile-packages target='compile'
+    @{
+        foreach(var info in Files.Include(SRC+"/**/project.json")){
+            var configuration = "release";
+            var projectFolder = Path.GetDirectoryName(info);
+            var projectName=Path.GetFileName(projectFolder);
+            var projectBin=Path.Combine(projectFolder, "bin", configuration);
+
+            //_exec.shade
+            var program = "kpm";
+            var commandLine = "build " + projectFolder + " --configuration " + configuration;
+            if(!IsMono){
+                program = "cmd";
+                commandLine = "/C kpm " + commandLine;
+            }
+
+            var processStartInfo = new ProcessStartInfo {
+                UseShellExecute = false,
+                WorkingDirectory = Directory.GetCurrentDirectory(),
+                FileName = program,
+                Arguments = commandLine
+            };
+
+            var process = Process.Start(processStartInfo);
+            process.WaitForExit();
+            if (process.ExitCode != 0)
+            {
+                throw new Exception(string.Format("Exit code {0} from {1}", process.ExitCode, program));
+            }
+
+            // _copy.shade
+            var copyFiles = Files.BasePath(Path.GetFullPath(projectBin));
+
+            copyFiles = copyFiles.Include("**/*.*");
+
+            foreach(var copyFile in copyFiles)
+            {
+                var sourceFile = Path.Combine(projectBin, copyFile);
+                var outputFile = Path.Combine(ARTIFACT_DIR, projectName, copyFile);
+
+                if (!Directory.Exists(Path.GetDirectoryName(outputFile)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
+                }
+                File.Copy(sourceFile, outputFile, true);
+            }
+        }
+    }
+
+#test-packages target='test'
+    @{
+        // Copy of https://github.com/aspnet/Universe/blob/dev/build/_k.shade
+        foreach(var projectFile in Files.Include(TEST+"/**/project.json")){
+            var serializer = new JavaScriptSerializer();
+            var projectText = File.ReadAllText(projectFile);
+            var project = (Dictionary<string, object>)serializer.DeserializeObject(projectText);
+
+            object commandsObject;
+            var commands = project.TryGetValue("commands", out commandsObject)
+                ? (Dictionary<string, object>)commandsObject
+                : new Dictionary<string, object>();
+
+            if (commands.Keys.Contains("test"))
+            {
+                var projectFolder = Path.GetDirectoryName(projectFile);
+
+                object configsObject;
+                var configs = project.TryGetValue("frameworks", out configsObject)
+                    ? (Dictionary<string, object>)configsObject
+                    : new Dictionary<string, object>
+                        {
+                            { "net45", new Dictionary<string, object>() } // Assume net45 only if none specified
+                        };
+
+                // Currently only net* and k* targets are supported. See aspnet/Universe#53
+                var targetFrameworks = configs.Keys.Where(k => k.StartsWith("net", StringComparison.OrdinalIgnoreCase)
+                                                            || k.StartsWith("k", StringComparison.OrdinalIgnoreCase)
+                                                            || k.StartsWith("aspnet", StringComparison.OrdinalIgnoreCase));
+
+                foreach (var framework in targetFrameworks)
+                {
+                    if (framework.StartsWith("net", StringComparison.OrdinalIgnoreCase)
+                        || (framework.StartsWith("aspnet", StringComparison.OrdinalIgnoreCase)
+                            && !framework.StartsWith("aspnetcore", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        var program = "k";
+                        var commandLine = "test";
+                        if(!IsMono){
+                            program = "cmd";
+                            commandLine = "/C k " + commandLine;
+                        }
+
+                        var processStartInfo = new ProcessStartInfo {
+                            UseShellExecute = false,
+                            WorkingDirectory = projectFolder,
+                            FileName = program,
+                            Arguments = commandLine
+                        };
+
+                        var process = Process.Start(processStartInfo);
+                        process.WaitForExit();
+                        if (process.ExitCode != 0)
+                        {
+                            throw new Exception(string.Format("Exit code {0} from {1}", process.ExitCode, program));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+#pack-packages target='package'
+    @{
+        foreach(var projectFile in Files.Include(SRC+"/**/project.json")){
+            var serializer = new JavaScriptSerializer();
+            var projectText = File.ReadAllText(projectFile);
+            var project = (Dictionary<string, object>)serializer.DeserializeObject(projectText);
+
+            if (project.Keys.Contains("webroot"))
+            {
+                var projectFolder = Path.GetDirectoryName(projectFile);
+                var projectName = Path.GetFileName(projectFolder);
+
+                var program = "kpm";
+                var commandLine = "pack "
+                    + "--overwrite "
+                    + "--no-source "
+                    + "--out " + Path.Combine(ARTIFACT_DIR, "pack", projectName);
+                if(!IsMono){
+                    program = "cmd";
+                    commandLine = "/C kpm " + commandLine;
+                }
+
+                var processStartInfo = new ProcessStartInfo {
+                    UseShellExecute = false,
+                    WorkingDirectory = projectFolder,
+                    FileName = program,
+                    Arguments = commandLine
+                };
+
+                var process = Process.Start(processStartInfo);
+                process.WaitForExit();
+                if (process.ExitCode != 0)
+                {
+                    throw new Exception(string.Format("Exit code {0} from {1}", process.ExitCode, program));
+                }
+            }
+        }
+    }

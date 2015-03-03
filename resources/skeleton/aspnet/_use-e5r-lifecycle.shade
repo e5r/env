@@ -1,0 +1,24 @@
+#default
+    @{
+        CallTarget("package");
+    }
+
+#pre-clean
+#clean .pre-clean
+    -CallTarget("post-clean");
+#post-clean
+
+#pre-compile
+#compile .clean .pre-compile
+    -CallTarget("post-compile");
+#post-compile
+
+#pre-test
+#test .compile .pre-test
+    -CallTarget("post-test");
+#post-test
+
+#pre-package
+#package .test .pre-package
+    -CallTarget("post-package");
+#post-package

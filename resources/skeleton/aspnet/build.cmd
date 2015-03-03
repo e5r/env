@@ -1,20 +1,45 @@
 setlocal
+
 set BUILDSTAGE=build-stage
 set NUGETPATH=%BUILDSTAGE%\.nuget
 set NUGET=%NUGETPATH%\nuget.exe
 set PACKAGESPATH=%NUGETPATH%\packages
 
-if exist %NUGET% goto bootstrap
-echo Downloading NuGet...
-if not exist "%NUGETPATH%" md "%NUGETPATH%"
-@powershell -NoProfile -ExecutionPolicy unrestricted -Command "$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest 'https://www.nuget.org/nuget.exe' -OutFile '%NUGET%'"
+:Build_EnvCheck
+  e5r 1>nul
+  if "%ERRORLEVEL%"=="0" goto Build_NugetDownload
+  echo.
+  echo E5R Environment not installed!
+  goto Build_End
 
-:bootstrap
-echo E5R Bootstrap...
-call e5r env boot
-call e5r env install -version 1.0.0-beta1 -runtime CLR -x86
+:Build_NugetDownload
+  if exist %NUGET% goto Build_Before
+  echo Downloading NuGet...
+  echo TODO: Move to E5R ENV BOOT --tech aspnet
+  if not exist "%NUGETPATH%" md "%NUGETPATH%"
+  @powershell -NoProfile -ExecutionPolicy unrestricted -Command ^
+    "$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest 'https://www.nuget.org/nuget.exe' -OutFile '%NUGET%'"
 
-:build
-echo Building...
-call "%NUGET%" install -OutputDirectory %PACKAGESPATH% -ExcludeVersion .\packages.config
-call "%PACKAGESPATH%\Sake\tools\sake.exe" -I "%PACKAGESPATH%\KoreBuild\build" -f makefile.shade %*
+:Build_NugetCheck
+  echo TODO: Move to Build_EnvCheck
+  if exist %NUGET% goto Build_Before
+  echo.
+  echo NUGET not installed!
+  goto Build_End
+
+:Build_Before
+    call e5r env boot
+    call e5r env install --version 1.0.0-beta3 -runtime CLR -x86
+    call e5r env use --version 1.0.0-beta3 -runtime CLR -x86
+    echo TODO: Delete packages.config and use install Sake here
+    call "%NUGET%" install ^
+        -OutputDirectory %PACKAGESPATH% ^
+        -ExcludeVersion .\packages.config
+
+:Build
+  echo Building...
+  call "%PACKAGESPATH%\Sake\tools\sake.exe" ^
+      -I "build" ^
+      -f makefile.shade %*
+
+:Build_End
