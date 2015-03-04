@@ -5,7 +5,15 @@
   // DOC: Windows Script Host   > https://msdn.microsoft.com/pt-br/library/9bbdkx3k.aspx
   //      JScript (ECMAScript3) > https://msdn.microsoft.com/en-us/library/hbxc2t98(v=vs.84).aspx
   //      Windows Scripting     > https://msdn.microsoft.com/en-us/library/bstcxhf7(v=vs.84).aspx
+  //      FileSystemObject      > https://msdn.microsoft.com/en-us/library/6kxy1a51(v=vs.84).aspx
   if(typeof WScript != 'object') throw new Error('WSH not detected!');
+
+  // Common prototypes
+
+  // String.trim()
+  String.prototype.trim = function(){
+    return this.replace(/(^\s*)|(\s*$)/g,'');
+  }
 
   var _fso = new ActiveXObject("Scripting.FileSystemObject"),
       _shell = new ActiveXObject("WScript.Shell"),
