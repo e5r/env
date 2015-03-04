@@ -35,6 +35,7 @@
 
   /**
    * Creates a new object based on another
+   * TODO: Move to <sysutils>
    *
    * @param {object} object  Object to copy
    *
@@ -48,6 +49,7 @@
 
   /**
    * Checks and make options data
+   * TODO: Move to <sysutils>
    *
    * @param {object} opt  Original options
    *
@@ -89,6 +91,7 @@
 
   /**
    * Create and check prerequisites for command
+   * TODO: Move to <sysutils>
    *
    * @param {string} cmd  The command name
    * @param {object} opt  The options
