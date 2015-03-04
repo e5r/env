@@ -171,6 +171,53 @@
     _fso.DeleteFile(_absolutePath(path));
   }
 
+  /**
+   * Remove the folder with all content
+   *
+   * @param {string} path Path to directory
+   */
+  function _deleteDirectory(path){
+    _fso.DeleteFolder(_absolutePath(path));
+  }
+
+  /**
+   * Return a items (files and subdirectorys) of directory
+   *
+   * @param {string} path Path to directory
+   *
+   * @return Array of {type(file|directory), path} items
+   */
+  function _getDirectoryItems(path){
+    var _path = _absolutePath(path),
+        _items = [],
+        _directory,
+        _folderIterator,
+        _fileIterator;
+
+    if(!_directoryExists(_path))
+      throw new Error('Directory [' + _path + '] not exists');
+
+    _directory = _fso.GetFolder(_path);
+
+    // Get subfolders
+    _folderIterator = new Enumerator(_directory.SubFolders);
+    while(!_folderIterator.atEnd())
+    {
+      _items.push({type:'directory', path:_folderIterator.item()});
+      _folderIterator.moveNext();
+    }
+
+    // Get files
+    _fileIterator = new Enumerator(_directory.Files);
+    while(!_fileIterator.atEnd())
+    {
+      _items.push({type:'file', path:_fileIterator.item()});
+      _fileIterator.moveNext();
+    }
+
+    return _items;
+  }
+
   module.exports = {
     CONST: _consts,
     fileExists: _fileExists,
@@ -178,11 +225,13 @@
     createDirectory: _createDirectory,
     createTextFile: _createTextFile,
     deleteFile: _deleteFile,
+    deleteDirectory: _deleteDirectory,
     getTextFileContent:_getTextFileContent,
     getArrayFileContent:_getArrayFileContent,
     getSpecialDirectory: _getSpecialDirectory,
     getTempFileName: _getTempFileName,
     getDirectoryPath: _getDirectoryPath,
+    getDirectoryItems: _getDirectoryItems,
     absolutePath: _absolutePath,
     combine: _combinePath
   }
