@@ -139,13 +139,13 @@
         // Checks and installs the prerequisites for informed
         // environment
         ['boot', function(opt, args){
-          _createAndCheckCommand('boot', _makeOptions(opt)).run(args);
+          _createAndCheckCommand('env.boot', _makeOptions(opt)).run(args);
         }],
 
         // Install a specific version of the environment
         ['install', function(opt, args){
           var _opt = _makeOptions(opt),
-              _cmd = _createAndCheckCommand('install', _opt);
+              _cmd = _createAndCheckCommand('env.install', _opt);
 
           if(!opt.version)
             throw new Error('Param --version is required.');
@@ -156,7 +156,7 @@
         // Uninstall a specific version of the environment
         ['uninstall', function(opt, args){
           var _opt = _makeOptions(opt),
-              _cmd = _createAndCheckCommand('uninstall', _opt);
+              _cmd = _createAndCheckCommand('env.uninstall', _opt);
 
           if(!opt.version)
             throw new Error('Param --version is required.');
@@ -166,14 +166,14 @@
 
         // List all installed versions of the environment
         ['list', function(opt, args){
-          _createAndCheckCommand('list', _makeOptions(opt)).run(args);
+          _createAndCheckCommand('env.list', _makeOptions(opt)).run(args);
         }],
 
         // Sets a specific version of the environment for use in the
         // system
         ['use', function(opt, args){
           var _opt = _makeOptions(opt),
-              _cmd = _createAndCheckCommand('use', _opt);
+              _cmd = _createAndCheckCommand('env.use', _opt);
 
           if(!opt.version)
             throw new Error('Param --version is required.');
