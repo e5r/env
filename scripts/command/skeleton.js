@@ -140,7 +140,9 @@
 
         // Initializes a directory with the skeleton of a project
         ['init', function(opt, args){
-          _createAndCheckCommand('skeleton.init', _makeOptions(opt)).run(args);
+          var _opt = _makeOptions(opt);
+          _createAndCheckCommand('skeleton.init', _opt)
+            .run(_opt, args);
         }]
       ]);
 
