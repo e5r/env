@@ -8,11 +8,16 @@
   //      FileSystemObject      > https://msdn.microsoft.com/en-us/library/6kxy1a51(v=vs.84).aspx
   if(typeof WScript != 'object') throw new Error('WSH not detected!');
 
-  // Common prototypes
+  // Common prototypes and class methods
 
   // String.trim()
   String.prototype.trim = function(){
     return this.replace(/(^\s*)|(\s*$)/g,'');
+  }
+
+  // Array.isArray()
+  Array.isArray = function(obj){
+    return Array.prototype.isPrototypeOf(obj);
   }
 
   var _fso = new ActiveXObject("Scripting.FileSystemObject"),
