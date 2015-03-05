@@ -30,8 +30,8 @@ set PACKAGESPATH=%NUGETPATH%\packages
 
 :Build_Before
     call e5r env boot
-    call e5r env install --version 1.0.0-beta3 -runtime CLR -x86
-    call e5r env use --version 1.0.0-beta3 -runtime CLR -x86
+    call e5r env install
+    call e5r env use
     echo TODO: Delete packages.config and use install Sake here
     call "%NUGET%" install -OutputDirectory %PACKAGESPATH%  -ExcludeVersion .\packages.config
 
