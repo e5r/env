@@ -2,6 +2,7 @@ d:src
 d:test
 d:doc
 f:build.cmd:common/build.cmd
+f:build.ps1:common/build.ps1
 f:README.md:common/README.md
 
 #d: Create a directory
