@@ -16,6 +16,8 @@ Options:
 
  -r, --replace      Replace all files if exists in --workdir
 
+ -V, --pversion     Persist version value in ".e5r/version" file
+
  -l, --license      License specifies that the project will use.
 
      AGPL-3.0       GNU Affero General Public License, Version 3

@@ -126,7 +126,8 @@
         'value|workdir|w',
         'value|tech|t',
         'value|license|l',
-        'switch|replace|r'
+        'switch|replace|r',
+        'value|pversion|V'
       ],
       [
         // Empty action

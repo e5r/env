@@ -25,7 +25,9 @@
       _skelWebPath = _skelUrlBase + '/{resource}',
       _skelWebFile = _skelUrlBase + '/{resource}.wres',
       _licenseLocalFile = fs.combine(_licensePathBase, '{license}.md'),
-      _licenseWebFile = _licenseUrlBase + '/{license}.md';
+      _licenseWebFile = _licenseUrlBase + '/{license}.md',
+      _e5rProjectPath = '{workdir}\\.e5r',
+      _e5rFile = _e5rProjectPath + '\\{file}';
 
   /**
    * Set environment configuration
@@ -191,7 +193,14 @@
       var _skelPathCommon = _skelPath.replace('{resource}', 'common'),
           _skelFileCommon = _skelLocalFile.replace('{resource}', 'common'),
           _skelPathTech = _skelPath.replace('{resource}', opt.tech),
-          _skelFileTech = _skelLocalFile.replace('{resource}', opt.tech);
+          _skelFileTech = _skelLocalFile.replace('{resource}', opt.tech),
+          _e5rSkelPath = _e5rProjectPath.replace('{workdir}', opt.workdir),
+          _skelTechFile = _e5rFile
+            .replace('{workdir}', opt.workdir)
+            .replace('{file}', 'tech'),
+          _skelVersionFile = _e5rFile
+            .replace('{workdir}', opt.workdir)
+            .replace('{file}', 'version');
 
       if(fs.getDirectoryItems(opt.workdir).length > 0 && !opt.replace){
         throw new Error('Not empty directories can not be initialized.');
@@ -217,6 +226,21 @@
       }
 
       if(opt.license) _copyLicense(opt.license, opt.workdir);
+
+      if(!fs.directoryExists(_e5rSkelPath)){
+        fs.createDirectory(_e5rSkelPath);
+      }
+
+      sys.logSubTask('Saving information files...');
+      {
+        //.e5t/tech file
+        fs.createTextFileWithContent(_skelTechFile, opt.tech, true);
+
+        //.e5r/version file
+        if(opt.pversion){
+          fs.createTextFileWithContent(_skelVersionFile, opt.pversion, true);
+        }
+      }
 
       sys.logTask('The project skeleton was successfully initialized!')
 
