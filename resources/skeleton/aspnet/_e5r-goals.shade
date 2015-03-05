@@ -147,7 +147,7 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs")}'
         }
     }
 
-#pack-packages target='package'
+#bundle-websites target='package'
     @{
         foreach(var projectFile in Files.Include(SRC+"/**/project.json")){
             var serializer = new JavaScriptSerializer();
@@ -160,10 +160,49 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs")}'
                 var projectName = Path.GetFileName(projectFolder);
 
                 var program = "kpm";
-                var commandLine = "pack "
+                var commandLine = "bundle "
                     + "--overwrite "
                     + "--no-source "
-                    + "--out " + Path.Combine(ARTIFACT_DIR, "pack", projectName);
+                    + "--out " + Path.Combine(ARTIFACT_DIR, "bundles", projectName);
+                if(!IsMono){
+                    program = "cmd";
+                    commandLine = "/C kpm " + commandLine;
+                }
+
+                var processStartInfo = new ProcessStartInfo {
+                    UseShellExecute = false,
+                    WorkingDirectory = projectFolder,
+                    FileName = program,
+                    Arguments = commandLine
+                };
+
+                var process = Process.Start(processStartInfo);
+                process.WaitForExit();
+                if (process.ExitCode != 0)
+                {
+                    throw new Exception(string.Format("Exit code {0} from {1}", process.ExitCode, program));
+                }
+            }
+        }
+    }
+
+#pack-packages target='package'
+    @{
+        foreach(var projectFile in Files.Include(SRC+"/**/project.json")){
+            var serializer = new JavaScriptSerializer();
+            var projectText = File.ReadAllText(projectFile);
+            var project = (Dictionary<string, object>)serializer.DeserializeObject(projectText);
+
+            if (!project.Keys.Contains("webroot"))
+            {
+                var projectFolder = Path.GetDirectoryName(projectFile);
+                var projectName = Path.GetFileName(projectFolder);
+
+                var program = "kpm";
+                var commandLine = "pack "
+                    //+ "--overwrite "
+                    //+ "--no-source "
+                    + "--out " + Path.Combine(ARTIFACT_DIR, "packages", projectName);
                 if(!IsMono){
                     program = "cmd";
                     commandLine = "/C kpm " + commandLine;
