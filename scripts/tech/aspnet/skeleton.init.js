@@ -149,7 +149,7 @@
           _aFileContent = fs.getArrayFileContent(_aFile),
           _fileContent = fs.fileExists(_file) ? fs.getArrayFileContent(_file) : [];
       _fileContent = _fileContent.concat(_aFileContent);
-      fs.createTextFileWithContent(_file, _fileContent, true, true);
+      fs.createTextFileWithContent(_file, _fileContent, true);
       fs.deleteFile(_aFile);
     }
   }
@@ -179,7 +179,7 @@
       throw new Error('Web license file ' +licenseName + ' not found!');
     }
 
-    fs.copyFile(_licenseLocal, _licensePath);
+    fs.copyFile(_licenseLocal, _licensePath, true);
   }
 
   /**

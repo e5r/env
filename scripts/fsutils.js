@@ -144,6 +144,9 @@
    * @param {bool}    unicode       If file is created as a Unicode or ASCII
    */
   function _createTextFileWithContent(path, content, overwrite, unicode){
+    overwrite = overwrite || false;
+    unicode = unicode || false;
+
     var _file = _createTextFile(path, overwrite, unicode);
     if(typeof content === typeof ''){
       _file.Write(content);
