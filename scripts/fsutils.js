@@ -136,6 +136,25 @@
   }
 
   /**
+   * Create a new Text file and fill content.
+   *
+   * @param {string}  path          Path to file
+   * @param {string|array} content  Content file
+   * @param {bool}    overwrite     If can overwrite an existing file
+   * @param {bool}    unicode       If file is created as a Unicode or ASCII
+   */
+  function _createTextFileWithContent(path, content, overwrite, unicode){
+    var _file = _createTextFile(path, overwrite, unicode);
+    if(typeof content === typeof ''){
+      _file.Write(content);
+    }
+    if(Array.isArray(content)){
+      for(var _l in content) _file.WriteLine(content[_l]);
+    }
+    _file.Close();
+  }
+
+  /**
    * Read content of text file
    *
    * @param {string} path   Path to file
@@ -187,9 +206,10 @@
    *
    * @return Array of {type(file|directory), path} items
    */
-  function _getDirectoryItems(path){
+  function _getDirectoryItems(path, matchRegex){
     var _path = _absolutePath(path),
         _items = [],
+        _match = RegExp.prototype.isPrototypeOf(matchRegex) ? matchRegex : /./g,
         _directory,
         _folderIterator,
         _fileIterator;
@@ -203,7 +223,10 @@
     _folderIterator = new Enumerator(_directory.SubFolders);
     while(!_folderIterator.atEnd())
     {
-      _items.push({type:'directory', path:_folderIterator.item()});
+      _itemPath = '.'.replace('.', _folderIterator.item());
+      if(_itemPath.search(_match) >= 0){
+        _items.push({type:'directory', path: _itemPath});
+      }
       _folderIterator.moveNext();
     }
 
@@ -211,28 +234,62 @@
     _fileIterator = new Enumerator(_directory.Files);
     while(!_fileIterator.atEnd())
     {
-      _items.push({type:'file', path:_fileIterator.item()});
+      _itemPath = '.'.replace('.', _fileIterator.item());
+      if(_itemPath.search(_match) >= 0){
+        _items.push({type:'file', path: _itemPath});
+      }
       _fileIterator.moveNext();
     }
 
     return _items;
   }
 
+  /**
+   * Copy a directory content to a destination path
+   *
+   * @param {string} source       Path to origin directory
+   * @param {string} destination  Path to destination directory
+   */
+  function _copyDirectory(source, destination){
+    _fso.CopyFolder(source, _absolutePath(destination));
+  }
+
+  /**
+   * Copy a file to a destination path
+   *
+   * @param {string}  source      Path to origin file
+   * @param {string}  destination Path to destination file
+   * @param {bool}    overwrite   If can overwrite an existing file
+   */
+  function _copyFile(source, destination, overwrite){
+    overwrite = overwrite || false;
+    _fso.CopyFile(source, _absolutePath(destination), overwrite);
+  }
+
   module.exports = {
     CONST: _consts,
+
+    // Path
+    absolutePath: _absolutePath,
+    combine: _combinePath,
+
+    // Files
     fileExists: _fileExists,
-    directoryExists: _directoryExists,
-    createDirectory: _createDirectory,
     createTextFile: _createTextFile,
+    createTextFileWithContent: _createTextFileWithContent,
     deleteFile: _deleteFile,
-    deleteDirectory: _deleteDirectory,
     getTextFileContent:_getTextFileContent,
     getArrayFileContent:_getArrayFileContent,
-    getSpecialDirectory: _getSpecialDirectory,
     getTempFileName: _getTempFileName,
+    copyFile: _copyFile,
+
+    // Directory
+    directoryExists: _directoryExists,
+    createDirectory: _createDirectory,
+    deleteDirectory: _deleteDirectory,
+    getSpecialDirectory: _getSpecialDirectory,
     getDirectoryPath: _getDirectoryPath,
     getDirectoryItems: _getDirectoryItems,
-    absolutePath: _absolutePath,
-    combine: _combinePath
+    copyDirectory: _copyDirectory
   }
 })();
