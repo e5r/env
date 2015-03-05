@@ -58,29 +58,23 @@
   function _makeOptions(opt){
     var _opt = _copyObject(opt);
 
-    // 1. Se --workdir não existe, usa o diretório atual
     if(!_opt.workdir) _opt.workdir = su.script.currentDirectory;
 
-    // 2. Se --workdir inicia com '$', substituir pelo diretório %E5R_HOME% ou %USERPROFILE%
     if((_opt.workdir||'').length > 0 && (_opt.workdir||'').charAt(0) == '$'){
       var _home = su.getEnvironment('E5R_HOME', su.CONST.ENVTYPE_PROCESS);
       if(!_home) _home = sys.product.meta.userPath;
       _opt.workdir = _opt.workdir.replace('$', _home);
     }
 
-    // 3. Expandir --workdir
     if(_opt.workdir) _opt.workdir = fs.absolutePath(su.buildEnvString(_opt.workdir));
 
-    // 4. Se diretório --workdir não existir, Criar
     if(!fs.directoryExists(_opt.workdir)) fs.createDirectory(_opt.workdir);
 
-    // 5. Se --tech não existe, procura pelo conteúdo do arquivo --workdir/.e5r/tech
     if(!_opt.tech){
       var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\tech'));
       if(fs.fileExists(_file)) _opt.tech = fs.getTextFileContent(_file);
     }
 
-    // 6. Se --version não existe, procura pelo conteúdo do arquivo --workdir/.e5r/version
     if(!_opt.version){
       var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\version'));
       if(fs.fileExists(_file)) _opt.version = fs.getTextFileContent(_file);
@@ -120,6 +114,7 @@
    * Run command entry point
    */
   function _run(args){
+
     // Redirect to help action
     if((args[0]||'') == 'help'){
       _env.helpers.showCmdHelp(_env.meta.cmd, []);
@@ -130,7 +125,8 @@
       [
         'value|workdir|w',
         'value|tech|t',
-        'value|license|l'
+        'value|license|l',
+        'switch|replace|r'
       ],
       [
         // Empty action
