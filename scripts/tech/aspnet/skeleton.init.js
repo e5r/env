@@ -7,6 +7,10 @@
       fs = sys.require('fsutils.js'),
       web = sys.require('webutils.js'),
 
+      // Constants
+      APPEND_EXTENSION = '.__append__',
+      APPEND_REGEX = '^(.*){ext}$'.replace('{ext}', APPEND_EXTENSION.replace('.','\\.')),
+
       // Read comment "Runner Plugin Environment API" in <cmdrunner.js> for
       // more information of environment API
       _env,
@@ -19,7 +23,9 @@
       _skelPath = fs.combine(_skelPathBase, '{resource}'),
       _skelLocalFile = fs.combine(_skelPathBase, '{resource}.wres'),
       _skelWebPath = _skelUrlBase + '/{resource}',
-      _skelWebFile = _skelUrlBase + '/{resource}.wres';
+      _skelWebFile = _skelUrlBase + '/{resource}.wres',
+      _licenseLocalFile = fs.combine(_licensePathBase, '{license}.md'),
+      _licenseWebFile = _licenseUrlBase + '/{license}.md';
 
   /**
    * Set environment configuration
@@ -35,6 +41,9 @@
    * @param {string} resourceName A name of resource
    */
   function _makeWebResource(resourceName){
+
+    sys.logSubTask('Making a Web Resource', resourceName + '...');
+
     var _localPath = _skelPath.replace('{resource}', resourceName),
         _localFile = _skelLocalFile.replace('{resource}', resourceName),
         _webUrl = _skelWebPath.replace('{resource}', resourceName),
@@ -62,7 +71,6 @@
       throw new Error('Web Resource ' + resourceName + ' not found!');
     }
 
-    // Percorrendo linha por linha
     var _fileContent = fs.getArrayFileContent(_localFile);
     for(var _line = 0; _line < _fileContent.length; _line++){
       var _lineValue = '.'.replace('.',_fileContent[_line]).trim();
@@ -71,8 +79,6 @@
       if(_lineValue.length < 1 || _lineValue.charAt(0) == '#') continue;
 
       var _parts = _lineValue.split(':');
-
-      // sys.logSubTask('#' + (_line+1), _lineValue, '-->', _parts);
 
       // Directory
       if(_parts.length === 2 && _parts[0] === 'd'){
@@ -86,7 +92,7 @@
       // File
       if(_parts.length === 3 && (_parts[0] === 'f' || _parts[0] === 'fa')){
         var _resLocalFile = fs.combine(_localPath,_parts[1])
-                          + (_parts[0] === 'fa' ? '.__append__' : ''),
+                          + (_parts[0] === 'fa' ? APPEND_EXTENSION : ''),
             _resLocalDirectory = fs.getDirectoryPath(_resLocalFile),
             _resWebFile = _skelUrlBase + '/' + _parts[2];
 
@@ -126,49 +132,93 @@
    * @param {string} skeleton Name of resource skeleton
    * @param {string} path     Destination path
    */
-  function _copySkeleton(skeleton, path){
-    sys.log('Copyng', skeleton, 'to', path + '...');
+  function _copySkelResource(resourceName, path){
+
+    sys.logSubTask('Copying resources', resourceName + ' to project path...');
+
+    var _localPath = _skelPath.replace('{resource}', resourceName),
+        _searchRegex = new RegExp(APPEND_REGEX, 'g');
+
+    fs.copyDirectory(_localPath, path);
+
+    var _appendFiles = fs.getDirectoryItems(path, _searchRegex);
+
+    for(var _af in _appendFiles){
+      var _aFile = _appendFiles[_af].path,
+          _file = _aFile.replace(_searchRegex, '$1'),
+          _aFileContent = fs.getArrayFileContent(_aFile),
+          _fileContent = fs.fileExists(_file) ? fs.getArrayFileContent(_file) : [];
+      _fileContent = _fileContent.concat(_aFileContent);
+      fs.createTextFileWithContent(_file, _fileContent, true, true);
+      fs.deleteFile(_aFile);
+    }
+  }
+
+  /**
+   * Get license of the Web and copy to path
+   *
+   * @param {string} licenseName  Name of license
+   * @param {string} path         Path to copy
+   */
+  function _copyLicense(licenseName, path){
+
+    sys.logSubTask('Copying license', licenseName + '...');
+
+    var _licenseWeb = _licenseWebFile.replace('{license}', licenseName),
+        _licenseLocal = _licenseLocalFile.replace('{license}', licenseName),
+        _licensePath = fs.combine(path, 'LICENSE.md');
+
+    if(!fs.directoryExists(_licensePathBase)) fs.createDirectory(_licensePathBase);
+
+    if(!fs.fileExists(_licenseLocal)){
+      sys.logAction('Downloading Web License', licenseName + '...');
+      web.download(_licenseWeb, _licenseLocal, function silent(){});
+    }
+
+    if(!fs.fileExists(_licenseLocal)){
+      throw new Error('Web license file ' +licenseName + ' not found!');
+    }
+
+    fs.copyFile(_licenseLocal, _licensePath);
   }
 
   /**
    * Run command entry point
    */
   function _run(opt, args){
+    sys.logTask('Initializing a skeleton project...');
     try {
       var _skelPathCommon = _skelPath.replace('{resource}', 'common'),
           _skelFileCommon = _skelLocalFile.replace('{resource}', 'common'),
           _skelPathTech = _skelPath.replace('{resource}', opt.tech),
           _skelFileTech = _skelLocalFile.replace('{resource}', opt.tech);
 
-      // 1. --workdir must be empty
-      if(fs.getDirectoryItems(opt.workdir).length > 0){
+      if(fs.getDirectoryItems(opt.workdir).length > 0 && !opt.replace){
         throw new Error('Not empty directories can not be initialized.');
       }
 
-      // 2. Se o diretório local::Skeleton Common não existe, ou existe junto ao
-      // arquivo de recurso common.wres. O mesmo deve ser processado
       if(!fs.directoryExists(_skelPathCommon) || fs.fileExists(_skelFileCommon)){
         _makeWebResource('common');
       }
 
-      // 3. Se o diretório local::Skeleton --tech não existe, ou existe junto ao
-      // arquivo de recurso --tech.wres. O mesmo deve ser processado
       if(!fs.directoryExists(_skelPathTech) || fs.fileExists(_skelFileTech)){
         _makeWebResource(opt.tech);
       }
 
-      _copySkeleton('common', opt.workdir);
-      _copySkeleton(opt.tech, opt.workdir);
+      _copySkelResource('common', opt.workdir);
+      _copySkelResource(opt.tech, opt.workdir);
 
-      // 4. Se o diretório local::Skeleton Common não existe. Erro Not Found
       if(!fs.directoryExists(_skelPathCommon) || fs.fileExists(_skelFileCommon)){
         throw new Error('Error processing <common> skeleton template');
       }
 
-      // 5. Se o diretório local::Skeleton --tech não existe. Erro Not Found
       if(!fs.directoryExists(_skelPathTech) || fs.fileExists(_skelFileTech)){
         throw new Error('Error processing <' + opt.tech + '> skeleton template');
       }
+
+      if(opt.license) _copyLicense(opt.license, opt.workdir);
+
+      sys.logTask('The project skeleton was successfully initialized!')
 
     }catch(error){
       sys.logTask('A error ocurred on init a project skeleton.');
