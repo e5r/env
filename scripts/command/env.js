@@ -72,12 +72,12 @@
 
     if(!_opt.tech){
       var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\tech'));
-      if(fs.fileExists(_file)) _opt.tech = fs.getTextFileContent(_file);
+      if(fs.fileExists(_file)) _opt.tech = fs.getTextFileContent(_file).trim();
     }
 
     if(!_opt.version){
       var _file = fs.absolutePath(fs.combine(_opt.workdir, '.e5r\\version'));
-      if(fs.fileExists(_file)) _opt.version = fs.getTextFileContent(_file);
+      if(fs.fileExists(_file)) _opt.version = fs.getTextFileContent(_file).trim();
     }
 
     return _opt;

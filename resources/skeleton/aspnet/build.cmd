@@ -1,3 +1,4 @@
+
 setlocal
 
 set BUILDSTAGE=build-stage
@@ -6,7 +7,7 @@ set NUGET=%NUGETPATH%\nuget.exe
 set PACKAGESPATH=%NUGETPATH%\packages
 
 :Build_EnvCheck
-  e5r 1>nul
+  call e5r 1>nul
   if "%ERRORLEVEL%"=="0" goto Build_NugetDownload
   echo.
   echo E5R Environment not installed!
@@ -32,14 +33,10 @@ set PACKAGESPATH=%NUGETPATH%\packages
     call e5r env install --version 1.0.0-beta3 -runtime CLR -x86
     call e5r env use --version 1.0.0-beta3 -runtime CLR -x86
     echo TODO: Delete packages.config and use install Sake here
-    call "%NUGET%" install ^
-        -OutputDirectory %PACKAGESPATH% ^
-        -ExcludeVersion .\packages.config
+    call "%NUGET%" install -OutputDirectory %PACKAGESPATH%  -ExcludeVersion .\packages.config
 
 :Build
   echo Building...
-  call "%PACKAGESPATH%\Sake\tools\sake.exe" ^
-      -I "build" ^
-      -f makefile.shade %*
+  call "%PACKAGESPATH%\Sake\tools\sake.exe" -I "build" -f makefile.shade %*
 
 :Build_End
