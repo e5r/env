@@ -29,6 +29,11 @@
     return true;
   }
 
+  /**
+   * Get and make a Web Resource content
+   *
+   * @param {string} resourceName A name of resource
+   */
   function _makeWebResource(resourceName){
     var _localPath = _skelPath.replace('{resource}', resourceName),
         _localFile = _skelLocalFile.replace('{resource}', resourceName),
@@ -115,8 +120,14 @@
     }
   }
 
+  /**
+   * Copy a content of resource skeleton to path
+   *
+   * @param {string} skeleton Name of resource skeleton
+   * @param {string} path     Destination path
+   */
   function _copySkeleton(skeleton, path){
-
+    sys.log('Copyng', skeleton, 'to', path + '...');
   }
 
   /**
@@ -145,6 +156,9 @@
       if(!fs.directoryExists(_skelPathTech) || fs.fileExists(_skelFileTech)){
         _makeWebResource(opt.tech);
       }
+
+      _copySkeleton('common', opt.workdir);
+      _copySkeleton(opt.tech, opt.workdir);
 
       // 4. Se o diretório local::Skeleton Common não existe. Erro Not Found
       if(!fs.directoryExists(_skelPathCommon) || fs.fileExists(_skelFileCommon)){
