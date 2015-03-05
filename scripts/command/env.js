@@ -144,7 +144,7 @@
           var _opt = _makeOptions(opt),
               _cmd = _createAndCheckCommand('env.install', _opt);
 
-          if(!opt.version)
+          if(!_opt.version)
             throw new Error('Param --version is required.');
 
           _cmd.run(_opt.version, args);
@@ -155,7 +155,7 @@
           var _opt = _makeOptions(opt),
               _cmd = _createAndCheckCommand('env.uninstall', _opt);
 
-          if(!opt.version)
+          if(!_opt.version)
             throw new Error('Param --version is required.');
 
           _cmd.run(_opt.version, args);
@@ -172,7 +172,7 @@
           var _opt = _makeOptions(opt),
               _cmd = _createAndCheckCommand('env.use', _opt);
 
-          if(!opt.version)
+          if(!_opt.version)
             throw new Error('Param --version is required.');
 
           _cmd.run(_opt.version, args);
