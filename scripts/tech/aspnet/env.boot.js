@@ -102,22 +102,15 @@
 
         if(!fs.fileExists(_nugetFile)){
           sys.logAction('Downloading nuget.exe');
-          sys.log('#TODO: Remove NuGet of build script');
           _env.helpers.getWebFile('nuget.exe', "https://www.nuget.org/nuget.exe", _nugetFile);
         }
 
-        if(!fs.fileExists()){
+        if(!fs.fileExists(fs.combine(_sakePath, 'Sake.exe'))){
           sys.logAction('Downloading Sake.exe');
-          sys.log('#TODO: Move aspnet/Sake/tools to aspnet/Sake and clean');
-          sys.log('#TODO: Remove Sake of build script');
           var _nugetArgs = [
-            'install',
-            '-ExcludeVersion',
-            '-OutputDirectory',
-            '"' + _toolsPath + '"',
-            'Sake',
-            '-Version',
-            '0.2.0'];
+            'install', '-ExcludeVersion',
+            '-OutputDirectory', '"' + _toolsPath + '"',
+            'Sake', '-Version', '0.2.0'];
           su.exec(_nugetFile, _nugetArgs, function silent(){});
         }
 
