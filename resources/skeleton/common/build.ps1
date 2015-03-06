@@ -7,6 +7,8 @@ for($count = 0; $count -lt $args.length; $count++) {
     $args[$count] = $value
 }
 
+$progresspreference = 'SilentlyContinue'
+
 if(!(get-command 'e5r' -erroraction silentlycontinue)){
   write-host "E5R Environment Bootstrap..."
   $e5rrepo = "https://github.com/e5r/env/raw/migrate-to-javascript"

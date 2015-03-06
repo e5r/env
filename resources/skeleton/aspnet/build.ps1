@@ -1,4 +1,3 @@
-$progresspreference = 'SilentlyContinue'
 
 if(!(get-command 'e5r' -erroraction silentlycontinue)){
   write-host "`nE5R Environment not installed!"
