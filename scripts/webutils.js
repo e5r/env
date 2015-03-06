@@ -1,9 +1,9 @@
 // Copyright (c) E5R Development Team. All rights reserved.
 // Licensed under the MIT License. See LICENSE file for license information.
 
-(function(){ 'use strict'
-  var fs = sys.require('fsutils.js'),
-      su = sys.require('sysutils.js');
+(function(_){ 'use strict'
+  _.fs = sys.require('fsutils.js');
+  _.su = sys.require('sysutils.js');
 
   /**
    * Get a Web file.
@@ -14,11 +14,11 @@
    *
    * @return TRUE if file is downloaded, FALSE if not
    */
-  function _getFile(){
+  _.getFile = function(){
     var url, filePath, cbkError;
 
     if(arguments.length < 1){
-      throw new Error('<webutils._getFile> #ArgumentException: @url is required.');
+      throw new Error('<webutils.getFile> #ArgumentException: @url is required.');
     }
 
     url = arguments[0];
@@ -34,20 +34,20 @@
       cbkError = arguments[arguments.length > 2 ? 2 : 1];
     }else{
       cbkError = function(error){
-        throw new Error('<webutils._getFile> #' + error.name + ': ' + error.message);
+        throw new Error('<webutils.getFile> #' + error.name + ': ' + error.message);
       };
     }
 
     if(typeof filePath != 'string'){
-      throw new Error('<webutils._getFile> #ArgumentException: @filePath type is invalid.');
+      throw new Error('<webutils.getFile> #ArgumentException: @filePath type is invalid.');
     }
 
     if(typeof cbkError != 'function'){
-      throw new Error('<webutils._getFile> #ArgumentException: @cbkError type is invalid.');
+      throw new Error('<webutils.getFile> #ArgumentException: @cbkError type is invalid.');
     }
 
-    var _filePath = fs.absolutePath(filePath),
-        _directoryPath = fs.getDirectoryPath(filePath),
+    var _filePath = _.fs.absolutePath(filePath),
+        _directoryPath = _.fs.getDirectoryPath(filePath),
         _http = new ActiveXObject('MSXML2.ServerXMLHTTP'),
         _stream = new ActiveXObject("ADODB.Stream")
         _completed = false,
@@ -62,8 +62,8 @@
             if(_http.responseText){
               _stream.write(_http.responseBody);
             }
-            if(!fs.directoryExists(_directoryPath)){
-              fs.createDirectory(_directoryPath);
+            if(!_.fs.directoryExists(_directoryPath)){
+              _.fs.createDirectory(_directoryPath);
             }
             _stream.savetofile(_filePath, 2);
           }else{
@@ -90,7 +90,7 @@
     }
 
     while(!_completed){
-      su.sleep(100);
+      _.su.sleep(100);
     }
 
     _http = null;
@@ -99,6 +99,6 @@
   }
 
   module.exports = {
-    download: _getFile
+    download: _.getFile
   }
-})();
+})({});

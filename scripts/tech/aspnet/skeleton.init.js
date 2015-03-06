@@ -1,39 +1,37 @@
 // Copyright (c) E5R Development Team. All rights reserved.
 // Licensed under the MIT License. See LICENSE file for license information.
 
-(function(){ 'use strict'
+(function(_){ 'use strict'
+  _.fs = sys.require('fsutils.js');
+  _.web = sys.require('webutils.js');
 
-  var su = sys.require('sysutils.js'),
-      fs = sys.require('fsutils.js'),
-      web = sys.require('webutils.js'),
+  // Constants
+  _.APPEND_EXTENSION = '.__append__';
+  _.APPEND_REGEX = '^(.*){ext}$'.replace('{ext}', _.APPEND_EXTENSION.replace('.','\\.'));
 
-      // Constants
-      APPEND_EXTENSION = '.__append__',
-      APPEND_REGEX = '^(.*){ext}$'.replace('{ext}', APPEND_EXTENSION.replace('.','\\.')),
+  // Read comment "Runner Plugin Environment API" in <cmdrunner.js> for
+  // more information of environment API
+  _.env;
 
-      // Read comment "Runner Plugin Environment API" in <cmdrunner.js> for
-      // more information of environment API
-      _env,
-
-      // Skeleton
-      _skelUrlBase = sys.product.meta.fileRepository + '/resources/skeleton',
-      _skelPathBase = sys.product.meta.installPath + '\\resources\\skeleton',
-      _licenseUrlBase = sys.product.meta.fileRepository + '/resources/license',
-      _licensePathBase = sys.product.meta.installPath + '\\resources\\license',
-      _skelPath = fs.combine(_skelPathBase, '{resource}'),
-      _skelLocalFile = fs.combine(_skelPathBase, '{resource}.wres'),
-      _skelWebPath = _skelUrlBase + '/{resource}',
-      _skelWebFile = _skelUrlBase + '/{resource}.wres',
-      _licenseLocalFile = fs.combine(_licensePathBase, '{license}.md'),
-      _licenseWebFile = _licenseUrlBase + '/{license}.md',
-      _e5rProjectPath = '{workdir}\\.e5r',
-      _e5rFile = _e5rProjectPath + '\\{file}';
+  // Skeleton
+  _.skelUrlBase = sys.product.meta.fileRepository + '/resources/skeleton';
+  _.skelPathBase = sys.product.meta.installPath + '\\resources\\skeleton';
+  _.licenseUrlBase = sys.product.meta.fileRepository + '/resources/license';
+  _.licensePathBase = sys.product.meta.installPath + '\\resources\\license';
+  _.skelPath = _.fs.combine(_.skelPathBase, '{resource}');
+  _.skelLocalFile = _.fs.combine(_.skelPathBase, '{resource}.wres');
+  _.skelWebPath = _.skelUrlBase + '/{resource}';
+  _.skelWebFile = _.skelUrlBase + '/{resource}.wres';
+  _.licenseLocalFile = _.fs.combine(_.licensePathBase, '{license}.md');
+  _.licenseWebFile = _.licenseUrlBase + '/{license}.md';
+  _.e5rProjectPath = '{workdir}\\.e5r';
+  _.e5rFile = _.e5rProjectPath + '\\{file}';
 
   /**
    * Set environment configuration
    */
-  function _setup(env){
-    _env = env;
+  _.setup = function(env){
+    _.env = env;
     return true;
   }
 
@@ -42,38 +40,38 @@
    *
    * @param {string} resourceName A name of resource
    */
-  function _makeWebResource(resourceName){
+  _.makeWebResource = function(resourceName){
 
     sys.logSubTask('Making a Web Resource', resourceName + '...');
 
-    var _localPath = _skelPath.replace('{resource}', resourceName),
-        _localFile = _skelLocalFile.replace('{resource}', resourceName),
-        _webUrl = _skelWebPath.replace('{resource}', resourceName),
-        _webFile = _skelWebFile.replace('{resource}', resourceName),
+    var _localPath = _.skelPath.replace('{resource}', resourceName),
+        _localFile = _.skelLocalFile.replace('{resource}', resourceName),
+        _webUrl = _.skelWebPath.replace('{resource}', resourceName),
+        _webFile = _.skelWebFile.replace('{resource}', resourceName),
         __clearLocalPath = function(){
           try{
-            fs.deleteDirectory(_localPath);
+            _.fs.deleteDirectory(_localPath);
           }catch(e){
             sys.log('#LOG:',
-              '<skeleton.init._makeWebResource>: Error clearing directory [',
+              '<skeleton.init.makeWebResource>: Error clearing directory [',
               _localPath + ' ].');
           }
         };
 
-    if(!fs.directoryExists(_skelPathBase)){
-      fs.createDirectory(_skelPathBase);
+    if(!_.fs.directoryExists(_.skelPathBase)){
+      _.fs.createDirectory(_.skelPathBase);
     }
 
-    if(!fs.fileExists(_localFile)){
+    if(!_.fs.fileExists(_localFile)){
       sys.logAction('Downloading Web Resource', resourceName + '...');
-      web.download(_webFile, _localFile, function silent(){});
+      _.web.download(_webFile, _localFile, function silent(){});
     }
 
-    if(!fs.fileExists(_localFile)){
+    if(!_.fs.fileExists(_localFile)){
       throw new Error('Web Resource ' + resourceName + ' not found!');
     }
 
-    var _fileContent = fs.getArrayFileContent(_localFile);
+    var _fileContent = _.fs.getArrayFileContent(_localFile);
     for(var _line = 0; _line < _fileContent.length; _line++){
       var _lineValue = '.'.replace('.',_fileContent[_line]).trim();
 
@@ -84,30 +82,30 @@
 
       // Directory
       if(_parts.length === 2 && _parts[0] === 'd'){
-        var _directory = fs.combine(_localPath, _parts[1]);
-        if(!fs.directoryExists(_directory)){
-          fs.createDirectory(_directory);
+        var _directory = _.fs.combine(_localPath, _parts[1]);
+        if(!_.fs.directoryExists(_directory)){
+          _.fs.createDirectory(_directory);
         }
         continue;
       }
 
       // File
       if(_parts.length === 3 && (_parts[0] === 'f' || _parts[0] === 'fa')){
-        var _resLocalFile = fs.combine(_localPath,_parts[1])
-                          + (_parts[0] === 'fa' ? APPEND_EXTENSION : ''),
-            _resLocalDirectory = fs.getDirectoryPath(_resLocalFile),
-            _resWebFile = _skelUrlBase + '/' + _parts[2];
+        var _resLocalFile = _.fs.combine(_localPath,_parts[1])
+                          + (_parts[0] === 'fa' ? _.APPEND_EXTENSION : ''),
+            _resLocalDirectory = _.fs.getDirectoryPath(_resLocalFile),
+            _resWebFile = _.skelUrlBase + '/' + _parts[2];
 
-        if(!fs.directoryExists(_resLocalDirectory)){
-          fs.createDirectory(_resLocalDirectory);
+        if(!_.fs.directoryExists(_resLocalDirectory)){
+          _.fs.createDirectory(_resLocalDirectory);
         }
 
-        if(!fs.fileExists(_resLocalFile)){
+        if(!_.fs.fileExists(_resLocalFile)){
           sys.logAction('Downloading resource file', _parts[2] + '...');
-          web.download(_resWebFile, _resLocalFile, function silent(){});
+          _.web.download(_resWebFile, _resLocalFile, function silent(){});
         }
 
-        if(!fs.fileExists(_resLocalFile)){
+        if(!_.fs.fileExists(_resLocalFile)){
           __clearLocalPath();
           throw new Error('Web resource file ' + _parts[2] + ' not found!');
         }
@@ -123,8 +121,8 @@
       throw new Error(_msgError);
     }
 
-    if(fs.fileExists(_localFile)){
-      fs.deleteFile(_localFile);
+    if(_.fs.fileExists(_localFile)){
+      _.fs.deleteFile(_localFile);
     }
   }
 
@@ -134,25 +132,25 @@
    * @param {string} skeleton Name of resource skeleton
    * @param {string} path     Destination path
    */
-  function _copySkelResource(resourceName, path){
+  _.copySkelResource = function(resourceName, path){
 
     sys.logSubTask('Copying resources', resourceName + ' to project path...');
 
-    var _localPath = _skelPath.replace('{resource}', resourceName),
-        _searchRegex = new RegExp(APPEND_REGEX, 'g');
+    var _localPath = _.skelPath.replace('{resource}', resourceName),
+        _searchRegex = new RegExp(_.APPEND_REGEX, 'g');
 
-    fs.copyDirectory(_localPath, path);
+    _.fs.copyDirectory(_localPath, path);
 
-    var _appendFiles = fs.getDirectoryItems(path, _searchRegex);
+    var _appendFiles = _.fs.getDirectoryItems(path, _searchRegex);
 
     for(var _af in _appendFiles){
       var _aFile = _appendFiles[_af].path,
           _file = _aFile.replace(_searchRegex, '$1'),
-          _aFileContent = fs.getArrayFileContent(_aFile),
-          _fileContent = fs.fileExists(_file) ? fs.getArrayFileContent(_file) : [];
+          _aFileContent = _.fs.getArrayFileContent(_aFile),
+          _fileContent = _.fs.fileExists(_file) ? _.fs.getArrayFileContent(_file) : [];
       _fileContent = _fileContent.concat(_aFileContent);
-      fs.createTextFileWithContent(_file, _fileContent, true);
-      fs.deleteFile(_aFile);
+      _.fs.createTextFileWithContent(_file, _fileContent, true);
+      _.fs.deleteFile(_aFile);
     }
   }
 
@@ -162,83 +160,83 @@
    * @param {string} licenseName  Name of license
    * @param {string} path         Path to copy
    */
-  function _copyLicense(licenseName, path){
+  _.copyLicense = function(licenseName, path){
 
     sys.logSubTask('Copying license', licenseName + '...');
 
-    var _licenseWeb = _licenseWebFile.replace('{license}', licenseName),
-        _licenseLocal = _licenseLocalFile.replace('{license}', licenseName),
-        _licensePath = fs.combine(path, 'LICENSE.md');
+    var _licenseWeb = _.licenseWebFile.replace('{license}', licenseName),
+        _licenseLocal = _.licenseLocalFile.replace('{license}', licenseName),
+        _licensePath = _.fs.combine(path, 'LICENSE.md');
 
-    if(!fs.directoryExists(_licensePathBase)) fs.createDirectory(_licensePathBase);
+    if(!_.fs.directoryExists(_.licensePathBase)) _.fs.createDirectory(_.licensePathBase);
 
-    if(!fs.fileExists(_licenseLocal)){
+    if(!_.fs.fileExists(_licenseLocal)){
       sys.logAction('Downloading Web License', licenseName + '...');
-      web.download(_licenseWeb, _licenseLocal, function silent(){});
+      _.web.download(_licenseWeb, _licenseLocal, function silent(){});
     }
 
-    if(!fs.fileExists(_licenseLocal)){
+    if(!_.fs.fileExists(_licenseLocal)){
       throw new Error('Web license file ' +licenseName + ' not found!');
     }
 
-    fs.copyFile(_licenseLocal, _licensePath, true);
+    _.fs.copyFile(_licenseLocal, _licensePath, true);
   }
 
   /**
    * Run command entry point
    */
-  function _run(opt, args){
+  _.run = function(opt, args){
     sys.logTask('Initializing a skeleton project...');
     try {
-      var _skelPathCommon = _skelPath.replace('{resource}', 'common'),
-          _skelFileCommon = _skelLocalFile.replace('{resource}', 'common'),
-          _skelPathTech = _skelPath.replace('{resource}', opt.tech),
-          _skelFileTech = _skelLocalFile.replace('{resource}', opt.tech),
-          _e5rSkelPath = _e5rProjectPath.replace('{workdir}', opt.workdir),
-          _skelTechFile = _e5rFile
+      var _skelPathCommon = _.skelPath.replace('{resource}', 'common'),
+          _skelFileCommon = _.skelLocalFile.replace('{resource}', 'common'),
+          _skelPathTech = _.skelPath.replace('{resource}', opt.tech),
+          _skelFileTech = _.skelLocalFile.replace('{resource}', opt.tech),
+          _e5rSkelPath = _.e5rProjectPath.replace('{workdir}', opt.workdir),
+          _skelTechFile = _.e5rFile
             .replace('{workdir}', opt.workdir)
             .replace('{file}', 'tech'),
-          _skelVersionFile = _e5rFile
+          _skelVersionFile = _.e5rFile
             .replace('{workdir}', opt.workdir)
             .replace('{file}', 'version');
 
-      if(fs.getDirectoryItems(opt.workdir).length > 0 && !opt.replace){
+      if(_.fs.getDirectoryItems(opt.workdir).length > 0 && !opt.replace){
         throw new Error('Not empty directories can not be initialized.');
       }
 
-      if(!fs.directoryExists(_skelPathCommon) || fs.fileExists(_skelFileCommon)){
-        _makeWebResource('common');
+      if(!_.fs.directoryExists(_skelPathCommon) || _.fs.fileExists(_skelFileCommon)){
+        _.makeWebResource('common');
       }
 
-      if(!fs.directoryExists(_skelPathTech) || fs.fileExists(_skelFileTech)){
-        _makeWebResource(opt.tech);
+      if(!_.fs.directoryExists(_skelPathTech) || _.fs.fileExists(_skelFileTech)){
+        _.makeWebResource(opt.tech);
       }
 
-      _copySkelResource('common', opt.workdir);
-      _copySkelResource(opt.tech, opt.workdir);
+      _.copySkelResource('common', opt.workdir);
+      _.copySkelResource(opt.tech, opt.workdir);
 
-      if(!fs.directoryExists(_skelPathCommon) || fs.fileExists(_skelFileCommon)){
+      if(!_.fs.directoryExists(_skelPathCommon) || _.fs.fileExists(_skelFileCommon)){
         throw new Error('Error processing <common> skeleton template');
       }
 
-      if(!fs.directoryExists(_skelPathTech) || fs.fileExists(_skelFileTech)){
+      if(!_.fs.directoryExists(_skelPathTech) || _.fs.fileExists(_skelFileTech)){
         throw new Error('Error processing <' + opt.tech + '> skeleton template');
       }
 
-      if(opt.license) _copyLicense(opt.license, opt.workdir);
+      if(opt.license) _.copyLicense(opt.license, opt.workdir);
 
-      if(!fs.directoryExists(_e5rSkelPath)){
-        fs.createDirectory(_e5rSkelPath);
+      if(!_.fs.directoryExists(_e5rSkelPath)){
+        _.fs.createDirectory(_e5rSkelPath);
       }
 
       sys.logSubTask('Saving information files...');
       {
         //.e5t/tech file
-        fs.createTextFileWithContent(_skelTechFile, opt.tech, true);
+        _.fs.createTextFileWithContent(_skelTechFile, opt.tech, true);
 
         //.e5r/version file
         if(opt.pversion){
-          fs.createTextFileWithContent(_skelVersionFile, opt.pversion, true);
+          _.fs.createTextFileWithContent(_skelVersionFile, opt.pversion, true);
         }
       }
 
@@ -251,7 +249,7 @@
   }
 
   command.api = {
-    setup: _setup,
-    run: _run
+    setup: _.setup,
+    run: _.run
   }
-})();
+})({});
