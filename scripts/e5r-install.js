@@ -20,6 +20,21 @@
     return Array.prototype.isPrototypeOf(obj);
   }
 
+  // Array.contains()
+  Array.contains = function(array, value){
+    for(var i in array){
+      if(array[i] == value) return true;
+    }
+    return false;
+  }
+
+  // Object.copy()
+  Object.copy = function(obj){
+    var _obj = {};
+    for(var p in obj) _obj[p] = obj[p];
+    return _obj;
+  }
+
   var _fso = new ActiveXObject("Scripting.FileSystemObject"),
       _shell = new ActiveXObject("WScript.Shell"),
       _userPath = _shell.Environment('PROCESS')('USERPROFILE'),
