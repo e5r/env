@@ -28,7 +28,7 @@
    */
   _.showUsage = function(){
     sys.log(sys.product.meta.getHeaderText());
-    sys.log('Usage:', sys.product.cmd, 'skeleton <command> [options...]');
+    sys.log('Usage:', sys.product.cmd, 'skeleton <action> [options...]');
     sys.log('      ', 'Try \'' + sys.product.cmd, 'help skeleton\' for more information.');
   }
 

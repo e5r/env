@@ -28,7 +28,7 @@
    */
   _.showUsage = function(){
     sys.log(sys.product.meta.getHeaderText());
-    sys.log('Usage:', sys.product.cmd, 'env <command> [options...]');
+    sys.log('Usage:', sys.product.cmd, 'env <action> [options...]');
     sys.log('      ', 'Try \'' + sys.product.cmd, 'help env\' for more information.');
   }
 
