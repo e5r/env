@@ -21,7 +21,7 @@
       _kvmUrlPs = _kvmUrlBase.replace('{t}', 'ps1'),
       _toolsPath = fs.combine(sys.product.meta.installPath, 'tools', 'tech', 'aspnet'),
       _nugetFile = fs.combine(_toolsPath, 'nuget.exe'),
-      _sakePath = fs.combine(_toolsPath,'Sake','tools'),
+      _sakePath = fs.combine(_toolsPath,'Sake'),
       _sakeFile = fs.combine(_sakePath, 'Sake.exe');
 
   /**
@@ -119,6 +119,17 @@
             '-Version',
             '0.2.0'];
           su.exec(_nugetFile, _nugetArgs, function silent(){});
+        }
+
+        // Remove Sake/Sake.nupkg
+        if(fs.fileExists(fs.combine(_sakePath, 'Sake.nupkg'))){
+          fs.deleteFile(fs.combine(_sakePath, 'Sake.nupkg'));
+        }
+
+        // Move Sake/tools to Sake
+        if(fs.directoryExists(fs.combine(_sakePath, 'tools'))){
+          fs.copyDirectory(fs.combine(_sakePath, 'tools'), _sakePath);
+          fs.deleteDirectory(fs.combine(_sakePath, 'tools'));
         }
 
         if(!fs.fileExists(_nugetFile)){
