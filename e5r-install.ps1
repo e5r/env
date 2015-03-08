@@ -1,4 +1,4 @@
-$repositoryUrl = "https://raw.githubusercontent.com/e5r/env/migrate-to-javascript"
+$repositoryUrl = "https://raw.githubusercontent.com/e5r/env/v0.1.0-alpha2"
 $scriptName = [io.path]::getfilenamewithoutextension($pscommandpath)
 $e5rPath = "$home\.e5r"
 $postFile = "$e5rPath\tmp-hot-envvars.ps1"

@@ -1,6 +1,6 @@
 @echo off
 
-set REPOSITORYURL="https://raw.githubusercontent.com/e5r/env/migrate-to-javascript"
+set REPOSITORYURL="https://raw.githubusercontent.com/e5r/env/v0.1.0-alpha2"
 set SCRIPTNAME=%~n0
 set E5RPATH=%USERPROFILE%\.e5r
 set POSTFILE=%E5RPATH%\tmp-hot-envvars.cmd

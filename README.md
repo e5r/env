@@ -5,7 +5,7 @@ E5R Environment
 
 * [Saiba mais sobre a arquitetura](doc/ARCHITECTURE.md)
 * [Guia do Usuário](doc/USERGUIDE.md)
-* [Notas de Lançamento](https://github.com/e5r/env/releases/tag/v0.1.0-alpha1) da versão **0.1.0-alpha1**
+* [Notas de Lançamento](https://github.com/e5r/env/releases/tag/v0.1.0-alpha2) da versão **0.1.0-alpha2**
 
 ## Instalação
 
@@ -16,12 +16,12 @@ Execute um dos códigos abaixo em seu shell favorito.
 #### Prompt de Comando
 
 ```cmd
-bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.cmd" "%CD%\e5r-install.cmd" && "%CD%\e5r-install.cmd" && del "%CD%\e5r-install.cmd"
+bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/v0.1.0-alpha2/e5r-install.cmd" "%CD%\e5r-install.cmd" && "%CD%\e5r-install.cmd" && del "%CD%\e5r-install.cmd"
 ```
 #### PowerShell
 
 ```powershell
-(new-object system.net.webclient).downloadfile("https://github.com/e5r/env/raw/migrate-to-javascript/e5r-install.ps1","$pwd\\e5r-install.ps1");iex "$pwd\\e5r-install.ps1";del "$pwd\\e5r-install.ps1"
+(new-object system.net.webclient).downloadfile("https://github.com/e5r/env/raw/v0.1.0-alpha2/e5r-install.ps1","$pwd\\e5r-install.ps1");iex "$pwd\\e5r-install.ps1";del "$pwd\\e5r-install.ps1"
 ```
 
 ### ~~Unix like~~

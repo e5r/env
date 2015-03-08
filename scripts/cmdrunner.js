@@ -60,7 +60,7 @@
           binPath: _userPath + '\\.e5r\\bin',
           libPath: _userPath + '\\.e5r\\lib',
           hotEnvVarsFileName: _userPath + '\\.e5r\\tmp-hot-envvars.{type}',
-          fileRepository: 'https://raw.githubusercontent.com/e5r/env/migrate-to-javascript',
+          fileRepository: 'https://raw.githubusercontent.com/e5r/env/v0.1.0-alpha2',
           copyright: '(C) 2014-2015, E5R Development Team. All rights reserved.',
           authors: [
             {name:'Erlimar Silva Campos', email:'erlimar@gmail.com', github:'erlimar'}
