@@ -1,36 +1,26 @@
 @echo off
 
-set REPOSITORYURL="http://e5r.github.io/env/dist"
-set CDPATH=%CD%
+set REPOSITORYURL="https://raw.githubusercontent.com/e5r/env/v0.1.0-alpha2"
 set SCRIPTNAME=%~n0
 set E5RPATH=%USERPROFILE%\.e5r
-set POSTFILE=%E5RPATH%\postfile.cmd
-set PSCOMMONFILE=%E5RPATH%\lib\common.ps1
-set PSINSTALLFILE=%E5RPATH%\bin\%SCRIPTNAME%.ps1
-set PSCOMMONURL=%REPOSITORYURL%/scripts/common.ps1
-set PSINSTALLURL=%REPOSITORYURL%/scripts/%SCRIPTNAME%.ps1
+set POSTFILE=%E5RPATH%\tmp-hot-envvars.cmd
+set INSTALLFILE=%E5RPATH%\bin\%SCRIPTNAME%.js
 
 if not exist %E5RPATH%\bin md %E5RPATH%\bin
 if not exist %E5RPATH%\lib md %E5RPATH%\lib
 
-:downloadinstall
-    if exist %PSINSTALLFILE% goto downloadcommon
-    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted ^
-        -Command "(New-Object System.Net.WebClient).DownloadFile('%PSINSTALLURL%', '%PSINSTALLFILE%')"
+:download
+  @powershell -noprofile -nologo -executionpolicy unrestricted ^
+      -command "$a=('sysutils','lib'),('fsutils','lib'),('webutils','lib'),('%SCRIPTNAME%','bin');$c=new-object system.net.webclient;foreach($i in $a){$u='%REPOSITORYURL%/scripts/{0}.js'-f$i[0];$f='%E5RPATH%\{1}\{0}.js'-f$i[0],$i[1];$c.downloadfile($u,$f);}"
 
-:downloadcommon
-    if exist %PSCOMMONFILE% goto psrun
-    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted ^
-        -Command "(New-Object System.Net.WebClient).DownloadFile('%PSCOMMONURL%', '%PSCOMMONFILE%')"
+:run
+  @cscript "%INSTALLFILE%" //nologo
 
-:psrun
-    @PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -File "%PSINSTALLFILE%"  %*
-
-    if exist %POSTFILE% (
-        CALL %POSTFILE%
-        DEL %POSTFILE%
-    )
+  if exist "%POSTFILE%" (
+      call "%POSTFILE%"
+      del "%POSTFILE%"
+  )
 
 :gc
-    if exist %PSINSTALLFILE% DEL %PSINSTALLFILE%
-    if not exist %E5RPATH%\bin\e5r.cmd rd /s /q %E5RPATH%
+    if exist "%INSTALLFILE%" del "%INSTALLFILE%"
+    if not exist "%E5RPATH%\bin\e5r.cmd" rd /s /q "%E5RPATH%"

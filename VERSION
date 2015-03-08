@@ -12,5 +12,7 @@ value, but the links must be preceded by "v", eg:
 The version is mentioned in the following files:
 
 * README.md
-* doc/USERGUIDE.md
-* scripts/common.ps1
+* e5r-install.cmd
+* e5r-install.ps1
+* scripts/cmdrunner.js
+* scripts/e5r-install.js

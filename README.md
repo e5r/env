@@ -5,16 +5,28 @@ E5R Environment
 
 * [Saiba mais sobre a arquitetura](doc/ARCHITECTURE.md)
 * [Guia do Usuário](doc/USERGUIDE.md)
-* [Notas de Lançamento](https://github.com/e5r/env/releases/tag/v0.1.0-alpha1) da versão **0.1.0-alpha1**
+* [Notas de Lançamento](https://github.com/e5r/env/releases/tag/v0.1.0-alpha2) da versão **0.1.0-alpha2**
 
 ## Instalação
 
-1. Baixe e execute o script de acordo com o sistema operacional:
-    * [Windows](http://e5r.github.io/env/dist/e5r-install.cmd);
-    * ~~Unix like~~ (em breve).
-2. A mensagem *E5R Environment successfully installed!* é apresentada.
+### Windows 7/8 ou superior
 
-PRONTO! Você já pode começar a usar a ferramenta.
+Execute um dos códigos abaixo em seu shell favorito.
+
+#### Prompt de Comando
+
+```cmd
+bitsadmin /TRANSFER "Installing E5R Env..." "https://github.com/e5r/env/raw/v0.1.0-alpha2/e5r-install.cmd" "%CD%\e5r-install.cmd" && "%CD%\e5r-install.cmd" && del "%CD%\e5r-install.cmd"
+```
+#### PowerShell
+
+```powershell
+(new-object system.net.webclient).downloadfile("https://github.com/e5r/env/raw/v0.1.0-alpha2/e5r-install.ps1","$pwd\\e5r-install.ps1");iex "$pwd\\e5r-install.ps1";del "$pwd\\e5r-install.ps1"
+```
+
+### ~~Unix like~~
+
+(em breve)
 
 ## Problemas?
 

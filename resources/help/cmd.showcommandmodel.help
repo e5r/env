@@ -1,0 +1,17 @@
+This is only a command model so that developers can be based and develop your
+own commands the future.
+
+Usage: e5r showcommandmodel <action> [options...]
+
+Action:
+  test              Show test message in console.
+
+Options:
+ -w, --workdir      By default the env command considers the current directory
+                    as the working directory, but this can be modified by
+                    passing a value for this option
+
+ -t, --tech         Specify the technology to be used. Optional when [workdir]
+                    contains file ".e5r/tech"
+
+ -T, --test         Only test

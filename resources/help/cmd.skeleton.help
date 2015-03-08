@@ -1,0 +1,39 @@
+Manage the structure of the project directories, with its configuration files,
+automation scripts and code templates.
+
+Usage: e5r skeleton <action> [options...]
+
+Action:
+  init              Initializes a directory with the skeleton of a project
+
+Options:
+ -w, --workdir      By default the env command considers the current directory
+                    as the working directory, but this can be modified by
+                    passing a value for this option
+
+ -t, --tech         Specify the technology to be used. Optional when [workdir]
+                    contains file ".e5r/tech"
+
+ -r, --replace      Replace all files if exists in --workdir
+
+ -V, --pversion     Persist version value in ".e5r/version" file
+
+ -l, --license      License specifies that the project will use.
+
+     AGPL-3.0       GNU Affero General Public License, Version 3
+     APACHE-2.0     Apache License, Version 2.0
+     ARTISTIC-2.0   The Artistic License 2.0
+     BSD-2-CLAUSE   Simplified BSD
+     BSD-3-CLAUSE   New BSD
+     CC0            CC0 1.0 Universal - Public Domain Dedication
+     EPL-1.0        Eclipse Public License - v 1.0
+     GPL-2.0        GNU General Public License, Version 2
+     GPL-3.0        GNU General Public License, Version 3
+     ISC            ISC license
+     LGPL-2.1       GNU Lesser General Public License, Version 2.1
+     LGPL-3.0       GNU Lesser General Public License, Version 3
+     MIT            The MIT License
+     MPL-2.0        Mozilla Public License, Version 2.0
+     UNLICENSE      Public Domain (Unlicense)
+
+     More in http://choosealicense.com

@@ -1,6 +1,6 @@
-var VERSION='@{Version}'
-var FULL_VERSION='@{FullVersion}'
-var AUTHORS='@{Authors}'
+var VERSION='0.1.0'
+var FULL_VERSION='0.1.0'
+var AUTHORS='E5R Development Team'
 
-use-standard-lifecycle
-k-standard-goals
+use-e5r-lifecycle
+e5r-goals
