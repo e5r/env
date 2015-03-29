@@ -1,6 +1,7 @@
 d:src
 d:test
 d:doc
+d:sample
 f:build.cmd:common/build.cmd
 f:build.ps1:common/build.ps1
 f:README.md:common/README.md

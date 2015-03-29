@@ -9,16 +9,17 @@ default BASE_DIR='${Path.Combine(Directory.GetCurrentDirectory(), "build-stage")
 default ARTIFACT_DIR='${Path.Combine(BASE_DIR, "artifacts")}'
 default TEST_DIR='${Path.Combine(ARTIFACT_DIR, "test")}'
 
+default SAMPLE='./sample'
 default SRC='./src'
 default TEST='./test'
-default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs")}'
+default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs", SAMPLE+"/**/AssemblyInfo.cs")}'
 
 #artifacts-dir-clean target="clean"
     directory delete="${ARTIFACT_DIR}"
 
 #build-clean target='clean'
     @{
-        foreach(var info in Files.Include(SRC+"/**/project.json", TEST+"/**/project.json")){
+        foreach(var info in Files.Include(SRC+"/**/project.json", SAMPLE+"/**/project.json", TEST+"/**/project.json")){
             var projectFolder = Path.GetDirectoryName(info);
             if(Directory.Exists(Path.Combine(projectFolder, "bin"))){
                 Directory.Delete(Path.Combine(projectFolder, "bin"), true);
@@ -38,7 +39,7 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs")}'
 
 #compile-packages target='compile'
     @{
-        foreach(var info in Files.Include(SRC+"/**/project.json")){
+        foreach(var info in Files.Include(SRC+"/**/project.json", SAMPLE+"/**/project.json")){
             var configuration = "release";
             var projectFolder = Path.GetDirectoryName(info);
             var projectName=Path.GetFileName(projectFolder);
@@ -149,7 +150,7 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs")}'
 
 #bundle-websites target='package'
     @{
-        foreach(var projectFile in Files.Include(SRC+"/**/project.json")){
+        foreach(var projectFile in Files.Include(SRC+"/**/project.json", SAMPLE+"/**/project.json")){
             var serializer = new JavaScriptSerializer();
             var projectText = File.ReadAllText(projectFile);
             var project = (Dictionary<string, object>)serializer.DeserializeObject(projectText);
@@ -188,7 +189,7 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs")}'
 
 #pack-packages target='package'
     @{
-        foreach(var projectFile in Files.Include(SRC+"/**/project.json")){
+        foreach(var projectFile in Files.Include(SRC+"/**/project.json", SAMPLE+"/**/project.json")){
             var serializer = new JavaScriptSerializer();
             var projectText = File.ReadAllText(projectFile);
             var project = (Dictionary<string, object>)serializer.DeserializeObject(projectText);
