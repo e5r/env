@@ -5,8 +5,7 @@ use assembly="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKey
 use import="Files"
 use import="Environment"
 
-default BASE_DIR='${Path.Combine(Directory.GetCurrentDirectory(), "build-stage")}'
-default ARTIFACT_DIR='${Path.Combine(BASE_DIR, "artifacts")}'
+default ARTIFACT_DIR='${Path.Combine(Directory.GetCurrentDirectory(), "stage")}'
 default TEST_DIR='${Path.Combine(ARTIFACT_DIR, "test")}'
 
 default SAMPLE='./sample'
@@ -47,7 +46,9 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs", SAMPLE+"/
 
             //_exec.shade
             var program = "kpm";
-            var commandLine = "build " + projectFolder + " --configuration " + configuration;
+            var commandLine = "build "
+                + projectFolder
+                + " --configuration " + configuration;
             if(!IsMono){
                 program = "cmd";
                 commandLine = "/C kpm " + commandLine;
@@ -75,7 +76,7 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs", SAMPLE+"/
             foreach(var copyFile in copyFiles)
             {
                 var sourceFile = Path.Combine(projectBin, copyFile);
-                var outputFile = Path.Combine(ARTIFACT_DIR, projectName, copyFile);
+                var outputFile = Path.Combine(ARTIFACT_DIR, "build", projectName, copyFile);
 
                 if (!Directory.Exists(Path.GetDirectoryName(outputFile)))
                 {
@@ -151,6 +152,7 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs", SAMPLE+"/
 #bundle-websites target='package'
     @{
         foreach(var projectFile in Files.Include(SRC+"/**/project.json", SAMPLE+"/**/project.json")){
+            var configuration = "release";
             var serializer = new JavaScriptSerializer();
             var projectText = File.ReadAllText(projectFile);
             var project = (Dictionary<string, object>)serializer.DeserializeObject(projectText);
@@ -161,10 +163,11 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs", SAMPLE+"/
                 var projectName = Path.GetFileName(projectFolder);
 
                 var program = "kpm";
-                var commandLine = "bundle "
-                    + "--overwrite "
-                    + "--no-source "
-                    + "--out " + Path.Combine(ARTIFACT_DIR, "bundles", projectName);
+                var commandLine = "bundle"
+                    + " --configuration " + configuration
+                    + " --overwrite"
+                    + " --no-source"
+                    + " --out " + Path.Combine(ARTIFACT_DIR, "bundles", projectName);
                 if(!IsMono){
                     program = "cmd";
                     commandLine = "/C kpm " + commandLine;
@@ -190,6 +193,7 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs", SAMPLE+"/
 #pack-packages target='package'
     @{
         foreach(var projectFile in Files.Include(SRC+"/**/project.json", SAMPLE+"/**/project.json")){
+            var configuration = "release";
             var serializer = new JavaScriptSerializer();
             var projectText = File.ReadAllText(projectFile);
             var project = (Dictionary<string, object>)serializer.DeserializeObject(projectText);
@@ -200,10 +204,11 @@ default ASSEMBLYINFO_FILES='${Files.Include(SRC+"/**/AssemblyInfo.cs", SAMPLE+"/
                 var projectName = Path.GetFileName(projectFolder);
 
                 var program = "kpm";
-                var commandLine = "pack "
-                    //+ "--overwrite "
-                    //+ "--no-source "
-                    + "--out " + Path.Combine(ARTIFACT_DIR, "packages", projectName);
+                var commandLine = "pack"
+                    + " --configuration " + configuration
+                    //+ " --overwrite "
+                    //+ " --no-source "
+                    + " --out " + Path.Combine(ARTIFACT_DIR, "packages", projectName);
                 if(!IsMono){
                     program = "cmd";
                     commandLine = "/C kpm " + commandLine;
